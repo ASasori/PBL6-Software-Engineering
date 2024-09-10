@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
     
     #Custom App
     'userauths',
@@ -163,7 +165,7 @@ AUTH_USER_MODEL = "userauths.User"
 JAZZMIN_SETTINGS = {
     'site_header': "Nguyen",
     'site_brand': "Your #1 marketplace for collectibles.",
-    'site_logo': "/images/logo1.png",
+    'site_logo': "/images/logo.png",
     'copyright':  "All Right Reserved 2024",
     "welcome_sign": "Welcome to Nguyen, Login Now.",
     "topmenu_links": [
@@ -241,4 +243,20 @@ JAZZMIN_UI_TWEAKS = {
         "danger": "btn-danger",
         "success": "btn-success"
     }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # or 'rest_framework.permissions.AllowAny' for open access
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',  # Optional: Add token-based authentication
+    ],
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',  # Ensures responses are in JSON format for the API
+        'rest_framework.renderers.BrowsableAPIRenderer',  # Optional: Provides a browsable API for debugging
+        'rest_framework.authentication.TokenAuthentication',
+    ),
 }

@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
 from shortuuid.django_fields import ShortUUIDField
 from django.dispatch import receiver
+import shortuuid
 
 USER_ROLES = (
     ("Admin", "Admin"),
@@ -87,8 +88,8 @@ class SystemAdmin(models.Model):
 # New model for Receptionist
 class Receptionist(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    receptionistID = models.CharField(max_length=100, unique=True)  # Example field
-    hotelID = models.IntegerField()  # Assuming this links to a Hotel model
+    receptionistID = models.CharField(max_length=100, unique=True, null=False, blank=False)  
+    hotelID = models.IntegerField(null=True, blank=True)  # Assuming this links to a Hotel model
     # Add specific fields and methods for Receptionist
 
     def manage_booking(self):
@@ -99,7 +100,7 @@ class Receptionist(models.Model):
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     customerID = models.CharField(max_length=100, unique=True)  # Example field
-    bookingID = models.IntegerField()  # Assuming this links to a Booking model
+    bookingID = models.IntegerField(null=True, blank=True)  # Assuming this links to a Booking model
     # Add specific fields and methods for Customer
 
     def create_booking(self):
@@ -125,7 +126,8 @@ def create_user_profile(sender, instance, created, **kwargs):
         elif instance.role == "Receptionist":
             Receptionist.objects.create(user=instance)
         elif instance.role == "Customer":
-            Customer.objects.create(user=instance)
+            unique_customer_id = shortuuid.uuid()  # Generate a unique ID for customerID
+            Customer.objects.create(user=instance, customerID=unique_customer_id, bookingID=0)
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):

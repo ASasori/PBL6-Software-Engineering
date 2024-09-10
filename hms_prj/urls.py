@@ -27,6 +27,10 @@ urlpatterns = [
     path("user/", include("userauths.urls")),
 
     path("", include("hotel.urls")),
+
+
+    #Ckeditor
+    path("ckeditor5/", include("django_ckeditor_5.urls"))
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)  
