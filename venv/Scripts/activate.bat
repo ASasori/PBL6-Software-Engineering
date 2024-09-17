@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=E:\BKDN\PBL\PBL6\hotel_management\hms_prj\venv
+set VIRTUAL_ENV=E:\django_WEB\PBL6\venv
 
 if not defined PROMPT set PROMPT=$P$G
 

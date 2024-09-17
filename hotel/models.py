@@ -6,6 +6,7 @@ from userauths.models import User
 from shortuuid.django_fields import ShortUUIDField
 import shortuuid
 from django_ckeditor_5.fields import CKEditor5Field
+from taggit.managers import TaggableManager
 HOTEL_STATUS =(
     ("Draft","Draft"),
     ("Disable","Disable"),
@@ -37,6 +38,7 @@ PAYMENT_STATUS = (
 
 class Hotel(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null = True)
+    
     name = models.CharField(max_length=100)
     description = CKEditor5Field(null=True, blank=True, config_name='extends')
     image = models.FileField(upload_to="hotel_gallery")
@@ -45,10 +47,10 @@ class Hotel(models.Model):
     email = models.EmailField(max_length=100)
     status = models.CharField(max_length=20, choices=HOTEL_STATUS, default="Live")
 
-    tags = models.CharField(max_length=200, help_text="Separate tags with comma")
-    views = models.IntegerField(default=0)
-    featured = models.BooleanField(default=False)
-    hid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmopqrstuvwxyz")
+    tags = TaggableManager(blank=True)
+    views = models.IntegerField(default=0) #số lượt xem
+    featured = models.BooleanField(default=False) #khách sạn có nổi bật hay không
+    hid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmopqrstuvwxyz") #tạo ID tự động
     slug = models.SlugField(unique=True)
     date = models.DateField(auto_now_add=True)
 
@@ -66,8 +68,13 @@ class Hotel(models.Model):
     def thumbnail(self):
         return mark_safe("<img src='%s' width='50' height='50' style='object-fit': cover; border-radius: 6px;' />" % (self.image.url))
 
+    def hotel_gallery(self):
+        return HotelGallery.objects.filter(hotel=self)
 
+    def hotel_room_types(self):
+        RoomType.objects.filter(hotel=self)
 
+#Lưu trữ hình ảnh khách sạn  
 class HotelGallery(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     image = models.FileField(upload_to="hotel_gallery")
@@ -79,8 +86,7 @@ class HotelGallery(models.Model):
     class Meta:
         verbose_name_plural = "Hotel Gallery"
 
-
-
+#Tính năng của khách sạn
 class HotelFeatures(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     icon_type = models.CharField(max_length=100, null=True, blank=True, choices=ICON_TPYE)
@@ -94,7 +100,7 @@ class HotelFeatures(models.Model):
     class Meta:
         verbose_name_plural = "Hotel Features"
 
-
+#Câu hỏi thưởng gặp 
 class HotelFAQs(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     question = models.CharField(max_length=1000)
@@ -108,16 +114,14 @@ class HotelFAQs(models.Model):
     class Meta:
         verbose_name_plural = "Hotel FAQs"
 
-
-
-
+#Loại phòng
 class RoomType(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     type = models.CharField(max_length=10)
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     number_of_beds = models.PositiveIntegerField(default=0)
-    room_capacity = models.PositiveIntegerField(default=0)
-    rtid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz")
+    room_capacity = models.PositiveIntegerField(default=0) #số lượng người trong phòng
+    rtid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz") #tạo ID tự động
     slug = models.SlugField(null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True)
 
@@ -135,7 +139,7 @@ class RoomType(models.Model):
             
         super(RoomType, self).save(*args, **kwargs) 
 
-
+#Phòng
 class Room(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     room_type = models.ForeignKey(RoomType, on_delete=models.CASCADE)
@@ -154,7 +158,7 @@ class Room(models.Model):
         return self.room_type.number_of_beds
     
 
-
+#Đặt phòng
 class Booking(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     payment_status = models.CharField(max_length=100, choices=PAYMENT_STATUS, default="initiated")
@@ -180,10 +184,10 @@ class Booking(models.Model):
     checked_in = models.BooleanField(default=False)
     checked_out = models.BooleanField(default=False)
     
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True) #Phòng có đang hoạt động hay không
     
-    checked_in_tracker = models.BooleanField(default=False, help_text="DO NOT CHECK THIS BOX")
-    checked_out_tracker = models.BooleanField(default=False, help_text="DO NOT CHECK THIS BOX")
+    checked_in_tracker = models.BooleanField(default=False, help_text="DO NOT CHECK THIS BOX") #Quá trình
+    checked_out_tracker = models.BooleanField(default=False, help_text="DO NOT CHECK THIS BOX") #Quá trình
     
     date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     #coupons = models.ManyToManyField("hotel.Coupon", blank=True)
@@ -198,6 +202,7 @@ class Booking(models.Model):
     def rooms(self):
         return self.room.all().count()
     
+#Hoạt động ra vào của khách hàng
 class ActivityLog(models.Model):
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
     guest_out = models.DateTimeField()
@@ -207,7 +212,8 @@ class ActivityLog(models.Model):
 
     def __str__(self):
         return str(self.booking)
-    
+
+#Thông tin nhân viên đặt phòng
 class StaffOnDuty(models.Model):
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
     staff_id = models.CharField(null=True, blank=True, max_length=100)
