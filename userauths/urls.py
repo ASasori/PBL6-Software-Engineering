@@ -9,5 +9,6 @@ urlpatterns = [
     path("sign-in/", views.loginViewTemp, name="sign-in"),
     path("sign-out/", views.logoutView, name="sign-out"),
     path('admin/', admin.site.urls),
+    
     path('api/userauths/', include('userauths.api_urls')),
 ]
