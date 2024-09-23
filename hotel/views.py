@@ -1,5 +1,6 @@
 from django.shortcuts import render
-
+from rest_framework import status, viewsets
+from .serializers import HotelSerializer
 from hotel.models import Hotel, Booking, ActivityLog, StaffOnDuty, Room, RoomType
 
 #Trả về danh sách khách sạn có trạng thái live

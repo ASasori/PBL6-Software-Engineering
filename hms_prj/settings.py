@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'ckeditor_uploader',
     'django_ckeditor_5',
     'taggit',
+    'drf_yasg',
     'anymail',
 
 ]
@@ -102,7 +103,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'pbl6',
         'USER': 'root',
-        'PASSWORD': 'Hieu123456@@',
+        'PASSWORD': 'Danhop2022@',
         'HOST': 'localhost',
         'PORT': '3306',  # 3306 là cổng mặc định cho MySQL
     }
@@ -246,6 +247,16 @@ JAZZMIN_UI_TWEAKS = {
     }
 }
 
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.AllowAny',
+#     ],
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework.authentication.SessionAuthentication',
+#         'rest_framework.authentication.BasicAuthentication',
+#     ],
+# }
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',  # or 'rest_framework.permissions.AllowAny' for open access
@@ -258,6 +269,6 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',  # Ensures responses are in JSON format for the API
         'rest_framework.renderers.BrowsableAPIRenderer',  # Optional: Provides a browsable API for debugging
-        'rest_framework.authentication.TokenAuthentication',
     ),
 }
+

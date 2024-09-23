@@ -2,6 +2,7 @@
 
 from django.urls import path
 from .views_api import register_view, login_view, logout_view
+from userauths import views_api
 
 app_name = "userauths_api"
 
