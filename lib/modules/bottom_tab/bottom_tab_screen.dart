@@ -29,7 +29,7 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
       vsync: this
     );
     _indexView = Container();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _startLoadingScreen();
     });
     super.initState();

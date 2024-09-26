@@ -259,6 +259,20 @@
         "ja": "ケープタウン"
     },
     {
+        "text_id": "turkey",
+        "en": "Turkey",
+        "fr": "Dinde",
+        "ar": "كيب تاون",
+        "ja": "ケープタウン"
+    },
+    {
+        "text_id": "egypt",
+        "en": "Egypt",
+        "fr": "Egypte",
+        "ar": "كيب تاون",
+        "ja": "ケープタウン"
+    },
+    {
         "text_id": "five_star",
         "en": "Extraordinary five-star\noutdoor activites",
         "fr": "Activités d'extérieur \nextraordinaires",
