@@ -1,9 +1,9 @@
 import 'package:booking_hotel_app/modules/bottom_tab/bottom_tab_screen.dart';
+import 'package:booking_hotel_app/modules/hotel_details/search_screen.dart';
 import 'package:booking_hotel_app/modules/login/forgot_password.dart';
 import 'package:booking_hotel_app/modules/login/login_screen.dart';
 import 'package:booking_hotel_app/modules/login/sign_up_screen.dart';
 import 'package:booking_hotel_app/routes/routes.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class NavigationServices {
@@ -40,5 +40,8 @@ class NavigationServices {
 
   Future<dynamic> gotoBottomTabScreen() async {
     return _pushMasterialPageRoute(BottomTabScreen());
+  }
+  Future<dynamic> gotoSearchScreen() async {
+    return _pushMasterialPageRoute(SearchScreen());
   }
 }

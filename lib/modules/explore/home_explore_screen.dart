@@ -5,6 +5,7 @@ import 'package:booking_hotel_app/modules/explore/hotel_list_view_page.dart';
 import 'package:booking_hotel_app/modules/explore/popular_list_view.dart';
 import 'package:booking_hotel_app/modules/explore/title_view.dart';
 import 'package:booking_hotel_app/providers/theme_provider.dart';
+import 'package:booking_hotel_app/routes/route_names.dart';
 import 'package:booking_hotel_app/widgets/bottom_top_move_animation_view.dart';
 import 'package:booking_hotel_app/widgets/common_button.dart';
 import 'package:booking_hotel_app/widgets/common_card.dart';
@@ -158,7 +159,9 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
                 height: sliderImageHeight * (1.0 - _animationController.value),
                 child: HomeExplorerSliderView(
                     opValue: opacity,
-                    click: () {}
+                    click: () {
+
+                    }
                 )
               );
             }
@@ -223,7 +226,7 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
         child: InkWell(
           borderRadius: BorderRadius.all(Radius.circular(30)),
           onTap: () {
-
+            NavigationServices(context).gotoSearchScreen();
           },
           child: CommonSearchBar(
             iconData: FontAwesomeIcons.search,

@@ -7,7 +7,8 @@ class CommonSearchBar extends StatelessWidget {
   final bool enabled, isShow;
   final double height;
   final IconData? iconData;
-  const CommonSearchBar({super.key, this.text,this.enabled = false, this.isShow = true, this.height = 48, this.iconData});
+  final TextEditingController? textEditingController;
+  const CommonSearchBar({super.key, this.text,this.enabled = false, this.isShow = true, this.height = 48, this.iconData, this.textEditingController});
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +24,7 @@ class CommonSearchBar extends StatelessWidget {
                 isShow == true ? SizedBox(width: 8,) : SizedBox(),
                 Expanded(
                   child: TextField(
+                    controller: textEditingController,
                     maxLines: 1,
                     enabled: enabled,
                     onChanged: (String text) {
