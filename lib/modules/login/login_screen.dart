@@ -6,7 +6,10 @@ import 'package:booking_hotel_app/widgets/common_appbar_view.dart';
 import 'package:booking_hotel_app/widgets/common_button.dart';
 import 'package:booking_hotel_app/widgets/common_textfield_view.dart';
 import 'package:booking_hotel_app/widgets/remove_focuse.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:booking_hotel_app/models/user.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -70,7 +73,8 @@ class _LoginScreen extends State<LoginScreen> {
                           padding: EdgeInsets.only(left: 24,right: 24,bottom: 16),
                           buttonText: AppLocalizations(context).of("login"),
                           onTap: () {
-                            if (allValidation()) NavigationServices(context).gotoBottomTabScreen();
+                             //_login();
+                             if (allValidation()) NavigationServices(context).gotoBottomTabScreen();
                           },
                         )
                       ],
@@ -118,7 +122,6 @@ class _LoginScreen extends State<LoginScreen> {
     } else {
       _errorEmail = "";
     }
-
     if (_passwordController.text.trim().isEmpty){
       _errorPassword = AppLocalizations(context).of("password_cannot_empty");
       isValid = false;
@@ -133,4 +136,72 @@ class _LoginScreen extends State<LoginScreen> {
     });
     return isValid;
   }
+//
+//   bool _isLoading = false;
+//
+//   Future<void> _login() async {
+//     setState(() {
+//       _isLoading = true;
+//     });
+//
+//     var dio = Dio();
+//     String apiUrl = "http://10.10.1.202:8000/api/login/"; // Đặt đúng API URL
+//
+//     try {
+//       // Gửi yêu cầu đăng nhập
+//       Response response = await dio.post(
+//         apiUrl,
+//         data: {
+//           'email': _emailController.text, // Key chính xác
+//           'password': _passwordController.text,
+//         },
+//       );
+//
+//       if (response.statusCode == 200) {
+//         var data = response.data;
+//
+//         // Kiểm tra xem phản hồi có thành công hay không
+//         if (data.containsKey('token')) {
+//           // Lưu token
+//           String token = data['token'];
+//           SharedPreferences prefs = await SharedPreferences.getInstance();
+//           await prefs.setString('auth_token', token);
+//
+//           // Điều hướng sau khi đăng nhập thành công
+//           NavigationServices(context).gotoBottomTabScreen();
+//         } else {
+//           _showErrorDialog('Đăng nhập không thành công');
+//         }
+//       } else {
+//         _showErrorDialog('Sai tên đăng nhập hoặc mật khẩu');
+//       }
+//     } catch (e) {
+//       _showErrorDialog('Lỗi kết nối: $e');
+//     } finally {
+//       setState(() {
+//         _isLoading = false;
+//       });
+//     }
+//   }
+//
+// // Hiển thị thông báo lỗi
+//   void _showErrorDialog(String message) {
+//     showDialog(
+//       context: context,
+//       builder: (ctx) => AlertDialog(
+//         title: Text('Lỗi'),
+//         content: Text(message),
+//         actions: <Widget>[
+//           TextButton(
+//             child: Text('OK'),
+//             onPressed: () {
+//               Navigator.of(ctx).pop();
+//             },
+//           )
+//         ],
+//       ),
+//     );
+//   }
+
 }
+

@@ -1,3 +1,4 @@
+import 'package:booking_hotel_app/models/hotel_list_data.dart';
 import 'package:flutter/material.dart';
 
 class HomeExploreScreen extends StatefulWidget {
