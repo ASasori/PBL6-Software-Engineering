@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from shortuuid.django_fields import ShortUUIDField
 from django.dispatch import receiver
 import shortuuid
+import datetime
 
 USER_ROLES = (
     ("Admin", "Admin"),
@@ -30,7 +31,7 @@ def user_directory_path(instance, filename):
 # Create your models here.
 class User(AbstractUser):
     full_name = models.CharField(max_length=500, null=True, blank=True)
-    username = models.CharField(max_length=500, unique=True)
+    username = models.CharField(max_length=500, null=True, blank=True)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=500, null=True, blank=True)
     gender = models.CharField(max_length=20, choices=GENDER, default="Other")
@@ -65,7 +66,7 @@ class Profile(models.Model):
     wallet = models.DecimalField(max_digits=32, decimal_places=2, default=0.00)
     verified = models.BooleanField(default=False)
 
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(default=datetime.datetime.now)
 
     class Meta:
         ordering =['-date']

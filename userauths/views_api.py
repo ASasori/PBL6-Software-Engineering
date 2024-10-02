@@ -1,15 +1,19 @@
 # userauths/views_api.py
-
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login, logout
-from .models import User
+from django.contrib.auth import get_user_model
 from .serializers import UserSerializer, LoginSerializer
+
+User = get_user_model()
 
 @api_view(['POST'])
 def register_view(request):
+    print("Received request at register_view")
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()

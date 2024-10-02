@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from .models import Hotel, RoomType, Room
 from .serializers import HotelSerializer, RoomTypeSerializer, RoomSerializer
 
+
 @api_view(['GET'])
 def index(request):
     hotels = Hotel.objects.filter(status='Live')
@@ -37,3 +38,4 @@ def room_type_detail(request, slug, rt_slug):
         'room_type': room_type_serializer.data,
         'rooms': rooms_serializer.data
     })
+

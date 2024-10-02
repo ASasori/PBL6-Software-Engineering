@@ -25,12 +25,13 @@ SECRET_KEY = 'django-insecure-&8$zx(^(s0nmnx4k-+4g2&*=nh7ox1e^jxu905v)h#^h@z&z!0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'django_extensions',
     'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders',
     
     #Custom App
     'userauths',
@@ -47,6 +49,7 @@ INSTALLED_APPS = [
     'hotel',
     'addon',
     'booking',
+    'receptionist',
 
     #Third Part Apps
     'import_export',
@@ -61,6 +64,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -68,6 +72,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'hms_prj.urls'
 
@@ -186,7 +192,7 @@ JAZZMIN_SETTINGS = {
         "hotel.BookingDetail",
         "hotel.Guest",
         "hotel.RoomServices",
-        "userauths"
+        "userauths",
         "addons",
     ],
     
@@ -221,7 +227,7 @@ JAZZMIN_UI_TWEAKS = {
     "brand_small_text": False,
     "brand_colour": "navbar-indigo",
     "accent": "accent-olive",
-    "navbar": "navbar-indigo navbar-dark",
+    "navbar": "navbar-white navbar-light",
     "no_navbar_border": False,
     "navbar_fixed": False,
     "layout_boxed": False,
@@ -234,11 +240,11 @@ JAZZMIN_UI_TWEAKS = {
     "sidebar_nav_compact_style": False,
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": False,
-    "theme": "cyborg",
-    "dark_mode_theme": "cyborg",
+    "theme": "litera",
+    "dark_mode_theme": None,
     "button_classes": {
-        "primary": "btn-primary",
-        "secondary": "btn-secondary",
+        "primary": "btn-outline-primary",
+        "secondary": "btn-outline-secondary",
         "info": "btn-info",
         "warning": "btn-warning",
         "danger": "btn-danger",
@@ -246,9 +252,11 @@ JAZZMIN_UI_TWEAKS = {
     }
 }
 
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',  # or 'rest_framework.permissions.AllowAny' for open access
+        # 'rest_framework.permissions.IsAuthenticated', 
+        'rest_framework.permissions.AllowAny', # or 'rest_framework.permissions.AllowAny' for open access
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
