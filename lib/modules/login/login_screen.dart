@@ -7,6 +7,8 @@ import 'package:booking_hotel_app/widgets/common_button.dart';
 import 'package:booking_hotel_app/widgets/common_textfield_view.dart';
 import 'package:booking_hotel_app/widgets/remove_focuse.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -108,7 +110,7 @@ class _LoginScreen extends State<LoginScreen> {
     );
   }
 
-  bool allValidation() {
+  bool allValidation()  {
     bool isValid = true;
     if (_emailController.text.trim().isEmpty){
       _errorEmail = AppLocalizations(context).of("email_cannot_empty");
@@ -129,10 +131,56 @@ class _LoginScreen extends State<LoginScreen> {
     } else {
       _errorPassword = "";
     }
+
     setState(() {
 
     });
+
+    //isValid =  login(_emailController.text.trim(), _passwordController.text.trim()) as bool;
     return isValid;
   }
 
+}
+
+Future<String?> fetchCsrfToken() async {
+  final response = await http.get(Uri.parse('http://10.10.28.164:8000/'));
+
+  if (response.statusCode == 200) {
+    // Lấy cookie từ headers
+    final cookies = response.headers['set-cookie'];
+    if (cookies != null) {
+      // Tìm CSRF token trong cookie
+      final csrfToken = RegExp(r'csrftoken=([^;]+)').firstMatch(cookies);
+      if (csrfToken != null) {
+        return csrfToken.group(1); // Trả về giá trị CSRF token
+      }
+    }
+  }
+  return null;
+}
+
+Future<bool> login(String email, String password) async {
+  final csrfToken = await fetchCsrfToken();
+
+  final response = await http.post(
+    Uri.parse('http://10.10.28.164:8000/user/api/userauths/login/'),
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken ?? '', // Thêm CSRF token vào header
+    },
+    body: jsonEncode({
+      'email': email,
+      'password': password,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    // Đăng nhập thành công
+    print('Login successful: ${response.body}');
+    return true;
+  } else {
+    // Xử lý lỗi
+    print('Login failed: ${response.body}');
+    return false;
+  }
 }

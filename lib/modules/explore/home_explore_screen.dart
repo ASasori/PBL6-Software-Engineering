@@ -190,7 +190,7 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
                     child: CommonButton(
                       onTap: (){
                         if (opacity!=0){
-                          Scaffold();
+                          NavigationServices(context).gotoHotelHomeScreen();
                         }
                       },
                       buttonTextWidget: Padding(
@@ -226,7 +226,7 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
         child: InkWell(
           borderRadius: BorderRadius.all(Radius.circular(30)),
           onTap: () {
-            NavigationServices(context).gotoSearchScreen();
+            NavigationServices(context).gotoHotelHomeScreen();
           },
           child: CommonSearchBar(
             iconData: FontAwesomeIcons.search,
