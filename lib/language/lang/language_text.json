@@ -133,6 +133,13 @@
         "ja": "苗字"
     },
     {
+        "text_id": "phone_number",
+        "en": "Phone number",
+        "fr": "Numéro de téléphone",
+        "ar": "",
+        "ja": "電話番号"
+    },
+    {
         "text_id": "terms_agreed",
         "en": "By Signing up,you agreed with our terms of\n Services and privacy policy",
         "fr": "En vous inscrivant, vous acceptez nos conditions de",
@@ -255,6 +262,20 @@
         "text_id": "cape Town",
         "en": "Cape Town",
         "fr": "Le Cap",
+        "ar": "كيب تاون",
+        "ja": "ケープタウン"
+    },
+    {
+        "text_id": "turkey",
+        "en": "Turkey",
+        "fr": "Dinde",
+        "ar": "كيب تاون",
+        "ja": "ケープタウン"
+    },
+    {
+        "text_id": "egypt",
+        "en": "Egypt",
+        "fr": "Egypte",
         "ar": "كيب تاون",
         "ja": "ケープタウン"
     },
@@ -1104,6 +1125,13 @@
         "fr": "Entrer le nom de famille",
         "ar": "إدخال اسم آخر",
         "ja": "名前を入力してください"
+    },
+    {
+        "text_id": "enter_phone_number",
+        "en": "Enter phone number",
+        "fr": "Entrez le numéro de téléphone",
+        "ar": "",
+        "ja": "電話番号を入力してください"
     },
     {
         "text_id": "first_name_cannot_empty",

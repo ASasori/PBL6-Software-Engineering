@@ -8,7 +8,7 @@ class User {
   final String otp;
 
   User({required this.full_name, required this.username, required this.email,
-        required this.phone, required this.gender, required this.role, required this.otp});
+    required this.phone, required this.gender, required this.role, required this.otp});
 
   factory User.fromJson(Map<String, dynamic> json){
     return User(

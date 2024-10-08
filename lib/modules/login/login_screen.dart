@@ -1,15 +1,16 @@
 import 'package:booking_hotel_app/language/appLocalizations.dart';
 import 'package:booking_hotel_app/modules/login/facebook_google_button_view.dart';
+import 'package:booking_hotel_app/providers/auth_provider.dart';
 import 'package:booking_hotel_app/routes/route_names.dart';
 import 'package:booking_hotel_app/utils/validator.dart';
 import 'package:booking_hotel_app/widgets/common_appbar_view.dart';
 import 'package:booking_hotel_app/widgets/common_button.dart';
 import 'package:booking_hotel_app/widgets/common_textfield_view.dart';
 import 'package:booking_hotel_app/widgets/remove_focuse.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:booking_hotel_app/models/user.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -23,91 +24,103 @@ class _LoginScreen extends State<LoginScreen> {
   TextEditingController _emailController = TextEditingController();
   String _errorPassword = '';
   TextEditingController _passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: RemoveFocuse(
-          onclick: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CommonAppbarView(
-                  iconData: Icons.arrow_back_ios_new,
-                  titleText: AppLocalizations(context).of("login"),
-                  onBackClick: (){
-                    Navigator.pop(context);
-                  }
-              ),
-              Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(top: 32),
-                          child: FacebookGoogleButtonView(),
-                        ),
-                        CommonTextFieldView(
-                          controller: _emailController,
-                          errorText: _errorEmail,
-                          titleText: AppLocalizations(context).of("your_mail"),
-                          padding: EdgeInsets.only(left: 24, right: 24, top: 24),
-                          hintText: AppLocalizations(context).of("enter_your_email"),
-                          keyboardType: TextInputType.emailAddress,
-                          onChanged: (String txt) {},
-                        ),
-                        CommonTextFieldView(
-                          controller: _passwordController,
-                          errorText: _errorPassword,
-                          titleText: AppLocalizations(context).of("password"),
-                          padding: EdgeInsets.only(left: 24, right: 24, bottom: 16),
-                          hintText: AppLocalizations(context).of("enter_password"),
-                          onChanged: (String txt) {},
-                          isObsecureText: true,
-                          keyboardType: TextInputType.text,
-                        ),
-                        _forgotYourPassword(),
-                        CommonButton(
-                          padding: EdgeInsets.only(left: 24,right: 24,bottom: 16),
-                          buttonText: AppLocalizations(context).of("login"),
-                          onTap: () {
-                             //_login();
-                             if (allValidation()) NavigationServices(context).gotoBottomTabScreen();
-                          },
-                        )
-                      ],
-                    ),
+        onclick: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CommonAppbarView(
+                iconData: Icons.arrow_back_ios_new,
+                titleText: AppLocalizations(context).of("login"),
+                onBackClick: () {
+                  Navigator.pop(context);
+                }
+            ),
+            Expanded(
+                child: SingleChildScrollView(
+                  child: Consumer<AuthProvider> (
+                    builder: (context, authProvider, child) {
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 32),
+                            child: FacebookGoogleButtonView(),
+                          ),
+                          CommonTextFieldView(
+                            controller: _emailController,
+                            errorText: _errorEmail,
+                            titleText: AppLocalizations(context).of("your_mail"),
+                            padding: EdgeInsets.only(left: 24, right: 24, top: 24),
+                            hintText: AppLocalizations(context).of(
+                                "enter_your_email"),
+                            keyboardType: TextInputType.emailAddress,
+                            onChanged: (String txt) {},
+                          ),
+                          CommonTextFieldView(
+                            controller: _passwordController,
+                            errorText: _errorPassword,
+                            titleText: AppLocalizations(context).of("password"),
+                            padding: EdgeInsets.only(
+                                left: 24, right: 24, bottom: 16),
+                            hintText: AppLocalizations(context).of(
+                                "enter_password"),
+                            onChanged: (String txt) {},
+                            isObsecureText: true,
+                            keyboardType: TextInputType.text,
+                          ),
+                          _forgotYourPassword(),
+                          CommonButton(
+                            padding: EdgeInsets.only(
+                                left: 24, right: 24, bottom: 16),
+                            buttonText: AppLocalizations(context).of("login"),
+                            onTap: () async {
+                              if (allValidation()) {
+                                bool isSuccess = await authProvider.login(_emailController.text.trim(), _passwordController.text.trim());
+                                if (isSuccess)
+                                  NavigationServices(context).gotoBottomTabScreen();
+                              }
+                            },
+                          )
+                        ],
+                      );
+                    }
                   )
-              )
-            ],
-          ),
+                )
+            )
+          ],
+        ),
       ),
     );
   }
 
   _forgotYourPassword() {
     return Padding(
-      padding: EdgeInsets.only(top: 8, right: 16, bottom: 8,left: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          InkWell(
-            borderRadius: BorderRadius.all(Radius.circular(8)),
-            onTap: () {
-              NavigationServices(context).gotoForgotPasswordScreen();
-            },
-            child: Padding(
-              padding: EdgeInsets.all(8),
-              child: Text(
-                AppLocalizations(context).of("forgot_your_Password")
+        padding: EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            InkWell(
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+              onTap: () {
+                NavigationServices(context).gotoForgotPasswordScreen();
+              },
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: Text(
+                    AppLocalizations(context).of("forgot_your_Password")
+                ),
               ),
-            ),
-          )
-        ],
-      )
+            )
+          ],
+        )
     );
   }
 
@@ -122,6 +135,7 @@ class _LoginScreen extends State<LoginScreen> {
     } else {
       _errorEmail = "";
     }
+
     if (_passwordController.text.trim().isEmpty){
       _errorPassword = AppLocalizations(context).of("password_cannot_empty");
       isValid = false;
@@ -136,72 +150,4 @@ class _LoginScreen extends State<LoginScreen> {
     });
     return isValid;
   }
-//
-//   bool _isLoading = false;
-//
-//   Future<void> _login() async {
-//     setState(() {
-//       _isLoading = true;
-//     });
-//
-//     var dio = Dio();
-//     String apiUrl = "http://10.10.1.202:8000/api/login/"; // Đặt đúng API URL
-//
-//     try {
-//       // Gửi yêu cầu đăng nhập
-//       Response response = await dio.post(
-//         apiUrl,
-//         data: {
-//           'email': _emailController.text, // Key chính xác
-//           'password': _passwordController.text,
-//         },
-//       );
-//
-//       if (response.statusCode == 200) {
-//         var data = response.data;
-//
-//         // Kiểm tra xem phản hồi có thành công hay không
-//         if (data.containsKey('token')) {
-//           // Lưu token
-//           String token = data['token'];
-//           SharedPreferences prefs = await SharedPreferences.getInstance();
-//           await prefs.setString('auth_token', token);
-//
-//           // Điều hướng sau khi đăng nhập thành công
-//           NavigationServices(context).gotoBottomTabScreen();
-//         } else {
-//           _showErrorDialog('Đăng nhập không thành công');
-//         }
-//       } else {
-//         _showErrorDialog('Sai tên đăng nhập hoặc mật khẩu');
-//       }
-//     } catch (e) {
-//       _showErrorDialog('Lỗi kết nối: $e');
-//     } finally {
-//       setState(() {
-//         _isLoading = false;
-//       });
-//     }
-//   }
-//
-// // Hiển thị thông báo lỗi
-//   void _showErrorDialog(String message) {
-//     showDialog(
-//       context: context,
-//       builder: (ctx) => AlertDialog(
-//         title: Text('Lỗi'),
-//         content: Text(message),
-//         actions: <Widget>[
-//           TextButton(
-//             child: Text('OK'),
-//             onPressed: () {
-//               Navigator.of(ctx).pop();
-//             },
-//           )
-//         ],
-//       ),
-//     );
-//   }
-
 }
-

@@ -1,3 +1,5 @@
+import 'package:booking_hotel_app/providers/auth_provider.dart';
+import 'package:booking_hotel_app/providers/hotel_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:booking_hotel_app/utils/themes.dart';
@@ -19,6 +21,12 @@ Widget _setAllProviders() {
         create: (_) => ThemeProvider(
           state: AppTheme.getThemeData,
         ),
+      ),
+      ChangeNotifierProvider( // Thêm HotelProvider vào đây
+        create: (_) => HotelProvider(),
+      ),
+      ChangeNotifierProvider(
+        create: (_) => AuthProvider(),
       ),
     ],
     child: MotelApp(),
