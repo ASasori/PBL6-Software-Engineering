@@ -1,6 +1,5 @@
 import 'package:booking_hotel_app/language/appLocalizations.dart';
 import 'package:booking_hotel_app/modules/login/facebook_google_button_view.dart';
-import 'package:booking_hotel_app/providers/auth_provider.dart';
 import 'package:booking_hotel_app/routes/route_names.dart';
 import 'package:booking_hotel_app/utils/validator.dart';
 import 'package:booking_hotel_app/widgets/common_appbar_view.dart';
@@ -10,6 +9,8 @@ import 'package:booking_hotel_app/widgets/remove_focuse.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../providers/auth_provider.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -24,7 +25,6 @@ class _LoginScreen extends State<LoginScreen> {
   TextEditingController _emailController = TextEditingController();
   String _errorPassword = '';
   TextEditingController _passwordController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,8 +91,8 @@ class _LoginScreen extends State<LoginScreen> {
                         ],
                       );
                     }
-                  )
-                )
+                  ),
+                ),
             )
           ],
         ),
@@ -150,4 +150,5 @@ class _LoginScreen extends State<LoginScreen> {
     });
     return isValid;
   }
+
 }

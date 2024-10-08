@@ -1,10 +1,13 @@
 import 'package:booking_hotel_app/modules/bottom_tab/bottom_tab_screen.dart';
+import 'package:booking_hotel_app/modules/hotel_details/room_booking_screen.dart';
 import 'package:booking_hotel_app/modules/login/forgot_password.dart';
 import 'package:booking_hotel_app/modules/login/login_screen.dart';
 import 'package:booking_hotel_app/modules/login/sign_up_screen.dart';
 import 'package:booking_hotel_app/routes/routes.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../modules/hotel_booking/filter_screen/filter_screen.dart';
+import '../modules/hotel_booking/hotel_home_screen.dart';
 
 class NavigationServices {
   final BuildContext context;
@@ -40,5 +43,17 @@ class NavigationServices {
 
   Future<dynamic> gotoBottomTabScreen() async {
     return _pushMasterialPageRoute(BottomTabScreen());
+  }
+
+  Future<dynamic> gotoHotelHomeScreen([String place = ""]) async {
+    return _pushMasterialPageRoute(HotelHomeScreen(placeName: place,));
+  }
+
+  Future<dynamic> gotoFiltersScreen() async {
+    return _pushMasterialPageRoute(FiltersScreen());
+  }
+
+  Future<dynamic> gotoRoomBookingScreen(String hotelName) async {
+    return _pushMasterialPageRoute(RoomBookingScreen(hotelName: hotelName));
   }
 }
