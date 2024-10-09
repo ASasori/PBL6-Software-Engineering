@@ -5,6 +5,7 @@ from shortuuid.django_fields import ShortUUIDField
 from django.dispatch import receiver
 import shortuuid
 import datetime
+from django.utils import timezone
 
 USER_ROLES = (
     ("Admin", "Admin"),
@@ -66,7 +67,7 @@ class Profile(models.Model):
     wallet = models.DecimalField(max_digits=32, decimal_places=2, default=0.00)
     verified = models.BooleanField(default=False)
 
-    date = models.DateTimeField(default=datetime.datetime.now)
+    date = models.DateTimeField(default=timezone.now)
 
     class Meta:
         ordering =['-date']
@@ -88,25 +89,28 @@ class SystemAdmin(models.Model):
 
 # New model for Receptionist
 class Receptionist(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    receptionistID = models.CharField(max_length=100, unique=True, null=False, blank=False)  
-    hotelID = models.IntegerField(null=True, blank=True)  # Assuming this links to a Hotel model
-    # Add specific fields and methods for Receptionist
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)  # Sử dụng user ID làm khóa chính
+    hotel = models.OneToOneField('hotel.Hotel', on_delete=models.CASCADE, related_name="receptionist", null=True, blank=True)
 
     def manage_booking(self):
         # Example method for managing bookings
         pass
 
+    def __str__(self):
+        return f"Receptionist {self.user.username} - Hotel: {self.hotel.name if self.hotel else 'No hotel'}"
+
 # New model for Customer
 class Customer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    customerID = models.CharField(max_length=100, unique=True)  # Example field
-    bookingID = models.IntegerField(null=True, blank=True)  # Assuming this links to a Booking model
-    # Add specific fields and methods for Customer
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)  # Sử dụng user ID làm khóa chính
+    bookingID = models.IntegerField(null=True, blank=True)  # Giữ lại trường bookingID nếu cần
 
     def create_booking(self):
         # Example method for creating a booking
         pass
+
+    def __str__(self):
+        return f"Customer {self.user.username}"
+
 
 
 # def create_user_profile(sender, instance, created, **kwargs):
@@ -127,8 +131,7 @@ def create_user_profile(sender, instance, created, **kwargs):
         elif instance.role == "Receptionist":
             Receptionist.objects.create(user=instance)
         elif instance.role == "Customer":
-            unique_customer_id = shortuuid.uuid()  # Generate a unique ID for customerID
-            Customer.objects.create(user=instance, customerID=unique_customer_id, bookingID=0)
+            Customer.objects.create(user=instance, bookingID=0)
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):

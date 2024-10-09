@@ -120,8 +120,8 @@ class RoomType(models.Model):
     type = models.CharField(max_length=10)
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     number_of_beds = models.PositiveIntegerField(default=0)
-    room_capacity = models.PositiveIntegerField(default=0) #số lượng người trong phòng
-    rtid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz") #tạo ID tự động
+    room_capacity = models.PositiveIntegerField(default=0)
+    rtid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz")
     slug = models.SlugField(null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True)
 
@@ -147,6 +147,7 @@ class Room(models.Model):
     is_available = models.BooleanField(default=True)
     rid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz")
     date = models.DateTimeField(auto_now_add=True)
+    slug = models.SlugField(null=True, blank=True) 
 
     def __str__(self):
         return f"{self.hotel.name} - {self.room_type.type} -  Room {self.room_number}"
@@ -157,6 +158,10 @@ class Room(models.Model):
     def number_of_beds(self):
         return self.room_type.number_of_beds
     
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(f"{self.hotel.name}-room-{self.room_number}") 
+        super(Room, self).save(*args, **kwargs)
 
 #Đặt phòng
 class Booking(models.Model):

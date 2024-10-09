@@ -27,6 +27,7 @@ urlpatterns = [
     path("user/", include("userauths.urls")),
 
     path("", include("hotel.urls")),
+    path("receptionist/", include("receptionist.urls")),
 
 
     #Ckeditor
