@@ -7,11 +7,13 @@ from shortuuid.django_fields import ShortUUIDField
 import shortuuid
 from django_ckeditor_5.fields import CKEditor5Field
 from taggit.managers import TaggableManager
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 HOTEL_STATUS =(
     ("Draft","Draft"),
     ("Disable","Disable"),
     ("Rejected","Rejected"),
-    ("In review","Draft"),
+    ("In review","In review"),
     ("Live","Live"),
 
 )
@@ -33,6 +35,17 @@ PAYMENT_STATUS = (
     ("unpaid", 'unpaid'),
     ("expired", 'expired'),
 )
+
+DISCOUNT_TYPE = (
+    ("Percentage", "Percentage"),
+    ("Flat Rate", "Flat Rate"),
+)
+
+NOTIFICATION_TYPE = (
+    ("Booking Confirmed", "Booking Confirmed"),
+    ("Booking Cancelled", "Booking Cancelled"),
+)
+
 
 # Create your models here.
 
@@ -72,7 +85,7 @@ class Hotel(models.Model):
         return HotelGallery.objects.filter(hotel=self)
 
     def hotel_room_types(self):
-        RoomType.objects.filter(hotel=self)
+        return RoomType.objects.filter(hotel=self)
 
 #Lưu trữ hình ảnh khách sạn  
 class HotelGallery(models.Model):
@@ -162,7 +175,7 @@ class Room(models.Model):
 class Booking(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     payment_status = models.CharField(max_length=100, choices=PAYMENT_STATUS, default="initiated")
-
+    coupons = models.ManyToManyField("hotel.Coupon", blank=True)
     full_name = models.CharField(max_length=1000, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     phone = models.CharField(max_length=1000, null=True, blank=True)
@@ -192,7 +205,7 @@ class Booking(models.Model):
     date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     #coupons = models.ManyToManyField("hotel.Coupon", blank=True)
     stripe_payment_intent = models.CharField(max_length=200,null=True, blank=True)
-    success_id = ShortUUIDField(length=300, max_length=505, alphabet="abcdefghijklmnopqrstuvxyz1234567890")
+    success_id = ShortUUIDField(length=300, max_length=505, alphabet="abcdefghijklmnopqrstuvxyz1234567890", null=True, blank=True)
     booking_id = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz")
 
 
@@ -221,3 +234,37 @@ class StaffOnDuty(models.Model):
 
     def __str__(self):
         return str(self.staff_id)
+    
+class Coupon(models.Model):
+    code = models.CharField(max_length=1000)
+    type = models.CharField(max_length=100, choices=DISCOUNT_TYPE, default="Percentage")
+    discount = models.IntegerField(default=1, validators=[MinValueValidator(0), MaxValueValidator(100)])
+    redemption = models.IntegerField(default=0)
+    date = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=True)
+    make_public = models.BooleanField(default=False)
+    valid_from = models.DateField()
+    valid_to = models.DateField()
+    cid = ShortUUIDField(length=10, max_length=25, alphabet="abcdefghijklmnopqrstuvxyz")
+
+    
+    def __str__(self):
+        return self.code
+    
+    class Meta:
+        ordering =['-id']
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="user")
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, null=True, blank=True)
+    type = models.CharField(max_length=100, default="new_order", choices=NOTIFICATION_TYPE)
+    seen = models.BooleanField(default=False)
+    nid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz")
+    date= models.DateField(auto_now_add=True)
+    
+    def __str__(self):
+        return str(self.user.username)
+    
+    class Meta:
+        ordering = ['-date']
+

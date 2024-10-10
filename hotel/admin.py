@@ -1,5 +1,5 @@
 from django.contrib import admin
-from hotel.models import Hotel, Booking, ActivityLog, StaffOnDuty, Room, RoomType, HotelGallery
+from hotel.models import Hotel, Booking, ActivityLog, StaffOnDuty, Room, RoomType, HotelGallery, Coupon
 
 class HotelGalleryInline(admin.TabularInline):
     model = HotelGallery
@@ -15,3 +15,4 @@ admin.site.register(ActivityLog)
 admin.site.register(StaffOnDuty)
 admin.site.register(Room)
 admin.site.register(RoomType)
+admin.site.register(Coupon)

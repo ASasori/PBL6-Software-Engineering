@@ -4,10 +4,11 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 
 
-from hotel.models import Hotel, Room, Booking, RoomServices, HotelGallery, HotelFeatures, RoomType
+from hotel.models import Hotel, Room, Booking, HotelGallery, HotelFeatures, RoomType
 
 from datetime import datetime
 from decimal import Decimal
+
 
 def check_room_availability(request):
     if request.method == "POST":
@@ -135,7 +136,19 @@ def delete_selection(request):
             total = room_price * days
         
     
-    context = render_to_string("hotel/async/selected_rooms.html", { "data":request.session['selection_data_obj'],  "total_selected_items": len(request.session['selection_data_obj']), "total":total, "total_days":total_days, "adult":adult, "children":children,    "checkin":checkin,    "checkout":checkout,    "hotel":hotel})
+    context = render_to_string(
+        "hotel/async/selected_rooms.html", 
+        { 
+            "data":request.session['selection_data_obj'],  
+            "total_selected_items": len(request.session['selection_data_obj']), 
+            "total":total, 
+            "total_days":total_days, 
+            "adult":adult, 
+            "children":children,    
+            "checkin":checkin,    
+            "checkout":checkout,    
+            "hotel":hotel
+        })
 
     print("data ======", context)
     

@@ -10,5 +10,6 @@ urlpatterns = [
     path("sign-out/", views.logoutView, name="sign-out"),
     path('admin/', admin.site.urls),
     
-    path('api/userauths/', include('userauths.api_urls')),
+    path('api/userauths/',include('userauths.urls_api')),
+        
 ]

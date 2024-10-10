@@ -1,5 +1,7 @@
 # userauths/views_api.py
-
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import permission_classes
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -8,7 +10,9 @@ from django.contrib.auth import authenticate, login, logout
 from .models import User
 from .serializers import UserSerializer, LoginSerializer
 
+
 @api_view(['POST'])
+
 def register_view(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
@@ -18,6 +22,7 @@ def register_view(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
+
 def login_view(request):
     serializer = LoginSerializer(data=request.data)
     if serializer.is_valid():

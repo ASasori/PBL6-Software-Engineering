@@ -1,9 +1,13 @@
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Hotel, RoomType, Room
+from django.shortcuts import get_object_or_404
+from hotel.models import Hotel, Booking, ActivityLog, StaffOnDuty, Room, RoomType, Coupon, Notification
 from .serializers import HotelSerializer, RoomTypeSerializer, RoomSerializer
-
+from datetime import datetime
+from django.conf import settings
+import stripe
+from django.urls import reverse
 @api_view(['GET'])
 def index(request):
     hotels = Hotel.objects.filter(status='Live')
@@ -37,3 +41,133 @@ def room_type_detail(request, slug, rt_slug):
         'room_type': room_type_serializer.data,
         'rooms': rooms_serializer.data
     })
+
+@api_view(['POST'])
+def create_booking(request):
+    data = request.data
+    try:
+        hotel = Hotel.objects.get(id=data['hotel_id'], status='Live')
+        room_type = RoomType.objects.get(id=data['room_type_id'], hotel=hotel)
+        rooms = Room.objects.filter(room_type=room_type, id__in=data['room_ids'], is_available=True)
+        
+        if not rooms:
+            return Response({'error': 'No available rooms'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        booking = Booking.objects.create(
+            hotel=hotel,
+            room_type=room_type,
+            check_in_date=data['check_in_date'],
+            check_out_date=data['check_out_date'],
+            total_days=(datetime.strptime(data['check_out_date'], '%Y-%m-%d') - datetime.strptime(data['check_in_date'], '%Y-%m-%d')).days,
+            num_adults=data['num_adults'],
+            num_children=data['num_children'],
+            full_name=data['full_name'],
+            email=data['email'],
+            phone=data['phone']
+        )
+
+        for room in rooms:
+            booking.room.add(room)
+
+        booking.save()
+
+        return Response({'message': 'Booking created successfully'}, status=status.HTTP_201_CREATED)
+
+    except (Hotel.DoesNotExist, RoomType.DoesNotExist):
+        return Response({'error': 'Invalid hotel or room type'}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def checkout_api(request, booking_id):
+    try:
+        # Fetch the booking by ID
+        booking = Booking.objects.get(booking_id=booking_id)
+
+        # Extract the coupon code from the request
+        code = request.data.get("code")
+        print("code====", code)
+
+        # If no code is provided, return an error
+        if not code:
+            return Response({'error': 'Coupon code is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Try to fetch the coupon
+        try:
+            coupon = Coupon.objects.get(code=code, active=True)
+
+            # Check if the coupon is already used for this booking
+            if coupon in booking.coupons.all():
+                return Response({'error': 'Coupon already activated'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Calculate the discount
+            if coupon.type == "Percentage":
+                discount = booking.total * coupon.discount / 100
+            else:
+                discount = coupon.discount
+
+            # Apply the coupon to the booking
+            booking.coupons.add(coupon)
+            booking.total -= discount
+            booking.saved += discount
+            booking.save()
+
+            # Return success response
+            return Response({
+                'message': 'Coupon activated',
+                'booking_total': booking.total,
+                'discount': discount
+            }, status=status.HTTP_200_OK)
+
+        except Coupon.DoesNotExist:
+            return Response({'error': 'Coupon does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+    except Booking.DoesNotExist:
+        return Response({'error': 'Booking not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['POST'])
+def create_checkout_session(request, booking_id):
+    try:
+        booking = Booking.objects.get(booking_id=booking_id)
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+
+        checkout_session = stripe.checkout.Session.create(
+            customer_email=booking.email,
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': {'name': f"Booking for {booking.full_name}"},
+                    'unit_amount': int(booking.total * 100),
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+            success_url=request.build_absolute_uri(reverse('api:payment_success', args=[booking.booking_id])) + "?session_id={CHECKOUT_SESSION_ID}",
+            cancel_url=request.build_absolute_uri(reverse('api:payment_failed', args=[booking.booking_id])),
+        )
+
+        booking.payment_status = "processing"
+        booking.stripe_payment_intent = checkout_session['id']
+        booking.save()
+
+        return Response({'sessionId': checkout_session.id}, status=status.HTTP_200_OK)
+
+    except Booking.DoesNotExist:
+        return Response({'error': 'Booking not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+def payment_success(request, booking_id):
+    session_id = request.GET.get('session_id')
+    booking = get_object_or_404(Booking, booking_id=booking_id)
+
+    if booking.stripe_payment_intent == session_id and booking.payment_status == "processing":
+        booking.payment_status = "paid"
+        booking.save()
+        return Response({'message': 'Payment successful'}, status=status.HTTP_200_OK)
+    return Response({'error': 'Payment verification failed'}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def payment_failed(request, booking_id):
+    booking = get_object_or_404(Booking, booking_id=booking_id)
+    booking.payment_status = "failed"
+    booking.save()
+    return Response({'message': 'Payment failed'}, status=status.HTTP_200_OK)

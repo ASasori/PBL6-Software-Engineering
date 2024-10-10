@@ -1,4 +1,4 @@
-# userauths/api_urls.py
+    # userauths/api_urls.py
 
 from django.urls import path
 from .views_api import register_view, login_view, logout_view

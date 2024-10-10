@@ -40,21 +40,21 @@
                   <li>Room Capacity: {{r.room_type.room_capacity}}</li>
                   </ul>
                   <input type="hidden" class="room_id_{{r.id}}" value="{{r.id}}" id="room_id">
-                  <input type="hidden" class="room_number_{{r.id}}" value="{{r.room_number}}" id="room_number">
+                  <input type="hid" class="room_number_{{r.id}}" value="{{r.room_number}}" id="room_number">
                   <button class="button border add-to-selection" data-index="{{r.id}}"><i class="fas fa-shopping-cart"></i> Add To Selection</button> 
               </div>
               </div>
           {% endfor %}
-          <input type="hidden" value="{{hotel.id}}" id="id">
-          <input type="hidden" value="{{hotel.name}}" id="hotel_name">
-          <input type="hidden" value="{{room_type.type}}" id="room_name">
-          <input type="hidden" value="{{room_type.price}}" id="room_price">
-          <input type="hidden" value="{{room_type.number_of_beds}}" id="number_of_beds">
-          <input type="hidden" value="{{room_type.id}}" id="room_type">
-          <input type="hidden" value="{{checkin}}" id="checkin">
-          <input type="hidden" value="{{checkout}}" id="checkout">
-          <input type="hidden" value="{{adult}}" id="adult">
-          <input type="hidden" value="{{children}}" id="children">
+          <input type="text" value="{{hotel.id}}" id="id">
+          <input type="text" value="{{hotel.name}}" id="hotel_name">
+          <input type="text" value="{{room_type.type}}" id="room_name">
+          <input type="text" value="{{room_type.price}}" id="room_price">
+          <input type="text" value="{{room_type.number_of_beds}}" id="number_of_beds">
+          <input type="text" value="{{room_type.id}}" id="room_type">
+          <input type="text" value="{{checkin}}" id="checkin">
+          <input type="text" value="{{checkout}}" id="checkout">
+          <input type="text" value="{{adult}}" id="adult">
+          <input type="text" value="{{children}}" id="children">
 
           
         </div>  

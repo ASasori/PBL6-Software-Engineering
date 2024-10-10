@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+from environs import Env
+env = Env()
+env.read_env()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,7 +30,7 @@ SECRET_KEY = 'django-insecure-&8$zx(^(s0nmnx4k-+4g2&*=nh7ox1e^jxu905v)h#^h@z&z!0
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+SECURE_CROSS_ORIGIN_OPENER_POLICY='same-origin-allow-popups'
 
 # Application definition
 
@@ -102,7 +106,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'pbl6',
         'USER': 'root',
-        'PASSWORD': 'Hieu123456@@',
+        'PASSWORD': 'Javascript29',
         'HOST': 'localhost',
         'PORT': '3306',  # 3306 là cổng mặc định cho MySQL
     }
@@ -163,9 +167,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "userauths.User"
 
+STRIPE_SECRET_KEY=env("STRIPE_SECRET_KEY")
+STRIPE_PUBLIC_KEY=env("STRIPE_PUBLIC_KEY")
+
+
+
 JAZZMIN_SETTINGS = {
     'site_header': "Nguyen",
-    'site_brand': "Your #1 marketplace for collectibles.",
+    'site_brand': "Manage Hotel",
     'site_logo': "/images/logo.png",
     'copyright':  "All Right Reserved 2024",
     "welcome_sign": "Welcome to Nguyen, Login Now.",
@@ -258,6 +267,6 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',  # Ensures responses are in JSON format for the API
         'rest_framework.renderers.BrowsableAPIRenderer',  # Optional: Provides a browsable API for debugging
-        'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
     ),
 }
