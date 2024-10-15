@@ -9,7 +9,6 @@ from hotel.models import Hotel, Room, Booking, HotelGallery, HotelFeatures, Room
 from datetime import datetime
 from decimal import Decimal
 
-
 def check_room_availability(request):
     if request.method == "POST":
         id = request.POST.get("hotel-id")
