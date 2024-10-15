@@ -41,29 +41,54 @@ def room_type_detail(request, slug, rt_slug):
         'room_type': room_type_serializer.data,
         'rooms': rooms_serializer.data
     })
-
 @api_view(['POST'])
 def create_booking(request):
-    data = request.data
     try:
-        hotel = Hotel.objects.get(id=data['hotel_id'], status='Live')
-        room_type = RoomType.objects.get(id=data['room_type_id'], hotel=hotel)
-        rooms = Room.objects.filter(room_type=room_type, id__in=data['room_ids'], is_available=True)
-        
+        # Retrieve data from the session
+        if 'selection_data_obj' not in request.session:
+            return Response({'error': 'No selected rooms found in session'}, status=status.HTTP_400_BAD_REQUEST)
+
+        selection_data = request.session['selection_data_obj']
+        # Assuming there's only one hotel selection in session
+        hotel_data = next(iter(selection_data.values()))
+
+        # Extract data from session
+        hotel_id = hotel_data['hotel_id']
+        room_ids = hotel_data['room_id']  # You may have to adjust this depending on how you store room IDs in the session
+        check_in_date = hotel_data['checkin']
+        check_out_date = hotel_data['checkout']
+        num_adults = hotel_data['adult']
+        num_children = hotel_data['children']
+        room_type_slug = hotel_data['room_type']
+
+        # You can still allow some data to be passed through the request body, like user details
+        full_name = request.data.get('full_name')
+        email = request.data.get('email')
+        phone = request.data.get('phone')
+
+        # Now use session data to create the booking
+        hotel = Hotel.objects.get(id=hotel_id, status='Live')
+        room_type = RoomType.objects.get(slug=room_type_slug, hotel=hotel)
+        rooms = Room.objects.filter(room_type=room_type, id=room_ids, is_available=True)
+
         if not rooms:
             return Response({'error': 'No available rooms'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+        # Calculate total days
+        total_days = (datetime.strptime(check_out_date, '%Y-%m-%d') - datetime.strptime(check_in_date, '%Y-%m-%d')).days
+
+        # Create the booking
         booking = Booking.objects.create(
             hotel=hotel,
             room_type=room_type,
-            check_in_date=data['check_in_date'],
-            check_out_date=data['check_out_date'],
-            total_days=(datetime.strptime(data['check_out_date'], '%Y-%m-%d') - datetime.strptime(data['check_in_date'], '%Y-%m-%d')).days,
-            num_adults=data['num_adults'],
-            num_children=data['num_children'],
-            full_name=data['full_name'],
-            email=data['email'],
-            phone=data['phone']
+            check_in_date=check_in_date,
+            check_out_date=check_out_date,
+            total_days=total_days,
+            num_adults=num_adults,
+            num_children=num_children,
+            full_name=full_name,
+            email=email,
+            phone=phone
         )
 
         for room in rooms:
@@ -75,6 +100,7 @@ def create_booking(request):
 
     except (Hotel.DoesNotExist, RoomType.DoesNotExist):
         return Response({'error': 'Invalid hotel or room type'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 def checkout_api(request, booking_id):
