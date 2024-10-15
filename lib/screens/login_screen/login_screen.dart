@@ -1,5 +1,5 @@
 import 'package:booking_hotel_app/language/appLocalizations.dart';
-import 'package:booking_hotel_app/modules/login/facebook_google_button_view.dart';
+import 'package:booking_hotel_app/screens/login_screen/facebook_google_button_view.dart';
 import 'package:booking_hotel_app/routes/route_names.dart';
 import 'package:booking_hotel_app/utils/validator.dart';
 import 'package:booking_hotel_app/widgets/common_appbar_view.dart';

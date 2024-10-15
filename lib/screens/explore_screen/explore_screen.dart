@@ -1,5 +1,5 @@
 import 'package:booking_hotel_app/models/hotel_list_data.dart';
-import 'package:booking_hotel_app/modules/myStrips/hotel_list_view.dart';
+import 'package:booking_hotel_app/screens/mytrip_screen/hotel_list_view.dart';
 import 'package:booking_hotel_app/utils/themes.dart';
 import 'package:booking_hotel_app/widgets/remove_focuse.dart';
 import 'package:flutter/material.dart';
@@ -13,15 +13,15 @@ import '../../widgets/common_search_bar.dart';
 import 'components/filter_bar_UI.dart';
 import 'components/time_date_view.dart';
 
-class HotelHomeScreen extends StatefulWidget {
+class ExploreScreen extends StatefulWidget {
   final String placeName ;
-  const HotelHomeScreen({super.key, this.placeName = ""});
+  const ExploreScreen({super.key, this.placeName = ""});
 
   @override
-  State<HotelHomeScreen> createState() => _HotelHomeScreenState();
+  State<ExploreScreen> createState() => _HotelHomeScreenState();
 }
 
-class _HotelHomeScreenState extends State<HotelHomeScreen> with TickerProviderStateMixin{
+class _HotelHomeScreenState extends State<ExploreScreen> with TickerProviderStateMixin{
   late AnimationController animationController;
   late AnimationController _animationController;
 
@@ -113,7 +113,7 @@ class _HotelHomeScreenState extends State<HotelHomeScreen> with TickerProviderSt
                                     animationController: animationController,
                                     animation: animation,
                                     callback: () {
-                                      NavigationServices(context).gotoRoomBookingScreen(hotelList[index].titleTxt);
+                                      NavigationServices(context).gotoHotelDetails(hotelList[index]);
                                     }
                                 );
                               },

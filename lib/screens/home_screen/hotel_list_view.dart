@@ -10,13 +10,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../utils/helper.dart';
 
-class HotelListViewPage extends StatelessWidget {
+class HotelListView extends StatelessWidget {
   final bool isShowData;
   final VoidCallback callback;
   final HotelListData hotelListData;
   final AnimationController animationController;
   final Animation<double> animation;
-  const HotelListViewPage({super.key, this.isShowData = false, required this.callback, required this.hotelListData, required this.animationController, required this.animation});
+  const HotelListView({super.key, this.isShowData = false, required this.callback, required this.hotelListData, required this.animationController, required this.animation});
 
   @override
   Widget build(BuildContext context) {

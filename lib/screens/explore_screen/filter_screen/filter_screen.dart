@@ -1,5 +1,5 @@
-import 'package:booking_hotel_app/modules/hotel_booking/filter_screen/range_slider_view.dart';
-import 'package:booking_hotel_app/modules/hotel_booking/filter_screen/slider_view.dart';
+import 'package:booking_hotel_app/screens/explore_screen/filter_screen/range_slider_view.dart';
+import 'package:booking_hotel_app/screens/explore_screen/filter_screen/slider_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

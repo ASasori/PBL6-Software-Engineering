@@ -1,23 +1,23 @@
 import 'dart:async';
 
 import 'package:booking_hotel_app/language/appLocalizations.dart';
-import 'package:booking_hotel_app/modules/splash/components/page_popview.dart';
+import 'package:booking_hotel_app/screens/splash/components/page_popview.dart';
 import 'package:booking_hotel_app/utils/localfiles.dart';
 import 'package:booking_hotel_app/utils/text_styles.dart';
 import 'package:booking_hotel_app/utils/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class HomeExplorerSliderView extends StatefulWidget {
+class HomeSliderView extends StatefulWidget {
   final double opValue;
   final VoidCallback click;
-  const HomeExplorerSliderView({super.key, required this.opValue, required this.click});
+  const HomeSliderView({super.key, required this.opValue, required this.click});
 
   @override
-  State<HomeExplorerSliderView> createState() => _HomeExplorerSliderViewState();
+  State<HomeSliderView> createState() => _HomeSliderViewState();
 }
 
-class _HomeExplorerSliderViewState extends State<HomeExplorerSliderView> {
+class _HomeSliderViewState extends State<HomeSliderView> {
   var pageController = PageController(initialPage: 0);
   List<PageViewData> pageViewData = [];
   late Timer sliderTimer;

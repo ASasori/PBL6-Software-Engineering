@@ -1,13 +1,17 @@
-import 'package:booking_hotel_app/modules/bottom_tab/bottom_tab_screen.dart';
-import 'package:booking_hotel_app/modules/hotel_details/room_booking_screen.dart';
-import 'package:booking_hotel_app/modules/login/forgot_password.dart';
-import 'package:booking_hotel_app/modules/login/login_screen.dart';
-import 'package:booking_hotel_app/modules/login/sign_up_screen.dart';
+import 'package:booking_hotel_app/models/hotel_list_data.dart';
+import 'package:booking_hotel_app/screens/bottom_tab/bottom_tab_screen.dart';
+import 'package:booking_hotel_app/screens/hotel_detail_screen/review_list_screen.dart';
+import 'package:booking_hotel_app/screens/hotel_detail_screen/room_booking_screen.dart';
+import 'package:booking_hotel_app/screens/login_screen/forgot_password.dart';
+import 'package:booking_hotel_app/screens/login_screen/login_screen.dart';
+import 'package:booking_hotel_app/screens/login_screen/sign_up_screen.dart';
 import 'package:booking_hotel_app/routes/routes.dart';
 import 'package:flutter/material.dart';
 
-import '../modules/hotel_booking/filter_screen/filter_screen.dart';
-import '../modules/hotel_booking/hotel_home_screen.dart';
+
+import '../screens/explore_screen/filter_screen/filter_screen.dart';
+import '../screens/explore_screen/explore_screen.dart';
+import '../screens/hotel_detail_screen/hotel_detail_screen.dart';
 
 class NavigationServices {
   final BuildContext context;
@@ -46,7 +50,7 @@ class NavigationServices {
   }
 
   Future<dynamic> gotoHotelHomeScreen([String place = ""]) async {
-    return _pushMasterialPageRoute(HotelHomeScreen(placeName: place,));
+    return _pushMasterialPageRoute(ExploreScreen(placeName: place,));
   }
 
   Future<dynamic> gotoFiltersScreen() async {
@@ -55,5 +59,15 @@ class NavigationServices {
 
   Future<dynamic> gotoRoomBookingScreen(String hotelName) async {
     return _pushMasterialPageRoute(RoomBookingScreen(hotelName: hotelName));
+  }
+
+  Future<dynamic> gotoHotelDetails(HotelListData hotelData) {
+    return _pushMasterialPageRoute(HotelDetailScreen(
+      hotelData: hotelData
+    ));
+  }
+
+  Future<dynamic> gotoReviewsListScreen() {
+    return _pushMasterialPageRoute(ReviewListScreen());
   }
 }

@@ -1,9 +1,9 @@
 import 'package:booking_hotel_app/language/appLocalizations.dart';
 import 'package:booking_hotel_app/models/hotel_list_data.dart';
-import 'package:booking_hotel_app/modules/explore/home_explorer_slider_view.dart';
-import 'package:booking_hotel_app/modules/explore/hotel_list_view_page.dart';
-import 'package:booking_hotel_app/modules/explore/popular_list_view.dart';
-import 'package:booking_hotel_app/modules/explore/title_view.dart';
+import 'package:booking_hotel_app/screens/home_screen/home_slider_view.dart';
+import 'package:booking_hotel_app/screens/home_screen/hotel_list_view.dart';
+import 'package:booking_hotel_app/screens/home_screen/popular_list_view.dart';
+import 'package:booking_hotel_app/screens/home_screen/title_view.dart';
 import 'package:booking_hotel_app/providers/theme_provider.dart';
 import 'package:booking_hotel_app/routes/route_names.dart';
 import 'package:booking_hotel_app/widgets/bottom_top_move_animation_view.dart';
@@ -17,15 +17,15 @@ import '../../utils/text_styles.dart';
 import '../../utils/themes.dart';
 import '../../widgets/common_search_bar.dart';
 
-class HomeExploreScreen extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   final AnimationController animationController;
-  const HomeExploreScreen({super.key, required this.animationController});
+  const HomeScreen({super.key, required this.animationController});
 
   @override
-  State<HomeExploreScreen> createState() => _HomeExploreScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProviderStateMixin{
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
   var homeList = HotelListData.hotelList;
   late ScrollController controller;
   late AnimationController _animationController;
@@ -157,7 +157,7 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
               var opacity = 1.0 - (_animationController.value > 0.64 ? 1.0 : _animationController.value);
               return SizedBox(
                 height: sliderImageHeight * (1.0 - _animationController.value),
-                child: HomeExplorerSliderView(
+                child: HomeSliderView(
                     opValue: opacity,
                     click: () {
 
@@ -249,8 +249,10 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
         ),
       );
       list.add(
-        HotelListViewPage(
-            callback: () {},
+          HotelListView(
+            callback: () {
+              NavigationServices(context).gotoHotelDetails(element);
+            },
             hotelListData: element,
             animationController: widget.animationController,
             animation: animation

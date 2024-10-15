@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:booking_hotel_app/common/common.dart';
 import 'package:booking_hotel_app/language/appLocalizations.dart';
-import 'package:booking_hotel_app/modules/splash/introductionScreen.dart';
-import 'package:booking_hotel_app/modules/splash/splashScreen.dart';
+import 'package:booking_hotel_app/screens/splash/introductionScreen.dart';
+import 'package:booking_hotel_app/screens/splash/splashScreen.dart';
 import 'package:booking_hotel_app/providers/theme_provider.dart';
 import 'package:booking_hotel_app/routes/routes.dart';
 import 'package:booking_hotel_app/utils/enum.dart';
