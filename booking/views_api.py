@@ -5,6 +5,7 @@ from hotel.models import Hotel, RoomType
 from datetime import datetime
 from django.urls import reverse
 
+
 @api_view(['POST'])
 def check_room_availability(request):
     try:

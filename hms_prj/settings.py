@@ -35,6 +35,7 @@ SECURE_CROSS_ORIGIN_OPENER_POLICY='same-origin-allow-popups'
 # Application definition
 
 INSTALLED_APPS = [
+    'django_extensions',
     'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders',
     
     #Custom App
     'userauths',
@@ -51,6 +53,7 @@ INSTALLED_APPS = [
     'hotel',
     'addon',
     'booking',
+    'receptionist',
 
     #Third Part Apps
     'import_export',
@@ -65,6 +68,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -72,6 +76,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'hms_prj.urls'
 
@@ -104,7 +110,7 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pbl6',
+        'NAME': 'pbl66',
         'USER': 'root',
         'PASSWORD': 'Javascript29',
         'HOST': 'localhost',
@@ -195,7 +201,7 @@ JAZZMIN_SETTINGS = {
         "hotel.BookingDetail",
         "hotel.Guest",
         "hotel.RoomServices",
-        "userauths"
+        "userauths",
         "addons",
     ],
     
@@ -255,9 +261,11 @@ JAZZMIN_UI_TWEAKS = {
     }
 }
 
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',  # or 'rest_framework.permissions.AllowAny' for open access
+        # 'rest_framework.permissions.IsAuthenticated', 
+        'rest_framework.permissions.AllowAny', # or 'rest_framework.permissions.AllowAny' for open access
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',

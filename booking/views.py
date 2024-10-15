@@ -123,8 +123,8 @@ def delete_selection(request):
 
             date_format = "%Y-%m-%d"
             checkin_date = datetime.strptime(checkin, date_format)
-            checout_date = datetime.strptime(checkout, date_format)
-            time_difference = checout_date - checkin_date
+            checkout_date = datetime.strptime(checkout, date_format)
+            time_difference = checkout_date - checkin_date
             total_days = time_difference.days
 
             room_count += 1
