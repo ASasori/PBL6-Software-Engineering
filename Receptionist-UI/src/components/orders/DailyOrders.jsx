@@ -14,12 +14,12 @@ const dailyOrdersData = [
 const DailyOrders = () => {
 	return (
 		<motion.div
-			className='bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700'
+			className='p-6 bg-gray-800 bg-opacity-50 border border-gray-700 shadow-lg backdrop-blur-md rounded-xl'
 			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ delay: 0.2 }}
 		>
-			<h2 className='text-xl font-semibold text-gray-100 mb-4'>Daily Orders</h2>
+			<h2 className='mb-4 text-xl font-semibold text-gray-100'>Daily Bookings</h2>
 
 			<div style={{ width: "100%", height: 300 }}>
 				<ResponsiveContainer>

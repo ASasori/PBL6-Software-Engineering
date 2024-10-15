@@ -10,30 +10,38 @@ import UsersPage from "./pages/UsersPage";
 import SalesPage from "./pages/SalesPage";
 import OrdersPage from "./pages/OrdersPage";
 import SettingsPage from "./pages/SettingsPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
+	const [isLoggedIn, setIsLoggedIn] = useState(() => {
+		return localStorage.getItem('isLoggedIn') === 'true'; // Kiểm tra localStorage
+	});
 
 	const handleLogin = () => {
 		setIsLoggedIn(true);
+		localStorage.setItem('isLoggedIn', 'true'); // Lưu trạng thái đăng nhập
 	};
+
+	// const handleLogout = () => {
+	// 	setIsLoggedIn(false);
+	// 	localStorage.removeItem('isLoggedIn'); // Xóa trạng thái đăng nhập
+	// };
 
 	return (
 		<div className='flex h-screen overflow-hidden text-gray-100 bg-gray-900'>
 			{isLoggedIn && <Sidebar />}
 			<div className={`flex-1 ${isLoggedIn ? "relative overflow-y-auto" : "absolute inset-0"}`}>
 				<Routes>
-					{!isLoggedIn && <Route path='/login' element={<Login onLogin={handleLogin} />} />}
-					<Route path='/' element={isLoggedIn ? <OverviewPage /> : <Navigate to="/login" />} />
-					<Route path='/rooms' element={isLoggedIn ? <ProductsPage /> : <Navigate to="/login" />} />
-					<Route path='/users' element={isLoggedIn ? <UsersPage /> : <Navigate to="/login" />} />
-					<Route path='/bookings' element={isLoggedIn ? <OrdersPage /> : <Navigate to="/login" />} />
-					<Route path='/sales' element={isLoggedIn ? <SalesPage /> : <Navigate to="/login" />} />
-					<Route path='/settings' element={isLoggedIn ? <SettingsPage /> : <Navigate to="/login" />} />
+					<Route path='/login' element={!isLoggedIn ? <Login onLogin={handleLogin} /> : <Navigate to="/" />} />
+					<Route path='/' element={<ProtectedRoute element={<OverviewPage />} isLoggedIn={isLoggedIn} />} />
+					<Route path='/rooms' element={<ProtectedRoute element={<ProductsPage />} isLoggedIn={isLoggedIn} />} />
+					<Route path='/users' element={<ProtectedRoute element={<UsersPage />} isLoggedIn={isLoggedIn} />} />
+					<Route path='/bookings' element={<ProtectedRoute element={<OrdersPage />} isLoggedIn={isLoggedIn} />} />
+					<Route path='/sales' element={<ProtectedRoute element={<SalesPage />} isLoggedIn={isLoggedIn} />} />
+					<Route path='/settings' element={<ProtectedRoute element={<SettingsPage />} isLoggedIn={isLoggedIn} />} />
 				</Routes>
 			</div>
 		</div>
-
 	);
 }
 

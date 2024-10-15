@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-
+from .models import Profile
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
@@ -28,3 +28,20 @@ class UserSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)  # Đặt write_only cho mật khẩu
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+        
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            user = None
+        
+        if user is not None and user.check_password(password):
+            attrs['user'] = user
+        else:
+            raise serializers.ValidationError("Invalid credentials")
+
+        return attrs
+

@@ -13,7 +13,6 @@ from userauths.models import Receptionist
 @permission_classes([IsAuthenticated, IsReceptionist])
 def create_room(request):
     try:
-        # Sử dụng receptionistID để tìm receptionist
         receptionist = Receptionist.objects.get(user=request.user)
 
         if not receptionist.hotel:
@@ -21,12 +20,19 @@ def create_room(request):
         
         hotel = receptionist.hotel
         data = request.data
-        room_type_name = data.get('room_type') 
+        room_number = data.get('room_number')
+        room_type_id = data.get('room_type') 
+
+        if Room.objects.filter(room_number=room_number, room_type=room_type_id, hotel=hotel).exists():
+            return Response({"error": "Phòng với số phòng này và loại phòng đã tồn tại."}, status=status.HTTP_400_BAD_REQUEST)
+        
         try:
-            room_type = RoomType.objects.get(type=room_type_name, hotel=hotel)  # Tìm loại phòng trong khách sạn
-            data['room_type'] = room_type.id  # Gán ID loại phòng vào dữ liệu
+            room_type = RoomType.objects.get(id=room_type_id, hotel=hotel) 
+            data['room_type'] = room_type.id
+
         except RoomType.DoesNotExist:
             return Response({"error": "Loại phòng không tồn tại"}, status=status.HTTP_404_NOT_FOUND)
+        
         data['hotel'] = hotel.id
 
         serializer = RoomSerializer(data=data, context={'request': request})
@@ -112,7 +118,11 @@ def create_room_type(request):
         receptionist = request.user.receptionist
         hotel = receptionist.hotel
 
-        # Truyền request vào context khi khởi tạo serializer
+        room_type_name = request.data.get('type')
+
+        if RoomType.objects.filter(type=room_type_name, hotel=hotel).exists():
+            return Response({"error": "Loại phòng này đã tồn tại trong khách sạn."}, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = RoomTypeSerializer(data=request.data, context={'request': request})
 
         if serializer.is_valid():
@@ -121,7 +131,7 @@ def create_room_type(request):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except Receptionist.DoesNotExist:
-        return Response({"error": "User is not a receptionist or doesn't have a hotel."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "Người dùng không phải là Receptionist và không liên kết với khách sạn nào."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
@@ -165,8 +175,12 @@ def delete_room_type(request, room_type_id):
     user=request.user
     try:
         room_type = RoomType.objects.get(pk=room_type_id, hotel__user=user)
+        Room.objects.filter(room_type=room_type).delete()
+        room_type.delete()
+
+        return Response({"message": "Loại phòng và các phòng liên quan đã được xoá thành công."}, status=status.HTTP_204_NO_CONTENT)
+    
     except RoomType.DoesNotExist:
         return Response({"error": "Loại phòng không tồn tại"}, status=status.HTTP_404_NOT_FOUND)
-
-    room_type.delete()
-    return Response({"message": "Loại phòng đã xóa"}, status=status.HTTP_204_NO_CONTENT)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

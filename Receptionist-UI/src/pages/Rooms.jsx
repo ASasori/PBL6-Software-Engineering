@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-
+import { useEffect, useState } from "react";
 import Header from "../components/common/Header";
 import StatCard from "../components/common/StatCard";
 
@@ -9,7 +9,32 @@ import SalesTrendChart from "../components/room_roomtype/SalesTrendChart";
 import ProductsTable from "../components/room_roomtype/Room";
 import RoomTypesTable from "../components/room_roomtype/RoomType";
 
+import RoomAPI from "../api/room"
+import RoomTypeAPI from "../api/roomtype";
+
+
 const ProductsPage = () => {
+
+	const [totalRooms, setTotalRooms] = useState(0)
+	const [totalRoomTypes, setTotalRoomTypes] = useState(0)
+	const token = localStorage.getItem('authToken')
+
+	useEffect(() =>{
+		const fetchData = async () => {
+			try{
+				const rooms = await RoomAPI.getRoom(token)
+				setTotalRooms(rooms.length)
+
+				const roomTypeAPI = new RoomTypeAPI()
+				const roomtypes = await roomTypeAPI.getRoomTypes(token)
+				setTotalRoomTypes(roomtypes.length)
+			}catch(e){
+				console.error("Error fetching data: ", e)
+			}
+		}
+		fetchData()
+	}, [token])
+	
 	return (
 		<div className='relative z-10 flex-1 overflow-auto'>
 			<Header title='Products' />
@@ -22,9 +47,9 @@ const ProductsPage = () => {
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 1 }}
 				>
-					<StatCard name='Total Rooms' icon={Package} value={1234} color='#6366F1' />
-					<StatCard name='Total RoomTypes' icon={TrendingUp} value={89} color='#10B981' />
-					<StatCard name='Top Orders' icon={AlertTriangle} value={23} color='#F59E0B' />
+					<StatCard name='Total Rooms' icon={Package} value={totalRooms} color='#6366F1' />
+					<StatCard name='Total RoomTypes' icon={TrendingUp} value={totalRoomTypes} color='#10B981' />
+					{/* <StatCard name='Top Orders' icon={AlertTriangle} value={23} color='#F59E0B' /> */}
 					{/* <StatCard name='Total Revenue' icon={DollarSign} value={"$543,210"} color='#EF4444' /> */}
 				</motion.div>
 
@@ -33,7 +58,7 @@ const ProductsPage = () => {
 
 				{/* CHARTS */}
 				<div className='grid gap-8 grid-col-1 lg:grid-cols-2'>
-					<SalesTrendChart />
+					{/* <SalesTrendChart /> */}
 					<CategoryDistributionChart />
 				</div>
 			</main>
