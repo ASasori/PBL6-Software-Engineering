@@ -61,7 +61,7 @@ class RoomViewSet(viewsets.ModelViewSet):
         return Response({
             'hotel': HotelSerializer(h).data,
             'roomtype': RoomTypeSerializer(rt).data,
-            'list room': RoomSerializer(r, many=True).data
+            'listroom': RoomSerializer(r, many=True).data
         }, status=status.HTTP_200_OK)
     
 class RoomTypeViewSet(viewsets.ModelViewSet):

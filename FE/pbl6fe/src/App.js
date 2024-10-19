@@ -8,6 +8,7 @@ import Test from "./pages/auth/test";
 import CsrfTokenFetcher from "./pages/auth/CsrfTokenFetcher";
 import ListHotel from "./pages/home/list_hotel/ListHotel";
 import DetailHotel from "./pages/home/detail_hotel/DetailHotel";
+import CheckRoomAvailability from "./pages/home/check_room_availability/CheckRoomAvailability";
 
 
 
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="register" element={<Register />} />
           <Route path="listhotel" element={<ListHotel />} />
           <Route path="detailhotel/:slug" element={<DetailHotel />} />
+          <Route path="checkroomavailability/:slug" element={<CheckRoomAvailability />} />
           <Route path="contact" element={<div>Contact</div>} />
           <Route path="*" element={<div>1</div>} />
       </Routes>

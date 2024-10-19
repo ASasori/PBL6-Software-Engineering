@@ -26,5 +26,4 @@ urlpatterns = [
          views_api.RoomViewSet.as_view({'get': 'room_by_roomtype'}), name='room-by-roomtype'),
     path('hotels/<slug:h_slug>/room-types/', 
          views_api.RoomTypeViewSet.as_view({'get': 'roomtype_by_hotel'}), name='roomtype-by-hotel'),
-
 ]

@@ -1,19 +1,97 @@
-import React, {useState, useEffect} from "react"
-import { useParams } from "react-router-dom"
-import axios from "axios"
+import React, {useState, useEffect} from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 import Header from "../../baseComponent/Header";
+import Swal from 'sweetalert2';
+import { useNavigate } from "react-router-dom";
+
 
 const DetailHotel = () => {
-    const { slug } = useParams(); // Lấy slug từ URL
+    const { slug } = useParams(); 
     const [detailHotel, setDetailHotel] = useState(null);
+    const [roomTypes, setRoomTypes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [adults, setAdults] = useState(1);
+    const [childrens, setChildrens] = useState(parseInt('1'));
+    const [checkin, setCheckin] = useState(''); 
+    const [checkout, setCheckout] = useState('');
+    const [initRoomType, setInitRoomType] = useState('');
+    const navigate = useNavigate();
+
+    const changeQuantity = (type, quantity) => {
+        if(type === 'adults') {
+            setAdults(prev => Math.max(prev + quantity, 0));
+        }
+        else {
+            setChildrens(prev => Math.max(prev + quantity, 0));
+        }
+    }
+    const handleCheckinDate = (e) => {
+        setCheckin(e.target.value); 
+    }
+    const handleCheckoutDate = (e) => {
+        const dateCheckout = e.target.value;
+        if(new Date(checkin) > new Date(dateCheckout)) {
+            setCheckout('');
+            Swal.fire({
+                icon: 'error',
+                title: 'Ngày Checkout không hợp lệ!',
+                text: ' Bạn vui lòng nhập lại ngày Check out',
+                showConfirmButton: false,
+                timer: 3000
+            })
+        }
+        else {
+            setCheckout(dateCheckout);
+        }
+    }
+    const handleSelectRoomType = (e) => {
+        setInitRoomType(e.target.value);
+    }
+    const handleCheckRoomAvailability = () => {
+        let responseData
+        if(initRoomType && checkin && checkout && adults && childrens) {
+            const urlAPICheckRoomAvailability = 'http://127.0.0.1:8000/booking/api/booking/check-room-availability/'
+            const data = {
+                hotel_id: detailHotel.id,
+                room_type: initRoomType,
+                checkin: checkin,
+                checkout: checkout,
+                adult: adults,
+                children: childrens
+            };
+    
+            axios.post(urlAPICheckRoomAvailability, data)
+            .then(response => {
+                responseData = response.data
+                console.log('responseData : ', responseData)
+                navigate(`/checkroomavailability/${encodeURIComponent(responseData.slug)}?room-type=${encodeURIComponent(responseData.room_type)}&date-checkin=${encodeURIComponent(checkin)}&date-checkout=${encodeURIComponent(checkout)}&adults=${encodeURIComponent(adults)}&childrens=${encodeURIComponent(childrens)}`);
+            })
+            .catch(error => {
+                console.error('There was an error!', error);
+            })
+        }
+        else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Nhập thiếu thông tin!',
+                text: 'Vui lòng nhập đầy đủ các thông tin cần để kiểm tra phòng trống',
+                showConfirmButton: false,
+                timer: 2000
+            })
+        }
+    }
   
     useEffect(() => {
       const fetchHotelDetails = async () => {
         try {
-          const response = await axios.get(`http://127.0.0.1:8000/api/hotels/${slug}`); 
-          setDetailHotel(response.data);
+          const responseHotelDetail = await axios.get(`http://127.0.0.1:8000/api/hotels/${slug}`);
+          setDetailHotel(responseHotelDetail.data);
+
+          const responseRoomType = await axios.get(`http://127.0.0.1:8000/api/hotels/${slug}/room-types`);
+          console.log(responseRoomType.data.roomtype);
+          setRoomTypes(responseRoomType.data.roomtype);
         } catch (err) {
           setError(err.message);
         } finally {
@@ -106,25 +184,13 @@ const DetailHotel = () => {
                                     <div class="utf_pricing_list_section">
                                         <h4>Select Pass</h4>
                                         <ul>
-                                            <li>
-                                                <h5>Basic Pass <sub class="ppl-offer label-light-success">20% Off</sub></h5>
-                                                <p><strong>Max :</strong> 1 Persons</p>
-                                                <span>$80</span>
-                                            </li>
-                                            <li>
-                                                <h5>Standard Pass <sub class="ppl-offer label-light-danger">10% Off</sub></h5>
-                                                <p><strong>Max :</strong> 2 Persons</p>
-                                                <span>$120</span>
-                                            </li>
-                                            <li>
-                                                <h5>Golden Pass <sub class="ppl-offer label-light-success">10% Off</sub></h5>
-                                                <p><strong>Max :</strong> 3 Persons</p>
-                                                <span>$220</span>
-                                            </li>
-                                            <li>
-                                                <h5><strong>Tatel Price</strong></h5>
-                                                <span><strong>$440</strong></span>
-                                            </li>
+                                            {roomTypes.map(roomType => (
+                                                <li>
+                                                    <h5>{roomType.type}<sub class="ppl-offer label-light-success">20% Off</sub></h5>
+                                                    <p><strong>Max :</strong> {roomType.room_capacity} Persons</p>
+                                                    <span>{roomType.price} VNĐ</span>
+                                                </li>
+                                            ))}
                                         </ul>
                                     </div>
                                 </div>
@@ -381,80 +447,58 @@ const DetailHotel = () => {
                         <div class="col-lg-4 col-md-4 margin-top-75 sidebar-search">
                             <div class="verified-badge with-tip margin-bottom-30" data-tip-content="Purchase ticket has been verified and belongs business owner or manager."> <i class="sl sl-icon-check"></i> Now Available</div>
                             <div class="utf_box_widget booking_widget_box">
-                                <h3><i class="fa fa-calendar"></i> Booking
-                                    <div class="price">
-                                        <span>120$<small>person</small></span>
-                                    </div>
-                                </h3>
+                                <h3><i class="fa fa-calendar"></i> Check Room Availability</h3>
                                 <div class="row with-forms margin-top-0">
                                     <div class="col-lg-12 col-md-12 select_date_box">
-                                        <input type="text" id="date-picker" placeholder="Select Date" readonly="readonly"/>
-                                        <i class="fa fa-calendar"></i>
+                                        <label for="">Name of Hotel</label>
+                                        <input type="text" id="name-hotel" value={detailHotel.name} name="name-hotel"/>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 select_date_box">
+                                        <label for="">Check-in Date</label>
+                                        <input type="date" id="date-picker" value={checkin} name="checkin" placeholder="Select Date" onChange={handleCheckinDate}/>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 select_date_box">
+                                        <label for="">Check-out Date</label>
+                                        <input type="date" id="date-picker" value={checkout} name="checkout" placeholder="Select Date" onChange={handleCheckoutDate}/>
+                                    </div>
+                                    <div class="with-forms">
+                                        <div class="col-lg-12 col-md-12 ">
+                                            <label for="">Select Room Type </label>
+                                            <select name="room-type" class="utf_chosen_select_single" required
+                                                    onChange={handleSelectRoomType}>
+                                                <option value="">Chọn loại phòng</option>
+                                                {roomTypes.map(roomType => (
+                                                    <option value={roomType.type}>{roomType.type}</option>
+                                                ))}
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="with-forms">
                                         <div class="col-lg-12 col-md-12">
-                                            <select class="utf_chosen_select_single">
-                            <option label="Select Time">Select Time</option>
-                            <option>8:00 AM - 10:00 AM</option>
-                            <option>10:00 AM - 12:00 AM</option>
-                            <option>12:00 AM - 02:00 PM</option>
-                            <option>02:00 PM - 04:00 PM</option>
-                            <option>04:00 PM - 06:00 PM</option>	
-                            <option>06:00 PM - 08:00 PM</option>
-                            <option>08:00 PM - 10:00 PM</option>
-                            <option>10:00 PM - 12:00 AM</option>
-                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12">
-                                        <div class="panel-dropdown time-slots-dropdown">
-                                            <a href="#">Select Ticket Type...</a>
-                                            <div class="panel-dropdown-content padding-reset">
-                                                <div class="panel-dropdown-scrollable">
-                                                    <div class="time-slot">
-                                                        <input type="radio" name="time-slot" id="time-slot-1"/>
-                                                        <label for="time-slot-1">
-                                            <strong>Basic Ticket</strong>
-                                            <span>5 Ticket Available</span>
-                                        </label>
-                                                    </div>
-
-                                                    <div class="time-slot">
-                                                        <input type="radio" name="time-slot" id="time-slot-2"/>
-                                                        <label for="time-slot-2">
-                                            <strong>Standard Ticket</strong>
-                                            <span>8 Ticket Available</span>
-                                        </label>
-                                                    </div>
-
-                                                    <div class="time-slot">
-                                                        <input type="radio" name="time-slot" id="time-slot-3"/>
-                                                        <label for="time-slot-3">
-                                            <strong>Golden Ticket</strong>
-                                            <span>10 Ticket Available</span>
-                                        </label>
-                                                    </div>
-                                                </div>
+                                        <a href="#">Guests <span class="qtyTotal" name="qtyTotal">{adults + childrens}</span></a>
+                                        <div class="panel-dropdown-content">
+                                            <div class="qtyButtons">
+                                                <div class="qtyTitle">Adults</div>
+                                                <button className="btn-decrement" style={{width:'40px', border:'none' }}
+                                                onClick={() => changeQuantity('adults', -1)}>-</button>
+                                                <input type="text" name="adult" value={adults}/>
+                                                <button className="btn-increment" style={{width:'40px', border:'none' }}
+                                                onClick={() => changeQuantity('adults', 1)}>+</button>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12">
-                                        <div class="panel-dropdown">
-                                            <a href="#">Guests <span class="qtyTotal" name="qtyTotal">1</span></a>
-                                            <div class="panel-dropdown-content">
-                                                <div class="qtyButtons">
-                                                    <div class="qtyTitle">Adults</div>
-                                                    <input type="text" name="qtyInput" value="1"/>
-                                                </div>
-                                                <div class="qtyButtons">
-                                                    <div class="qtyTitle">Childrens</div>
-                                                    <input type="text" name="qtyInput" value="1"/>
-                                                </div>
+                                            <div class="qtyButtons">
+                                                <div class="qtyTitle">Childrens</div>
+                                                <button className="btn-decrement" style={{width:'40px', border:'none' }}
+                                                onClick={() => changeQuantity('childrens', -1)}>-</button>
+                                                <input type="text" name="children" value={childrens}/>
+                                                <button className="btn-increment" style={{width:'40px', border:'none' }}
+                                                onClick={() => changeQuantity('childrens', 1)}>+</button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <a href="listing_booking.html" class="utf_progress_button button fullwidth_block margin-top-5">Purchase Ticket</a>
+                                    
+                                </div>
+                                <a href="#" class="utf_progress_button button fullwidth_block margin-top-5" onClick={handleCheckRoomAvailability}>Check</a>
                                 <button class="like-button add_to_wishlist"><span class="like-icon"></span> Add to Wishlist</button>
                                 <div class="clearfix"></div>
                             </div>

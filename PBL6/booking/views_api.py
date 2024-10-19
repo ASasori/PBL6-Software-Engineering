@@ -25,16 +25,16 @@ def check_room_availability(request):
 
         # Generate the room detail URL as in the original view function
         room_type_url = reverse("hotel:room_type_detail", args=[hotel.slug, room_type.slug])
-        url_with_params = f"{room_type_url}?hotel-id={data['hotel_id']}&checkin={data['checkin']}&checkout={data['checkout']}&adult={adult}&children={children}&room_type={room_type.slug}"
-
+        url_with_params = f"{room_type_url}?hotel-id={data['hotel_id']}&checkin={data['checkin']}&checkout={data['checkout']}&adult={adult}&children={children}&room_type={room_type.slug}" 
         # Return the URL and booking details in response
         return Response({
+            'slug': hotel.slug,
             'hotel': hotel.name,
-            'room_type': room_type.name,
+            'room_type': room_type.type,
             'checkin': checkin.date(),
             'checkout': checkout.date(),
-            'adult': adult,
-            'children': children,
+            'adults': adult,
+            'childrens': children,
             'room_type_url': url_with_params  # URL with parameters for further action
         }, status=status.HTTP_200_OK)
 

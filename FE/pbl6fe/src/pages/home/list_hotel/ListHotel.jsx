@@ -158,58 +158,6 @@ const ListHotel = ()=> {
                                         </li>
                                     ))}
                                 </ul>
-                                <div class="col-lg-12 col-md-12">
-                                    <div class="utf_listing_item-container list-layout">
-                                        <a href="listings_single_page_1.html" class="utf_listing_item">
-                                            <div class="utf_listing_item-image">
-                                                <img src="images/utf_listing_item-05.jpg" alt=""/>
-                                                <span class="like-icon"></span>
-                                                <span class="tag"><i class="im im-icon-Hotel"></i> Hotels</span>
-                                                <div class="utf_listing_prige_block utf_half_list">
-                                                    <span class="utf_meta_listing_price"><i class="fa fa-tag"></i> $25 - $45</span>
-                                                    <span class="utp_approve_item"><i class="utf_approve_listing"></i></span>
-                                                </div>
-                                            </div>
-                                            <div class="utf_listing_item_content">
-                                                <div class="utf_listing_item-inner">
-                                                    <h3>UK Fitness Club</h3>
-                                                    <span><i class="fa fa-map-marker"></i> The Ritz-Carlton, Hong Kong</span>
-                                                    <span><i class="fa fa-phone"></i> (+15) 124-796-3633</span>
-                                                    <div class="utf_star_rating_section" data-rating="4.5">
-                                                        <div class="utf_counter_star_rating">(4.5)</div>
-                                                    </div>
-                                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas in pulvinar neque. Nulla finibus lobortis pulvinar. Donec a consectetur nulla.</p>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="col-lg-12 col-md-12">
-                                    <div class="utf_listing_item-container list-layout">
-                                        <a href="listings_single_page_1.html" class="utf_listing_item">
-                                            <div class="utf_listing_item-image">
-                                                <img src="images/utf_listing_item-06.jpg" alt=""/>
-                                                <span class="like-icon"></span>
-                                                <span class="tag"><i class="im im-icon-Hotel"></i> Hotels</span>
-                                                <div class="utf_listing_prige_block utf_half_list">
-                                                    <span class="utf_meta_listing_price"><i class="fa fa-tag"></i> $25 - $45</span>
-                                                    <span class="utp_approve_item"><i class="utf_approve_listing"></i></span>
-                                                </div>
-                                            </div>
-                                            <div class="utf_listing_item_content">
-                                                <div class="utf_listing_item-inner">
-                                                    <h3>Fairmont Pacific Rim</h3>
-                                                    <span><i class="fa fa-map-marker"></i> The Ritz-Carlton, Hong Kong</span>
-                                                    <span><i class="fa fa-phone"></i> (+15) 124-796-3633</span>
-                                                    <div class="utf_star_rating_section" data-rating="4.5">
-                                                        <div class="utf_counter_star_rating">(4.5)</div>
-                                                    </div>
-                                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas in pulvinar neque. Nulla finibus lobortis pulvinar. Donec a consectetur nulla.</p>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
                             </div>
                             <div class="clearfix"></div>
                             <div class="row">
