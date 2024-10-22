@@ -43,8 +43,6 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
       Provider.of<HotelProvider>(context, listen: false).fetchHotels();
     });
 
-    // call function _fetchHotel
-    // _fetchHotels();
     controller.addListener((){
       if (mounted) {
         if (controller.offset < 0){

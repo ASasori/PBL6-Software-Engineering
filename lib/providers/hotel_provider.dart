@@ -1,15 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import '../models/hotel.dart';
+import '../models/location.dart';
 import '../services/api_services.dart';
 
 class HotelProvider with ChangeNotifier {
+  final HotelServices _hotelServices = HotelServices();
   List<Hotel> _hotels = [];
   List<Hotel> _topHotels = [];
+  List<Location> _locations = [];
+  List<Hotel> _hotelsByLocation = [];
   bool _isLoading = false;
-  final HotelServices _hotelServices = HotelServices();
 
   List<Hotel> get hotels => _hotels;
   List<Hotel> get topHotels => _topHotels;
+  List<Location> get locations => _locations;
+  List<Hotel> get hotelsByLocation => _hotelsByLocation;
   bool get isLoading => _isLoading;
 
   Future<void> fetchHotels() async {
@@ -36,6 +41,33 @@ class HotelProvider with ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+  Future<void> fetchLocations() async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      _locations = await _hotelServices.fetchLocations();
+    } catch (e) {
+      print(e);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<List<Hotel>> fetchHotelsByLocation(String location, String name) async {
+    _isLoading = true;
+    // notifyListeners();
+    try {
+      _hotelsByLocation = await _hotelServices.fetchHotelsByLocation(location, name);
+      return _hotelsByLocation;
+    } catch (e) {
+      print(e);
+      return [];
+    } finally {
+      _isLoading = false;
+      // notifyListeners();
     }
   }
 }

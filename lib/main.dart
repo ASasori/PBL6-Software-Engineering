@@ -24,7 +24,7 @@ Widget _setAllProviders() {
       ),
       ChangeNotifierProvider( // Thêm HotelProvider vào đây
         create: (_) => HotelProvider(),
-      ),
+      ),  
       ChangeNotifierProvider(
         create: (_) => AuthProvider(),
       ),

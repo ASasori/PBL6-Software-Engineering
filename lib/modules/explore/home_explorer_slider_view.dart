@@ -11,6 +11,8 @@ import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:booking_hotel_app/models/hotel.dart';
 import '../../providers/hotel_provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 
 class HomeExplorerSliderView extends StatefulWidget {
   final double opValue;
@@ -42,8 +44,8 @@ class _HomeExplorerSliderViewState extends State<HomeExplorerSliderView> {
   }
   void _startSliderTimer() {
     sliderTimer = Timer.periodic(Duration(seconds: 4), (timer) {
-      if (mounted) {
-        int nextPage = (pageController.page!.toInt() + 1) % Provider.of<HotelProvider>(context, listen: false).topHotels.length;
+      if (mounted && pageController.hasClients) {
+        int nextPage = ((pageController.page!.toInt()??0) + 1) % Provider.of<HotelProvider>(context, listen: false).topHotels.length;
         pageController.animateToPage(
           nextPage,
           duration: Duration(seconds: 1),
@@ -86,7 +88,7 @@ class _HomeExplorerSliderViewState extends State<HomeExplorerSliderView> {
                   );
                 },
               ),
-              if (!hotelProvider.isLoading)
+              if (hotelProvider.topHotels.isNotEmpty)
                 Positioned(
                   bottom: 32,
                   right: 32,
@@ -122,7 +124,12 @@ class PagePopup extends StatelessWidget {
         Container(
           height: MediaQuery.of(context).size.width * 1.3,
           width: MediaQuery.of(context).size.width,
-          child: Image.network(imageData.imageUrl, fit: BoxFit.cover),
+          child: CachedNetworkImage(
+            imageUrl: imageData.imageUrl,
+            placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Hiển thị khi ảnh đang load
+            errorWidget: (context, url, error) => Icon(Icons.error),     // Hiển thị khi có lỗi tải ảnh
+            fit: BoxFit.cover,
+          ),
         ),
         Positioned(
           bottom: 80,

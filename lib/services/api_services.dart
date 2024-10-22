@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:booking_hotel_app/models/hotel.dart';
+import 'package:booking_hotel_app/models/location.dart';
 
 class HotelServices {
   final Dio _dio = Dio();
+
   // static const String baseUrl = 'http://10.10.3.249:8000';
-  static const String baseUrl = 'http://192.168.1.11:8000';
+  // static const String baseUrl = 'http://192.168.1.23:8000';
+  static const String baseUrl = 'http://192.168.43.21:8000';
+  // static const String baseUrl = 'http://192.168.1.16:8000';
 
   Future<List<Hotel>> fetchHotels() async {
     try {
@@ -37,6 +41,43 @@ class HotelServices {
       throw Exception('Error fetching data api');
     }
   }
+  Future<List<Location>> fetchLocations() async {
+    try {
+      final response = await _dio.get('$baseUrl/api/detail/location/');
+      if (response.statusCode == 200) {
+        List<dynamic> data = response.data;
+        return data.map((json) => Location.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load location');
+      }
+    } catch(e) {
+      print(e);
+      throw Exception('Error fetching data location');
+    }
+  }
+  Future<List<Hotel>> fetchHotelsByLocation(String location, String name) async {
+    try {
+      final response = await _dio.post(
+        '$baseUrl/api/detail/location/hotels_by_location/',
+        options: Options(
+          contentType: 'application/json',
+        ),
+        data: jsonEncode({
+          'location': location,
+          'name': name,
+        }),
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> data = response.data;
+        return data.map((json) => Hotel.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load hotels');
+      }
+    } catch (e) {
+      print(e);
+      throw Exception('Error fetching data api');
+    }
+  }
 }
 
 // call api auth
@@ -44,11 +85,12 @@ class AuthService {
   final Dio _dio = Dio();
   // static const String baseUrl = 'http://10.10.3.249:8000';
   // static const String baseUrl = 'http://192.168.1.23:8000';
-  static const String baseUrl = 'http://192.168.1.11:8000';
+  // static const String baseUrl = 'http://192.168.1.16:8000';
+  static const String baseUrl = 'http://192.168.43.21:8000';
+
 
   Future<String?> fetchCsrfToken() async {
     try {
-      // final response = await dio.get('http://10.10.3.249:8000/');
       final response = await _dio.get('$baseUrl/');
       print('Response headers: ${response.headers}');
       if (response.statusCode == 200) {
@@ -74,7 +116,6 @@ class AuthService {
     try {
       final response = await _dio.post(
         '$baseUrl/user/api/userauths/login/',
-        // 'http://10.10.3.249:8000/user/api/userauths/login/',
         options: Options(
           contentType: 'application/json',
           headers: {
@@ -99,18 +140,11 @@ class AuthService {
     }
   }
   Future<bool> register(String username, String email, String password, String full_name, String phone) async {
-    final csrfToken = await fetchCsrfToken();
-    print('CSRF Token: $csrfToken');
-    print("$email, $password, $username, $full_name, $phone");
     try {
       final response = await _dio.post(
-        // 'http://10.10.3.249:8000/user/api/userauths/register/',
         '$baseUrl/user/api/userauths/register/',
         options: Options(
           contentType: 'application/json',
-          headers: {
-            'X-CSRFToken': csrfToken ?? '', // Thêm CSRF token vào header
-          },
         ),
         data: jsonEncode({
           'username': username,

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:booking_hotel_app/models/hotel.dart';
 import '../../utils/helper.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HotelListViewPage extends StatelessWidget {
   final bool isShowData;
@@ -37,7 +38,12 @@ class HotelListViewPage extends StatelessWidget {
                         children: [
                           AspectRatio(
                             aspectRatio: 0.9,
-                            child: Image.network(hotelListData.imageUrl, fit: BoxFit.cover),
+                            child: CachedNetworkImage(
+                              imageUrl: hotelListData.imageUrl,
+                              placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Hiển thị khi ảnh đang load
+                              errorWidget: (context, url, error) => Icon(Icons.error),     // Hiển thị khi có lỗi tải ảnh
+                              fit: BoxFit.cover, // Tùy chỉnh cách hiển thị ảnh
+                            ),
                           ),
                           Expanded(
                               child: Container(
