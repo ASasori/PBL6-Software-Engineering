@@ -137,7 +137,7 @@ class _HotelHomeScreenState extends State<ExploreScreen> with TickerProviderStat
                                           //hotel search view
                                           _getSearchBarUI(),
                                           // time date and number of rooms view
-                                          TimeDateView(),
+                                          //TimeDateView(),
                                         ],
                                       ),
                                     ),

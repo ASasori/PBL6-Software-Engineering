@@ -34,11 +34,6 @@ class SettingsListData {
       iconData: FontAwesomeIcons.lock,
     ),
     SettingsListData(
-      titleTxt: 'invite_friend',
-      isSelected: false,
-      iconData: FontAwesomeIcons.userFriends,
-    ),
-    SettingsListData(
       titleTxt: 'credit_coupons',
       isSelected: false,
       iconData: FontAwesomeIcons.gift,

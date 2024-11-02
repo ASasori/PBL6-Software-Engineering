@@ -1,9 +1,13 @@
+import 'package:booking_hotel_app/models/booking.dart';
+import 'package:booking_hotel_app/providers/wish_list_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../language/appLocalizations.dart';
 import '../../models/hotel_list_data.dart';
 import '../../utils/helper.dart';
+import '../../utils/localfiles.dart';
 import '../../utils/text_styles.dart';
 import '../../widgets/common_button.dart';
 
@@ -11,12 +15,13 @@ class RoomBookView extends StatefulWidget {
   final HotelListData roomData;
   final AnimationController animationController;
   final Animation<double> animation;
+  final DateTime startDate,endDate;
 
   const RoomBookView(
       {Key? key,
         required this.roomData,
         required this.animationController,
-        required this.animation})
+        required this.animation, required this.startDate, required this.endDate})
       : super(key: key);
 
   @override
@@ -28,6 +33,8 @@ class _RoomBookViewState extends State<RoomBookView> {
 
   @override
   Widget build(BuildContext context) {
+    var wishlist = Provider.of<WishlistProvider>(context);
+
     List<String> images = widget.roomData.imagePath.split(" ");
     return AnimatedBuilder(
       animation: widget.animationController,
@@ -98,11 +105,50 @@ class _RoomBookViewState extends State<RoomBookView> {
                                 padding: const EdgeInsets.only(
                                     left: 16.0, right: 16.0, top: 4, bottom: 4),
                                 child: Text(
-                                  AppLocalizations(context).of("book_now"),
+                                  "Add to Wishlist",
                                   textAlign: TextAlign.center,
                                   style: TextStyles(context).getRegularStyle(),
                                 ),
                               ),
+                              onTap: () {
+                                BookingData value = new BookingData(
+                                  bookingID: "B003",
+                                  hotelName: widget.roomData.titleTxt,
+                                  imagePath: widget.roomData.imagePath,
+                                  address:  widget.roomData.location.toString(),
+                                  startDate: widget.startDate,
+                                  endDate: widget.endDate,
+                                  numberOfAdults: 3,
+                                  numberOfChildren: 2,
+                                  pricePernight:widget.roomData.perNight.toDouble(),
+                                  typeRoom:  widget.roomData.titleTxt.toString(),
+                                  totalAmount: widget.endDate.difference(widget.startDate).inDays * widget.roomData.perNight.toDouble(),
+                                );
+                                print("add");
+                                wishlist.addBookingData(value);
+                                wishlist.addTotalPrice(widget.endDate.difference(widget.startDate).inDays * widget.roomData.perNight.toDouble());
+                                wishlist.addCounter();
+                                // Show SnackBar when product is added to the cart
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Row(
+                                      children: [
+                                        Icon(Icons.check_circle, color: Colors.green), // Add an icon
+                                        SizedBox(width: 10), // Space between icon and text
+                                        Expanded(child: Text('Product added to cart!')), // Message text
+                                      ],
+                                    ),
+                                    backgroundColor: Colors.black87, // Darker background for better contrast
+                                    duration: Duration(seconds: 3), // Duration of the SnackBar
+                                    behavior: SnackBarBehavior.floating, // Makes it float above the content
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(24),
+                                    ), // Rounded corners for better appearance
+                                    margin: EdgeInsets.all(16), // Adds some space around the SnackBar
+                                  ),
+                                );
+
+                              },
                             ),
                           ),
                         ],
@@ -182,4 +228,5 @@ class _RoomBookViewState extends State<RoomBookView> {
       },
     );
   }
+
 }

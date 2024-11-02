@@ -1,3 +1,4 @@
+import 'package:booking_hotel_app/providers/wish_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:booking_hotel_app/utils/themes.dart';
@@ -20,6 +21,9 @@ Widget _setAllProviders() {
           state: AppTheme.getThemeData,
         ),
       ),
+      ChangeNotifierProvider(
+          create: (_) => WishlistProvider()
+      )
     ],
     child: MotelApp(),
   );

@@ -25,9 +25,7 @@ class AppLocalizations {
         Map<String, String> texts = {};
         texts['text_id'] = value['text_id'] ?? '';
         texts['en'] = value['en'] ?? '';
-        texts['fr'] = value['fr'] ?? '';
-        texts['ar'] = value['ar'] ?? '';
-        texts['ja'] = value['ja'] ?? '';
+        texts['vn'] = value['vn'] ?? '';
         allTexts.add(texts);
       }
     });
@@ -69,7 +67,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) {
-    return ['en', 'fr', 'ar'].contains(locale.languageCode);
+    return ['en', 'vn'].contains(locale.languageCode);
   }
 
   @override

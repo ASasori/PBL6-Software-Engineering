@@ -40,7 +40,7 @@ class _FavoritesListViewState extends State<FavoritesListView> {
           return HotelListView(
             callback: () {
               NavigationServices(context)
-                  .gotoRoomBookingScreen(hotelList[index].titleTxt);
+                  .gotoRoomBookingScreen(hotelList[index]);
             },
             hotelListData: hotelList[index],
             animation: animation,

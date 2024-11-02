@@ -176,12 +176,7 @@ class HotelListView extends StatelessWidget {
                                   ),
                                   Padding(
                                     padding: EdgeInsets.only(
-                                        top: context
-                                            .read<ThemeProvider>()
-                                            .languageType ==
-                                            LanguageType.ar
-                                            ? 2.0
-                                            : 0.0),
+                                        top:  0.0),
                                     child: Text(
                                       AppLocalizations(context).of("per_night"),
                                       style: TextStyles(context)

@@ -136,34 +136,48 @@ class _LoginScreen extends State<LoginScreen> {
 
     });
 
-    //isValid =  login(_emailController.text.trim(), _passwordController.text.trim()) as bool;
+    // isValid =  login(_emailController.text.trim(), _passwordController.text.trim()) as bool;
     return isValid;
   }
 
 }
 
 Future<String?> fetchCsrfToken() async {
-  final response = await http.get(Uri.parse('http://10.10.28.164:8000/'));
+  try {
+    final response = await http.get(Uri.parse('http://192.168.43.246:8000/receptionist/get-csrf-token/'));
 
-  if (response.statusCode == 200) {
-    // Lấy cookie từ headers
-    final cookies = response.headers['set-cookie'];
-    if (cookies != null) {
-      // Tìm CSRF token trong cookie
-      final csrfToken = RegExp(r'csrftoken=([^;]+)').firstMatch(cookies);
-      if (csrfToken != null) {
-        return csrfToken.group(1); // Trả về giá trị CSRF token
+    if (response.statusCode == 200) {
+      // Get cookie from headers
+      final cookies = response.headers['set-cookie'];
+      if (cookies != null) {
+        // Find CSRF token in the cookie
+        final csrfToken = RegExp(r'csrftoken=([^;]+)').firstMatch(cookies);
+        if (csrfToken != null) {
+          print( csrfToken.group(1));
+          return csrfToken.group(1); // Return CSRF token value
+
+        } else {
+          print("CSRF token not found in cookies.");
+        }
+      } else {
+        print("No cookies in the response headers.");
       }
+    } else {
+      print("Error: Received status code ${response.statusCode}");
     }
+  } catch (e) {
+    print("An error occurred: $e");
   }
+
   return null;
 }
 
 Future<bool> login(String email, String password) async {
+
   final csrfToken = await fetchCsrfToken();
 
   final response = await http.post(
-    Uri.parse('http://10.10.28.164:8000/user/api/userauths/login/'),
+    Uri.parse('http://192.168.43.246:8000/user/api/userauths/login/'),
     headers: {
       'Content-Type': 'application/json',
       'X-CSRFToken': csrfToken ?? '', // Thêm CSRF token vào header

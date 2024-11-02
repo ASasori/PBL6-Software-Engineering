@@ -157,21 +157,7 @@ class _CustomCalendarViewState extends State<CustomCalendarView> {
     List<Widget> listUI = [];
     for (var i = 0; i < 7; i++) {
       listUI.add(
-        context.read<ThemeProvider>().languageType == LanguageType.ar
-            ? Padding(
-          padding: const EdgeInsets.only(left: 0.0, right: 6.0),
-          child: Center(
-            child: Text(
-              DateFormat("EEE", _languageType.toString().split(".")[1])
-                  .format(dateList[i]),
-              textAlign: TextAlign.justify,
-              style: TextStyles(context)
-                  .getRegularStyle()
-                  .copyWith(color: Theme.of(context).primaryColor),
-            ),
-          ),
-        )
-            : Expanded(
+        Expanded(
           child: Center(
             child: Text(
               DateFormat("EEE", _languageType.toString().split(".")[1])
@@ -211,20 +197,10 @@ class _CustomCalendarViewState extends State<CustomCalendarView> {
                               top: 2,
                               bottom: 2,
                               left: isStartDateRadius(date)
-                                  ? context
-                                  .read<ThemeProvider>()
-                                  .languageType ==
-                                  LanguageType.ar
-                                  ? 0
-                                  : 4
+                                  ? 4
                                   : 0,
                               right: isEndDateRadius(date)
-                                  ? context
-                                  .read<ThemeProvider>()
-                                  .languageType ==
-                                  LanguageType.ar
-                                  ? 0
-                                  : 4
+                                  ?  4
                                   : 0),
                           child: Container(
                             decoration: BoxDecoration(
@@ -237,44 +213,16 @@ class _CustomCalendarViewState extends State<CustomCalendarView> {
                                   : Colors.transparent
                                   : Colors.transparent,
                               borderRadius: BorderRadius.only(
-                                bottomLeft: context
-                                    .read<ThemeProvider>()
-                                    .languageType ==
-                                    LanguageType.ar
-                                    ? isEndDateRadius(date)
-                                    ? Radius.circular(24.0)
-                                    : Radius.circular(0.0)
-                                    : isStartDateRadius(date)
+                                bottomLeft:isStartDateRadius(date)
                                     ? Radius.circular(24.0)
                                     : Radius.circular(0.0),
-                                topLeft: context
-                                    .read<ThemeProvider>()
-                                    .languageType ==
-                                    LanguageType.ar
-                                    ? isEndDateRadius(date)
-                                    ? Radius.circular(24.0)
-                                    : Radius.circular(0.0)
-                                    : isStartDateRadius(date)
+                                topLeft:isStartDateRadius(date)
                                     ? Radius.circular(24.0)
                                     : Radius.circular(0.0),
-                                topRight: context
-                                    .read<ThemeProvider>()
-                                    .languageType ==
-                                    LanguageType.ar
-                                    ? isStartDateRadius(date)
-                                    ? Radius.circular(24.0)
-                                    : Radius.circular(0.0)
-                                    : isEndDateRadius(date)
+                                topRight:  isEndDateRadius(date)
                                     ? Radius.circular(24.0)
                                     : Radius.circular(0.0),
-                                bottomRight: context
-                                    .read<ThemeProvider>()
-                                    .languageType ==
-                                    LanguageType.ar
-                                    ? isStartDateRadius(date)
-                                    ? Radius.circular(24.0)
-                                    : Radius.circular(0.0)
-                                    : isEndDateRadius(date)
+                                bottomRight:  isEndDateRadius(date)
                                     ? Radius.circular(24.0)
                                     : Radius.circular(0.0),
                               ),

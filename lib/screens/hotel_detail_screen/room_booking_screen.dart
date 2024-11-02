@@ -1,13 +1,20 @@
 import 'package:booking_hotel_app/models/hotel_list_data.dart';
+import 'package:booking_hotel_app/providers/wish_list_provider.dart';
+import 'package:booking_hotel_app/screens/bottom_tab/bottom_tab_screen.dart';
+import 'package:booking_hotel_app/screens/explore_screen/components/time_date_view.dart';
 import 'package:booking_hotel_app/screens/hotel_detail_screen/room_booking_view.dart';
+import 'package:booking_hotel_app/screens/wishlist_screen/wishlist_screen.dart';
+import 'package:booking_hotel_app/widgets/common_button.dart';
 import 'package:flutter/material.dart';
-
+import 'package:badges/badges.dart' as badges;
+import 'package:provider/provider.dart';
+import '../../utils/enum.dart';
 import '../../utils/text_styles.dart';
 
 class RoomBookingScreen extends StatefulWidget {
-  final String hotelName;
+  final HotelListData hotelListData;
 
-  const RoomBookingScreen({super.key, required this.hotelName});
+  const RoomBookingScreen({super.key, required this.hotelListData});
 
   @override
   State<RoomBookingScreen> createState() => _RoomBookingScreenState();
@@ -16,6 +23,9 @@ class RoomBookingScreen extends StatefulWidget {
 class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProviderStateMixin{
   List<HotelListData> romeList = HotelListData.romeList;
   late AnimationController animationController;
+
+  DateTime? startDate = DateTime.now(); // Store selected start date
+  DateTime? endDate =  DateTime.now().add(Duration(days: 5)) ;// Store selected end date
 
   @override
   void initState() {
@@ -35,7 +45,29 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
     return Scaffold(
       body: Column(
         children: <Widget>[
-          getAppBarUI(),
+          getAppBarUI(context,animationController),
+          TimeDateView(
+            onDateChanged: (selectedStartDate, selectedEndDate) {
+              setState(() {
+                startDate = selectedStartDate;
+                endDate = selectedEndDate;
+              });
+            },
+          ),
+          CommonButton(
+            padding: EdgeInsets.only(top: 8, bottom: 24),
+            buttonText: "Check Availability",
+          ),
+          Divider(
+            height: 1,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 16),
+            child: Text(
+              "All room  available",
+              style: TextStyles(context).getRegularStyle(),
+            ),
+          ),
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.all(0.0),
@@ -53,6 +85,8 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
                   roomData: romeList[index],
                   animation: animation,
                   animationController: animationController,
+                  startDate: startDate!,
+                  endDate:  endDate!,
                 );
               },
             ),
@@ -62,7 +96,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
     );
   }
 
-  Widget getAppBarUI() {
+  Widget getAppBarUI(BuildContext context, AnimationController animationController) {
     return Padding(
       padding: EdgeInsets.only(
           top: MediaQuery.of(context).padding.top,
@@ -91,23 +125,32 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
           Expanded(
             child: Center(
               child: Text(
-                widget.hotelName,
+                widget.hotelListData.titleTxt,
                 style: TextStyles(context).getTitleStyle(),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
           ),
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.all(
-                Radius.circular(32.0),
-              ),
-              onTap: () {},
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(Icons.favorite_border),
-              ),
+          badges.Badge(
+            badgeContent: Consumer<WishlistProvider>(
+              builder: (context, value, child) {
+                return Text(
+                  value.getCounter().toString(),
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                );
+              },
+            ),
+            //position: badges.BadgePosition(start: 30, bottom: 30),
+
+            child: IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BottomTabScreen(initialBottomBarType: BottomBarType.Wishlist)));
+              },
+              icon: const Icon(Icons.shopping_cart),
             ),
           ),
           //   )

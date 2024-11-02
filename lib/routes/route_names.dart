@@ -6,12 +6,17 @@ import 'package:booking_hotel_app/screens/login_screen/forgot_password.dart';
 import 'package:booking_hotel_app/screens/login_screen/login_screen.dart';
 import 'package:booking_hotel_app/screens/login_screen/sign_up_screen.dart';
 import 'package:booking_hotel_app/routes/routes.dart';
+import 'package:booking_hotel_app/screens/profile_screen/change_password_screen.dart';
+import 'package:booking_hotel_app/screens/profile_screen/edit_profile_screen.dart';
+import 'package:booking_hotel_app/screens/profile_screen/help_center_screen.dart';
+import 'package:booking_hotel_app/screens/profile_screen/setting_screen.dart';
 import 'package:flutter/material.dart';
 
 
 import '../screens/explore_screen/filter_screen/filter_screen.dart';
 import '../screens/explore_screen/explore_screen.dart';
 import '../screens/hotel_detail_screen/hotel_detail_screen.dart';
+import '../utils/enum.dart';
 
 class NavigationServices {
   final BuildContext context;
@@ -45,8 +50,8 @@ class NavigationServices {
     return _pushMasterialPageRoute(SignUpScreen());
   }
 
-  Future<dynamic> gotoBottomTabScreen() async {
-    return _pushMasterialPageRoute(BottomTabScreen());
+  Future<dynamic> gotoBottomTabScreen({BottomBarType? bottomBarType}) async {
+    return _pushMasterialPageRoute(BottomTabScreen(initialBottomBarType: bottomBarType==null ? BottomBarType.Explore : bottomBarType,));
   }
 
   Future<dynamic> gotoHotelHomeScreen([String place = ""]) async {
@@ -57,8 +62,8 @@ class NavigationServices {
     return _pushMasterialPageRoute(FiltersScreen());
   }
 
-  Future<dynamic> gotoRoomBookingScreen(String hotelName) async {
-    return _pushMasterialPageRoute(RoomBookingScreen(hotelName: hotelName));
+  Future<dynamic> gotoRoomBookingScreen(HotelListData hotelListData) async {
+    return _pushMasterialPageRoute(RoomBookingScreen(hotelListData: hotelListData));
   }
 
   Future<dynamic> gotoHotelDetails(HotelListData hotelData) {
@@ -70,4 +75,23 @@ class NavigationServices {
   Future<dynamic> gotoReviewsListScreen() {
     return _pushMasterialPageRoute(ReviewListScreen());
   }
+
+  Future<Future> gotoEditProfileScreen()  async{
+    return await _pushMasterialPageRoute(EditProfileScreen());
+  }
+
+
+  Future<Future> gotoChangePasswordScreen()  async{
+    return await _pushMasterialPageRoute(ChangePasswordScreen());
+  }
+
+  Future<Future> gotoHelpCenterScreen()  async{
+    return await _pushMasterialPageRoute(HelpCenterScreen());
+  }
+
+  Future<Future> gotoSettingsScreen()  async{
+    return await _pushMasterialPageRoute(SettingsScreen());
+  }
+
+  
 }

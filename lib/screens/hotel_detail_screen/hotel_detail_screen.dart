@@ -552,7 +552,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                                           onTap: () {
                                             NavigationServices(context)
                                                 .gotoRoomBookingScreen(
-                                                widget.hotelData.titleTxt);
+                                                widget.hotelData);
                                           }),
                                     ),
                                   ],

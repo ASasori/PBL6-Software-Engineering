@@ -197,14 +197,14 @@ class HotelListData {
   static List<HotelListData> romeList = [
     HotelListData(
         imagePath:
-        'assets/images/room_1.jpg assets/images/room_2.jpg assets/images/room_3.jpg',
+        'assets/images/room_1.jpg',
         titleTxt: 'Deluxe Room',
         perNight: 180,
         dateTxt: 'Sleeps 3 people',
         roomData: RoomData(2, 2)),
     HotelListData(
         imagePath:
-        'assets/images/room_4.jpg assets/images/room_5.jpg assets/images/room_6.jpg',
+        'assets/images/room_4.jpg',
         titleTxt: 'Premium Room',
         perNight: 200,
         dateTxt: 'Sleeps 3 people + 2 children',

@@ -4,9 +4,11 @@ import 'package:booking_hotel_app/screens/explore_screen/components/room_popup_v
 import 'package:booking_hotel_app/motel_app.dart';
 import 'package:booking_hotel_app/providers/theme_provider.dart';
 import 'package:booking_hotel_app/utils/enum.dart';
+import 'package:booking_hotel_app/widgets/common_button.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../../language/appLocalizations.dart';
 import '../../../utils/helper.dart';
@@ -14,7 +16,8 @@ import '../../../utils/text_styles.dart';
 import 'calendar_popup_view.dart';
 
 class TimeDateView extends StatefulWidget {
-  const TimeDateView({super.key});
+  final Function(DateTime startDate, DateTime endDate)? onDateChanged; // Add callback
+  const TimeDateView({super.key, this.onDateChanged});
 
   @override
   State<TimeDateView> createState() => _TimeDateViewState();
@@ -23,11 +26,17 @@ class TimeDateView extends StatefulWidget {
 class _TimeDateViewState extends State<TimeDateView> {
   RoomData _roomData = RoomData(1, 2);
 
-  DateTime startDate = DateTime.now();
-  DateTime endDate = DateTime.now().add(Duration(days: 5));
+  late DateTime startDate ;
+  late DateTime endDate ;
   LanguageType _languageType = applicationcontext == null ? LanguageType.en : applicationcontext!.read<ThemeProvider>().languageType;
 
-
+  final DateRangePickerController _controller = DateRangePickerController();
+  @override
+  void initState() {
+    startDate = DateTime.now();
+    endDate = DateTime.now().add(Duration(days: 5));
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -100,24 +109,57 @@ class _TimeDateViewState extends State<TimeDateView> {
   void _showDemoDialog(BuildContext context) {
     showDialog(
       context: context,
-      //custome calendar view
-      builder: (BuildContext context) => CalendarPopupView(
-        barrierDismissible: true,
-        minimumDate: DateTime.now(),
-        maximumDate: DateTime(
-            DateTime.now().year, DateTime.now().month, DateTime.now().day + 10),
-        initialEndDate: endDate,
-        initialStartDate: startDate,
-        onApplyClick: (DateTime startData, DateTime endData) {
-          setState(() {
-            startDate = startData;
-            endDate = endData;
-          });
-        },
-        onCancelClick: () {},
+      builder: (BuildContext context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: StatefulBuilder(
+          builder: (BuildContext context, StateSetter setStateInDialog) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Card(
+                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                  child: SfDateRangePicker(
+                    controller: _controller,
+                    selectionMode: DateRangePickerSelectionMode.range,
+                    onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+                      setStateInDialog(() {
+                        if (args.value is PickerDateRange) {
+                          startDate = args.value.startDate!;
+                          endDate = args.value.endDate!;
+                        }
+                      });
+                    },
+                    allowViewNavigation: false,
+                  ),
+                ),
+                // Buttons to confirm or cancel the selection
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16, top: 8),
+                  child: CommonButton(
+                    buttonText: AppLocalizations(context).of("Apply_date"),
+                    onTap: () {
+                      // Close the dialog and update the parent state
+                      Navigator.pop(context);
+                      if (widget.onDateChanged != null) {
+                        widget.onDateChanged!(startDate, endDate); // Notify the parent
+                      }
+                      // Ensure parent widget updates with the selected dates
+                      setState(() {
+                      });
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
+
+
 
   void _showPopUp() {
     showDialog(
