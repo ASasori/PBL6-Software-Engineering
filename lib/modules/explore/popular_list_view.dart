@@ -25,7 +25,7 @@ class _PopularListViewState extends State<PopularListView> with TickerProviderSt
         vsync: this, duration: Duration(milliseconds: 1000)
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<HotelProvider>(context, listen: false).fetchLocations();
+      final hotelProvider = Provider.of<HotelProvider>(context, listen: false).fetchLocations();
     });
     super.initState();
   }
