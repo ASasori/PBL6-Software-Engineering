@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'drf_yasg',
+
     
     #Custom App
     'userauths',
@@ -264,8 +266,8 @@ JAZZMIN_UI_TWEAKS = {
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.IsAuthenticated', 
-        'rest_framework.permissions.AllowAny', # or 'rest_framework.permissions.AllowAny' for open access
+        'rest_framework.permissions.IsAuthenticated', 
+        #'rest_framework.permissions.AllowAny', # or 'rest_framework.permissions.AllowAny' for open access
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
