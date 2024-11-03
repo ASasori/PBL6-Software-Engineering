@@ -40,9 +40,11 @@ class Hotel {
 
     // connect link in order to dowload image from Server
     // const String baseUrl = 'http://192.168.1.23:8000';
-    const String baseUrl = 'http://192.168.43.21:8000';
+    // const String baseUrl = 'http://192.168.43.21:8000';
     // const String baseUrl = "http://10.10.3.249:8000";
     // const String baseUrl = "http://192.168.1.16:8000";
+    const String baseUrl = 'http://192.168.2.25:8000';
+
     String fullImageUrl ='$baseUrl${json['image']}';
 
     //remove html card

@@ -1,6 +1,6 @@
 import 'package:booking_hotel_app/main.dart';
 import 'package:booking_hotel_app/models/room_data.dart';
-import 'package:booking_hotel_app/modules/hotel_booking/components/room_popup_view.dart';
+import 'package:booking_hotel_app/screens/explore_screen/components/room_popup_view.dart';
 import 'package:booking_hotel_app/motel_app.dart';
 import 'package:booking_hotel_app/providers/theme_provider.dart';
 import 'package:booking_hotel_app/utils/enum.dart';

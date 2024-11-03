@@ -34,7 +34,8 @@ class HotelServices {
   final ApiService _apiService = ApiService();
   // static const String baseUrl = 'http://10.10.3.249:8000';
   // static const String baseUrl = 'http://192.168.1.23:8000';
-  static const String baseUrl = 'http://192.168.43.21:8000';
+  // static const String baseUrl = 'http://192.168.43.21:8000';
+  static const String baseUrl = 'http://192.168.2.25:8000';
 
   Future<List<Hotel>> fetchHotels() async {
     try {
@@ -110,7 +111,8 @@ class AuthService {
   final Dio _dio = Dio();
   // static const String baseUrl = 'http://10.10.3.249:8000';
   // static const String baseUrl = 'http://192.168.1.23:8000';
-  static const String baseUrl = 'http://192.168.43.21:8000';
+  // static const String baseUrl = 'http://192.168.43.21:8000';
+  static const String baseUrl = 'http://192.168.2.25:8000';
 
 
   Future<String?> fetchCsrfToken() async {

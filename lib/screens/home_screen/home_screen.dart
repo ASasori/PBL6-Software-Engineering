@@ -1,9 +1,9 @@
 import 'package:booking_hotel_app/language/appLocalizations.dart';
 import 'package:booking_hotel_app/models/hotel.dart';
-import 'package:booking_hotel_app/modules/explore/home_explorer_slider_view.dart';
-import 'package:booking_hotel_app/modules/explore/hotel_list_view_page.dart';
-import 'package:booking_hotel_app/modules/explore/popular_list_view.dart';
-import 'package:booking_hotel_app/modules/explore/title_view.dart';
+import 'package:booking_hotel_app/screens/home_screen/home_slider_view.dart';
+import 'package:booking_hotel_app/screens/home_screen/hotel_list_view.dart';
+import 'package:booking_hotel_app/screens/home_screen/popular_list_view.dart';
+import 'package:booking_hotel_app/screens/home_screen/title_view.dart';
 import 'package:booking_hotel_app/providers/theme_provider.dart';
 import 'package:booking_hotel_app/routes/route_names.dart';
 import 'package:booking_hotel_app/widgets/bottom_top_move_animation_view.dart';
@@ -18,16 +18,15 @@ import '../../utils/text_styles.dart';
 import '../../utils/themes.dart';
 import '../../widgets/common_search_bar.dart';
 
-class HomeExploreScreen extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   final AnimationController animationController;
-  const HomeExploreScreen({super.key, required this.animationController});
+  const HomeScreen({super.key, required this.animationController});
 
   @override
-  State<HomeExploreScreen> createState() => _HomeExploreScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProviderStateMixin{
-  bool isLoading = true;
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late ScrollController controller;
   late AnimationController _animationController;
   var sliderImageHeight = 0.0;
@@ -35,7 +34,8 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 0));
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 0));
     widget.animationController.forward();
     controller = ScrollController(initialScrollOffset: 0.0);
 
@@ -43,26 +43,33 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
       Provider.of<HotelProvider>(context, listen: false).fetchHotels();
     });
 
-    controller.addListener((){
+    controller.addListener(() {
       if (mounted) {
-        if (controller.offset < 0){
+        if (controller.offset < 0) {
           // set a static half scrolling values
           _animationController.animateTo(0.0);
-        } if (controller.offset > 0.0 && controller.offset < sliderImageHeight){
+        }
+        if (controller.offset > 0.0 && controller.offset < sliderImageHeight) {
           // we need arround half crolling value
-          if (controller.offset < (sliderImageHeight / 1.5)){
-            _animationController.animateTo(controller.offset/sliderImageHeight);
+          if (controller.offset < (sliderImageHeight / 1.5)) {
+            _animationController.animateTo(
+                controller.offset / sliderImageHeight);
           } else {
-            _animationController.animateTo((sliderImageHeight / 1.5) / sliderImageHeight);
+            _animationController.animateTo(
+                (sliderImageHeight / 1.5) / sliderImageHeight);
           }
         }
       }
     });
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    sliderImageHeight = MediaQuery.of(context).size.width * 1.3;
+    sliderImageHeight = MediaQuery
+        .of(context)
+        .size
+        .width * 1.3;
     return BottomTopMoveAnimationView(
         animationController: widget.animationController,
         child: Consumer2<HotelProvider, ThemeProvider>(
@@ -115,7 +122,8 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
                               isLeftButton: true,
                             );
                           } else {
-                            return getDealListView(hotelProvider.hotels); // Hiển thị danh sách hotel
+                            return getDealListView(hotelProvider
+                                .hotels); // Hiển thị danh sách hotel
                           }
                         }
                     ),
@@ -167,24 +175,25 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
 
   _sliderUI() {
     return Positioned(
-        top: 0,
-        left: 0,
-        right: 0,
-        child: AnimatedBuilder(
-            animation: _animationController,
-            builder: (BuildContext context, Widget? child){
-              var opacity = 1.0 - (_animationController.value > 0.64 ? 1.0 : _animationController.value);
-              return SizedBox(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: AnimatedBuilder(
+          animation: _animationController,
+          builder: (BuildContext context, Widget? child) {
+            var opacity = 1.0 -
+                (_animationController.value > 0.64 ? 1.0 : _animationController
+                    .value);
+            return SizedBox(
                 height: sliderImageHeight * (1.0 - _animationController.value),
-                child: HomeExplorerSliderView(
+                child: HomeSliderView(
                     opValue: opacity,
                     click: () {
-
                     }
                 )
-              );
-            }
-        ),
+            );
+          }
+      ),
 
     );
   }
@@ -192,8 +201,10 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
   _viewHotelButton(AnimationController animationController) {
     return AnimatedBuilder(
         animation: animationController,
-        builder: (BuildContext context, Widget? child){
-          var opacity = 1.0 - (_animationController.value > 0.64 ? 1.0 : _animationController.value);
+        builder: (BuildContext context, Widget? child) {
+          var opacity = 1.0 -
+              (_animationController.value > 0.64 ? 1.0 : _animationController
+                  .value);
           return Positioned(
             left: 0,
             right: 0,
@@ -207,8 +218,8 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
                   child: Opacity(
                     opacity: opacity,
                     child: CommonButton(
-                      onTap: (){
-                        if (opacity!=0){
+                      onTap: () {
+                        if (opacity != 0) {
                           NavigationServices(context).gotoHotelHomeScreen();
                         }
                       },
@@ -222,8 +233,8 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
                         child: Text(
                           AppLocalizations(context).of("view_hotel"),
                           style: TextStyles(context).getTitleStyle().copyWith(
-                            color: AppTheme.whiteColor,
-                            fontSize: 18
+                              color: AppTheme.whiteColor,
+                              fontSize: 18
                           ),
                         ),
                       ),
@@ -269,9 +280,11 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
               curve: Interval(0.0, 1.0, curve: Curves.fastOutSlowIn),
             ),
           );
-          return HotelListViewPage(
+          // HotelListView
+          return HotelListView(
             callback: () {
               // Xử lý khi nhấn vào từng khách sạn
+              // NavigationServices(context).gotoHotelDetails(hotel);
             },
             hotelListData: hotel,
             animationController: widget.animationController,
@@ -282,3 +295,4 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
     );
   }
 }
+

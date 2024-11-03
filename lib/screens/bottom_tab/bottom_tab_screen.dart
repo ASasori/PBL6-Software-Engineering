@@ -1,14 +1,14 @@
 import 'package:booking_hotel_app/language/appLocalizations.dart';
-import 'package:booking_hotel_app/modules/bottom_tab/components/tap_bottom_UI.dart';
-import 'package:booking_hotel_app/modules/profile/profile_screen.dart';
+import 'package:booking_hotel_app/screens/bottom_tab/components/tap_bottom_UI.dart';
+import 'package:booking_hotel_app/screens/profile_screen/profile_screen.dart';
 import 'package:booking_hotel_app/utils/themes.dart';
 import 'package:booking_hotel_app/widgets/common_card.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
-import '../explore/home_explore_screen.dart';
-import '../myStrips/my_trips_screen.dart';
+import '../home_screen/home_screen.dart';
+import '../mytrip_screen/my_trips_screen.dart';
 
 class BottomTabScreen extends StatefulWidget {
   const BottomTabScreen({super.key});
@@ -39,7 +39,7 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
     await Future.delayed(const Duration(milliseconds: 480));
     setState(() {
       _isFirstTime = false;
-      _indexView = HomeExploreScreen(animationController: animationController,);
+      _indexView = HomeScreen(animationController: animationController,);
       animationController.forward();
     });
   }
@@ -114,7 +114,7 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
           if (tabType == BottomBarType.Explore){
             setState(() {
               _isFirstTime = false;
-              _indexView = HomeExploreScreen(animationController: animationController);
+              _indexView = HomeScreen(animationController: animationController);
             });
           } else if (tabType == BottomBarType.Trips) {
             setState(() {

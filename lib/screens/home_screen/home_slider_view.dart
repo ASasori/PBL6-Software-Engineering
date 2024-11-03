@@ -14,18 +14,17 @@ import '../../providers/hotel_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 
-class HomeExplorerSliderView extends StatefulWidget {
+class HomeSliderView extends StatefulWidget {
   final double opValue;
   final VoidCallback click;
-  const HomeExplorerSliderView({super.key, required this.opValue, required this.click});
+  const HomeSliderView({super.key, required this.opValue, required this.click});
+
   @override
-  State<HomeExplorerSliderView> createState() => _HomeExplorerSliderViewState();
+  State<HomeSliderView> createState() => _HomeSliderViewState();
 }
 
-class _HomeExplorerSliderViewState extends State<HomeExplorerSliderView> {
+class _HomeSliderViewState extends State<HomeSliderView> {
   var pageController = PageController(initialPage: 0);
-  // List<Hotel> topHotelsData = [];
-  // bool isLoading = true;
   late Timer sliderTimer;
   var currentShowIndex = 0 ;
 
@@ -53,10 +52,11 @@ class _HomeExplorerSliderViewState extends State<HomeExplorerSliderView> {
         );
       }
     });
+    super.initState();
   }
-
   @override
   void dispose() {
+    // TODO: implement dispose
     sliderTimer.cancel();
     pageController.dispose();
     super.dispose();
@@ -112,6 +112,7 @@ class _HomeExplorerSliderViewState extends State<HomeExplorerSliderView> {
   }
 }
 
+
 class PagePopup extends StatelessWidget {
   final Hotel imageData;
   final double opValue;
@@ -120,62 +121,61 @@ class PagePopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      children: [
-        Container(
-          height: MediaQuery.of(context).size.width * 1.3,
-          width: MediaQuery.of(context).size.width,
-          child: CachedNetworkImage(
-            imageUrl: imageData.imageUrl,
-            placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Hiển thị khi ảnh đang load
-            errorWidget: (context, url, error) => Icon(Icons.error),     // Hiển thị khi có lỗi tải ảnh
-            fit: BoxFit.cover,
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.width * 1.3,
+            width: MediaQuery.of(context).size.width,
+            child: CachedNetworkImage(
+              imageUrl: imageData.imageUrl,
+              placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Hiển thị khi ảnh đang load
+              errorWidget: (context, url, error) => Icon(Icons.error),     // Hiển thị khi có lỗi tải ảnh
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        Positioned(
-          bottom: 80,
-          left: 24,
-          right: 24,
-          child: Opacity(
-            opacity: opValue,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  child: Text(
-                    imageData.name, // Sử dụng trực tiếp tên của khách sạn
-                    textAlign: TextAlign.left,
-                    style: TextStyles(context).getTitleStyle().copyWith(
-                      color: AppTheme.whiteColor,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+          Positioned(
+              bottom: 80,
+              left: 24,
+              right: 24,
+              child: Opacity(
+                opacity: opValue,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      child: Text(
+                        imageData.name, // Sử dụng trực tiếp tên của khách sạn
+                        textAlign: TextAlign.left,
+                        style: TextStyles(context).getTitleStyle().copyWith(
+                          color: AppTheme.whiteColor,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                Container(
-                  child: Text(
-                    imageData.address, // Sử dụng trực tiếp địa chỉ của khách sạn
-                    textAlign: TextAlign.left,
-                    style: TextStyles(context).getTitleStyle().copyWith(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.whiteColor,
+                    SizedBox(
+                      height: 8,
                     ),
-                  ),
-                ),
-                SizedBox(
-                  height: 8,
+                    Container(
+                      child: Text(
+                        imageData.address, // Sử dụng trực tiếp địa chỉ của khách sạn
+                        textAlign: TextAlign.left,
+                        style: TextStyles(context).getTitleStyle().copyWith(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.whiteColor,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 8,
                 ),
               ],
             ),
-          ),
+          )
         ),
-      ],
+      ]
     );
   }
 }
-
 
