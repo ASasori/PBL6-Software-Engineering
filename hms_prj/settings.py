@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'drf_yasg',
+
     
     #Custom App
     'userauths',
@@ -124,7 +126,7 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pbl6',
+        'NAME': 'pbl66',
         'USER': 'root',
         'PASSWORD': 'Hieu123456@@',
         'HOST': 'localhost',

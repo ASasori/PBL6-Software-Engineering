@@ -36,13 +36,24 @@ class RoomTypeAdmin(admin.ModelAdmin):
 class RoomAdmin(admin.ModelAdmin):
     list_display = ['hotel', 'room_type', 'room_number', 'is_available', 'rid', 'date']
     
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "room_type":
-            if request.GET.get('hotel'):
-                kwargs["queryset"] = RoomType.objects.filter(hotel_id=request.GET['hotel'])  
-            else:
-                kwargs["queryset"] = RoomType.objects.none()  # Không có RoomType nào
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    # def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    #     if db_field.name == "room_type":
+           
+    #         hotel_id = request.GET.get('hotel')
+        
+    #         if not hotel_id and request.resolver_match.kwargs.get('object_id'):
+    #             room = self.get_object(request, request.resolver_match.kwargs.get('object_id'))
+    #             if room and room.hotel:
+    #                 hotel_id = room.hotel.id
+    #             print("test"+hotel_id)
+    #     # Nếu hotel_id đã được xác định, lọc RoomType theo hotel
+    #         if hotel_id:
+    #             kwargs["queryset"] = RoomType.objects.filter(hotel_id=hotel_id)
+    #         else:
+    #             kwargs["queryset"] = RoomType.objects.none()  # Không có RoomType nào nếu không có hotel
+    #             print("None hotel")
+    #     return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 # Đăng ký các model
 admin.site.register(Hotel, HotelAdmin)
