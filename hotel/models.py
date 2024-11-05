@@ -159,8 +159,7 @@ class Room(models.Model):
     room_number = models.CharField(max_length=10)
     is_available = models.BooleanField(default=True)
     rid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz")
-    date = models.DateTimeField(auto_now_add=True)
-    slug = models.SlugField(null=True, blank=True) 
+    date = models.DateTimeField(auto_now_add=True) 
 
     def __str__(self):
         return f"{self.hotel.name} - {self.room_type.type} -  Room {self.room_number}"

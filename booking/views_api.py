@@ -54,7 +54,6 @@ def add_to_selection(request):
         room_selection = {
             'hotel_id': data['hotel_id'],
             'hotel_name': data['hotel_name'],
-            'room_name': data['room_name'],
             'room_price': data['room_price'],
             'number_of_beds': data['number_of_beds'],
             'room_number': data['room_number'],

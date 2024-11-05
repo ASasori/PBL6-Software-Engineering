@@ -11,12 +11,16 @@ from datetime import datetime
 from django.conf import settings
 import stripe
 from django.urls import reverse
+from django.middleware.csrf import get_token
+
+def csrf_token(request):
+    token = get_token(request)
+    return JsonResponse({'csrfToken': token})
 
 class HotelViewSet(viewsets.ModelViewSet):
     queryset = Hotel.objects.filter(status='Live')
     serializer_class = HotelSerializer
     lookup_field = 'slug'
-    permission_classes = [AllowAny]
     
     def get_queryset(self):
         queryset = self.queryset

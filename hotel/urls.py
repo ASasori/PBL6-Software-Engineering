@@ -19,4 +19,5 @@ urlpatterns = [
     
     # API routes
     path('api/', include('hotel.urls_api')), 
+
 ]
