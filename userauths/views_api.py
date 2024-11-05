@@ -45,3 +45,4 @@ def logout_view(request):
     request.user.auth_token.delete()
     logout(request)
     return Response({'message': 'Logged out successfully'}, status=status.HTTP_200_OK)
+

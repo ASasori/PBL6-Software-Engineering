@@ -55,6 +55,7 @@ class Hotel(models.Model):
     name = models.CharField(max_length=100)
     description = CKEditor5Field(null=True, blank=True, config_name='extends')
     image = models.FileField(upload_to="hotel_gallery")
+    map_image = models.ImageField(upload_to="hotel_gallery", null=True, blank=True)
     address = models.CharField(max_length=200)
     mobile = models.CharField(max_length=200)
     email = models.EmailField(max_length=100)
@@ -133,6 +134,7 @@ class RoomType(models.Model):
     type = models.CharField(max_length=10)
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     number_of_beds = models.PositiveIntegerField(default=0)
+    image = models.ImageField(upload_to="hotel_gallery", blank=True, null=True)
     room_capacity = models.PositiveIntegerField(default=0)
     rtid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz")
     slug = models.SlugField(null=True, blank=True)
@@ -169,11 +171,6 @@ class Room(models.Model):
     
     def number_of_beds(self):
         return self.room_type.number_of_beds
-    
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(f"{self.hotel.name}-room-{self.room_number}") 
-        super(Room, self).save(*args, **kwargs)
 
 #Đặt phòng
 class Booking(models.Model):
@@ -272,3 +269,39 @@ class Notification(models.Model):
     class Meta:
         ordering = ['-date']
 
+class Review(models.Model):
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="reviews", null=True, blank=True)
+    room_type = models.ForeignKey(RoomType, on_delete=models.CASCADE, related_name="reviews", null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], default=5)  # Đánh giá từ 1 đến 5
+    review_text = models.TextField(null=True, blank=True)
+    date = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Review by {self.user.username} for {self.hotel.name if self.hotel else self.room_type.type}"
+    
+    class Meta:
+        verbose_name_plural = "Reviews"
+
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE) 
+    is_active = models.BooleanField(default=True) 
+    created_at = models.DateTimeField(auto_now_add=True)  
+    updated_at = models.DateTimeField(auto_now=True) 
+
+    def total_price(self):
+        return sum(item.total_price() for item in self.cart_items.all())
+
+    def __str__(self):
+        return f"Cart of {self.user.username}"
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="cart_items") 
+    room = models.ForeignKey(Room, on_delete=models.CASCADE) 
+    quantity = models.PositiveIntegerField(default=1) 
+
+    def total_price(self):
+        return self.room.price * self.quantity
+
+    def __str__(self):
+        return f"{self.quantity} x {self.room.room_type.type} in cart"
