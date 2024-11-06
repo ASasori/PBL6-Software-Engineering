@@ -126,7 +126,7 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pbl66',
+        'NAME': 'pbl6',
         'USER': 'root',
         'PASSWORD': 'Hieu123456@@',
         'HOST': 'localhost',

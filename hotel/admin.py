@@ -7,7 +7,7 @@ class HotelGalleryInline(admin.TabularInline):
 
 class HotelAdmin(admin.ModelAdmin):
     inlines = [HotelGalleryInline]
-    list_display = ['thumbnail', 'name', 'user', 'status']
+    list_display = ['name', 'user', 'status']
     prepopulated_fields = {"slug": ("name", )}
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
