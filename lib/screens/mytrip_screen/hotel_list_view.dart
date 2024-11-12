@@ -75,7 +75,7 @@ class HotelListView extends StatelessWidget {
                         AspectRatio(
                           aspectRatio: 2,
                           child: CachedNetworkImage(
-                            imageUrl: hotelByLocation.imageUrl,
+                            imageUrl: hotelByLocation.galleryImages[1].imageUrl,
                             placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Hiển thị khi ảnh đang load
                             errorWidget: (context, url, error) => Icon(Icons.error),     // Hiển thị khi có lỗi tải ảnh
                             fit: BoxFit.cover, // Tùy chỉnh cách hiển thị ảnh
@@ -108,24 +108,24 @@ class HotelListView extends StatelessWidget {
                                         mainAxisAlignment:
                                         MainAxisAlignment.start,
                                         children: <Widget>[
-                                          // Icon(
-                                          //   FontAwesomeIcons.mapMarkerAlt,
-                                          //   size: 12,
-                                          //   color:
-                                          //   Theme.of(context).primaryColor,
-                                          // ),
-                                          // Text(
-                                          //   // "${hotelData.dist.toStringAsFixed(1)}",
-                                          //   "${hotelByLocation.address}",
-                                          //   overflow: TextOverflow.ellipsis,
-                                          //   style: TextStyles(context)
-                                          //       .getDescriptionStyle(),
-                                          // ),
-                                          Text(
-                                            hotelByLocation.description,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyles(context).getDescriptionStyle(),
+                                          Icon(
+                                            FontAwesomeIcons.mapMarkerAlt,
+                                            size: 12,
+                                            color:
+                                            Theme.of(context).primaryColor,
                                           ),
+                                          Text(
+                                            // "${hotelData.dist.toStringAsFixed(1)}",
+                                            "${hotelByLocation.address}",
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyles(context)
+                                                .getDescriptionStyle(),
+                                          ),
+                                          // Text(
+                                          //   hotelByLocation.description,
+                                          //   overflow: TextOverflow.ellipsis,
+                                          //   style: TextStyles(context).getDescriptionStyle(),
+                                          // ),
                                           SizedBox(
                                             width: 4,
                                           ),
@@ -256,11 +256,5 @@ class HotelListView extends StatelessWidget {
         ),
       ),
     );
-  }
-  String truncateDescription(String description, {int maxLength = 100}) {
-    if (description.length <= maxLength) {
-      return description; // Không cắt nếu mô tả ngắn hơn hoặc bằng maxLength
-    }
-    return '${description.substring(0, maxLength)}...'; // Cắt và thêm dấu chấm ba chấm
   }
 }

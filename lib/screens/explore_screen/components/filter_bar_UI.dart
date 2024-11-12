@@ -5,6 +5,7 @@ import '../../../routes/route_names.dart';
 import '../../../utils/text_styles.dart';
 import '../../../utils/themes.dart';
 
+
 class FilterBarUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

@@ -5,8 +5,9 @@ class ImageLocation {
   factory ImageLocation.fromJson(Map<String, dynamic> json){
     // String baseUrl = 'http://192.168.1.23:8000';
     // String baseUrl = 'http://192.168.43.21:8000';
-    // String baseUrl = 'http://192.168.1.16:8000';
-    String baseUrl = 'http://192.168.2.25:8000';
+    // String baseUrl = 'http://192.168.1.4:8000';
+    // String baseUrl = 'http://192.168.1.59:8000';
+    const String baseUrl = 'http://10.10.28.64:8000';
     String fullImagePath = '$baseUrl${json['imagePath']}';
     return ImageLocation(imagePath: fullImagePath,);
   }

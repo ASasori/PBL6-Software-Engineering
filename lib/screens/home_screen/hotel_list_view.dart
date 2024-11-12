@@ -39,7 +39,7 @@ class HotelListView extends StatelessWidget {
                           AspectRatio(
                             aspectRatio: 0.9,
                             child: CachedNetworkImage(
-                              imageUrl: hotelListData.imageUrl,
+                              imageUrl: hotelListData.galleryImages[0].imageUrl,
                               placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Hiển thị khi ảnh đang load
                               errorWidget: (context, url, error) => Icon(Icons.error),     // Hiển thị khi có lỗi tải ảnh
                               fit: BoxFit.cover, // Tùy chỉnh cách hiển thị ảnh
@@ -127,24 +127,23 @@ class HotelListView extends StatelessWidget {
                                                         fontSize: 22
                                                     ),
                                                   ),
-                                                  Text(
-                                                    AppLocalizations(context).of("per_night"),
-                                                    textAlign: TextAlign.left,
-                                                    style: TextStyles(context).getDescriptionStyle().copyWith(
-                                                        fontSize: 14
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
+                                                  // Text(
+                                                  //   AppLocalizations(context).of("per_night"),
+                                                  //   textAlign: TextAlign.left,
+                                                  //   style: TextStyles(context).getDescriptionStyle().copyWith(
+                                                  //       fontSize: 14
+                                                  //   ),
+                                                  // )
+                                              ],
                                             ),
-                                          )
-
-                                        ],
-                                      ),
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              )
+                                  ),
+                                ],
+                              ),
+                            )
                           )
                         ],
                       ),

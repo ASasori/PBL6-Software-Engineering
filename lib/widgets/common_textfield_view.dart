@@ -12,7 +12,7 @@ class CommonTextFieldView extends StatelessWidget {
   final TextInputType keyboardType;
   final TextEditingController? controller;
 
-  const CommonTextFieldView({super.key, this.titleText, this.hintText, this.errorText,  this.isObsecureText = false,  this.isAllowTopTitleView = true, required this.padding, this.onChanged, required this.keyboardType, this.controller});
+  const CommonTextFieldView({super.key, this.titleText, this.hintText, this.errorText,  this.isObsecureText = false,  this.isAllowTopTitleView = true, required this.padding, this.onChanged, required this.keyboardType, this.controller,});
   @override
   Widget build(BuildContext context) {
     return Padding(

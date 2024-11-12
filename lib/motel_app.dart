@@ -39,10 +39,7 @@ class _MotelAppState extends State<MotelApp> {
             ],
             supportedLocales: const [
               const Locale("en"),
-              const Locale("fr"),
-              const Locale("ja"),
-              const Locale("en"),
-              const Locale("ar"),
+              const Locale("vn")
 
             ],
             navigatorKey: navigatorKey,
@@ -53,7 +50,7 @@ class _MotelAppState extends State<MotelApp> {
             builder: (BuildContext context, Widget? child){
               _setFirstTimeSomeData(context, _theme);
               return Directionality(
-                  textDirection: context.read<ThemeProvider>().languageType == LanguageType.ar ? TextDirection.rtl : TextDirection.ltr,
+                  textDirection: TextDirection.ltr,
                   child: Builder(
                     builder: (BuildContext context){
                       return MediaQuery(

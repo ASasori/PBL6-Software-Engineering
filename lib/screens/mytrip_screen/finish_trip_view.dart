@@ -40,8 +40,8 @@ class _FinishTripViewState extends State<FinishTripView> {
           //Finished hotel data list and UI View
           return HotelListViewData(
             callback: () {
-              NavigationServices(context)
-                  .gotoRoomBookingScreen(hotelList[index].titleTxt);
+              // NavigationServices(context)
+              //     .gotoRoomBookingScreen(hotelList[index]);
             },
             hotelData: hotelList[index],
             animation: animation,

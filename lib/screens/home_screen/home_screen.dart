@@ -30,7 +30,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late ScrollController controller;
   late AnimationController _animationController;
   var sliderImageHeight = 0.0;
-
   @override
   void initState() {
     super.initState();
@@ -61,7 +60,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         }
       }
     });
-    super.initState();
   }
 
   @override
@@ -79,14 +77,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   Container(
                     color: AppTheme.scaffoldBackgroundColor,
                     child: hotelProvider.isLoading
-                        ? Center(
-                        child: CircularProgressIndicator()) // Loading indicator
+                        ? Center(child: CircularProgressIndicator()) // Loading indicator
                         : ListView.builder(
                         controller: controller,
                         itemCount: 4,
                         // Số lượng mục cần hiển thị
-                        padding: EdgeInsets.only(
-                            top: sliderImageHeight + 32, bottom: 16),
+                        padding: EdgeInsets.only(top: sliderImageHeight + 32, bottom: 16),
                         scrollDirection: Axis.vertical,
                         itemBuilder: (context, index) {
                           var animation = Tween(begin: 0.0, end: 1.0).animate(
@@ -113,8 +109,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             );
                           } else if (index == 2) {
                             return TitleView(
-                              titleText: AppLocalizations(context).of(
-                                  "best_deal"),
+                              titleText: AppLocalizations(context).of("best_deal"),
                               subTxt: AppLocalizations(context).of("view_all"),
                               animationController: widget.animationController,
                               animation: animation,
@@ -122,8 +117,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               isLeftButton: true,
                             );
                           } else {
-                            return getDealListView(hotelProvider
-                                .hotels); // Hiển thị danh sách hotel
+                            return getDealListView(hotelProvider.hotels); // Hiển thị danh sách hotel
                           }
                         }
                     ),
@@ -158,10 +152,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                   ),
                   Positioned(
-                    top: MediaQuery
-                        .of(context)
-                        .padding
-                        .top,
+                    top: MediaQuery.of(context).padding.top,
                     left: 0,
                     right: 0,
                     child: searchUI(),
@@ -202,9 +193,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return AnimatedBuilder(
         animation: animationController,
         builder: (BuildContext context, Widget? child) {
-          var opacity = 1.0 -
-              (_animationController.value > 0.64 ? 1.0 : _animationController
-                  .value);
+          var opacity = 1.0 - (_animationController.value > 0.64 ? 1.0 : _animationController.value);
           return Positioned(
             left: 0,
             right: 0,
@@ -249,6 +238,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   searchUI() {
+    TextEditingController _searchController = TextEditingController();
+
     return Padding(
       padding: EdgeInsets.only(left: 24, right: 24, top: 16),
       child: CommonCard(
@@ -256,12 +247,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         child: InkWell(
           borderRadius: BorderRadius.all(Radius.circular(30)),
           onTap: () {
-            NavigationServices(context).gotoHotelHomeScreen();
+            NavigationServices(context).gotoHotelHomeScreen(_searchController.text);
           },
           child: CommonSearchBar(
             iconData: FontAwesomeIcons.search,
             enabled: true,
             text: AppLocalizations(context).of("where_are_you_going"),
+            textEditingController: _searchController,
+            onSubmitted: (String value) {
+              NavigationServices(context).gotoHotelHomeScreen(value);
+            },
           ),
         ),
       ),
@@ -284,7 +279,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           return HotelListView(
             callback: () {
               // Xử lý khi nhấn vào từng khách sạn
-              // NavigationServices(context).gotoHotelDetails(hotel);
+              NavigationServices(context).gotoHotelDetails(hotel);
             },
             hotelListData: hotel,
             animationController: widget.animationController,
@@ -295,4 +290,3 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 }
-

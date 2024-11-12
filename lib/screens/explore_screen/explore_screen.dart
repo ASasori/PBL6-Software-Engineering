@@ -123,10 +123,7 @@ class _HotelHomeScreenState extends State<ExploreScreen> with TickerProviderStat
                                       scrollDirection: Axis.vertical,
                                       itemBuilder: (context, index) {
                                         var count = hotelProvider
-                                            .hotelsByLocation.length > 10
-                                            ? 10
-                                            : hotelProvider.hotelsByLocation
-                                            .length;
+                                            .hotelsByLocation.length > 10 ? 10 : hotelProvider.hotelsByLocation.length;
                                         var animation = Tween(
                                             begin: 0.0, end: 1.0)
                                             .animate(CurvedAnimation(
@@ -136,16 +133,12 @@ class _HotelHomeScreenState extends State<ExploreScreen> with TickerProviderStat
                                                 curve: Curves.fastOutSlowIn)));
                                         animationController.forward();
                                         return HotelListView(
-                                            hotelByLocation: hotelProvider
-                                                .hotelsByLocation[index],
+                                            hotelByLocation: hotelProvider.hotelsByLocation[index],
                                             animationController: animationController,
                                             animation: animation,
                                             callback: () {
-                                              NavigationServices(context)
-                                                  .gotoRoomBookingScreen(
-                                                  hotelProvider
-                                                      .hotelsByLocation[index]
-                                                      .name);
+                                              NavigationServices(context).gotoHotelDetails(hotelProvider.hotelsByLocation[index]);
+                                              // NavigationServices(context).gotoRoomBookingScreen(hotelProvider.hotelsByLocation[index].name);
                                             }
                                         );
                                       },
@@ -171,7 +164,7 @@ class _HotelHomeScreenState extends State<ExploreScreen> with TickerProviderStat
                                               //hotel search view
                                               _getSearchBarUI(hotelProvider),
                                               // time date and number of rooms view
-                                              TimeDateView(),
+                                              // TimeDateView(),
                                             ],
                                           ),
                                         ),

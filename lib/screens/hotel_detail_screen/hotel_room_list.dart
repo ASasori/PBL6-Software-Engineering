@@ -10,6 +10,7 @@ class HotelRoomList extends StatefulWidget {
 }
 
 class _HotelRoomeListState extends State<HotelRoomList> {
+  // dua link anh cua hotel xuong: roomtype, anh hotelgallery
   List<String> photosList = [
     Localfiles.hotel_room_1,
     Localfiles.hotel_room_2,

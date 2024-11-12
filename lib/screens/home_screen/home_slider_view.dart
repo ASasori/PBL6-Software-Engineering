@@ -52,7 +52,6 @@ class _HomeSliderViewState extends State<HomeSliderView> {
         );
       }
     });
-    super.initState();
   }
   @override
   void dispose() {
@@ -125,12 +124,12 @@ class PagePopup extends StatelessWidget {
           Container(
             height: MediaQuery.of(context).size.width * 1.3,
             width: MediaQuery.of(context).size.width,
-            child: CachedNetworkImage(
-              imageUrl: imageData.imageUrl,
+            child: imageData.galleryImages.isNotEmpty ? CachedNetworkImage(
+              imageUrl: imageData.galleryImages[0].imageUrl,
               placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Hiển thị khi ảnh đang load
               errorWidget: (context, url, error) => Icon(Icons.error),     // Hiển thị khi có lỗi tải ảnh
               fit: BoxFit.cover,
-            ),
+            ): Center(child: Icon(Icons.error)),
           ),
           Positioned(
               bottom: 80,

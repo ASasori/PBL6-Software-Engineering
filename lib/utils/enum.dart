@@ -14,5 +14,7 @@ enum ColorType {
   BilobaFlower,
 }
 
-enum LanguageType { en, fr, ar, ja }
+enum LanguageType { en, vn }
+
+enum BottomBarType { Explore, Trips, Wishlist, Profile}
 

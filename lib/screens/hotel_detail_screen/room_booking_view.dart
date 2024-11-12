@@ -1,22 +1,29 @@
+import 'package:booking_hotel_app/models/booking.dart';
+import 'package:booking_hotel_app/providers/wish_list_provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../language/appLocalizations.dart';
 import '../../models/hotel_list_data.dart';
+import '../../models/room.dart';
 import '../../utils/helper.dart';
+import '../../utils/localfiles.dart';
 import '../../utils/text_styles.dart';
 import '../../widgets/common_button.dart';
 
 class RoomBookView extends StatefulWidget {
-  final HotelListData roomData;
+  final Room roomData;
   final AnimationController animationController;
   final Animation<double> animation;
+  final DateTime startDate,endDate;
 
   const RoomBookView(
       {Key? key,
         required this.roomData,
         required this.animationController,
-        required this.animation})
+        required this.animation, required this.startDate, required this.endDate})
       : super(key: key);
 
   @override
@@ -28,7 +35,9 @@ class _RoomBookViewState extends State<RoomBookView> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> images = widget.roomData.imagePath.split(" ");
+    var wishlist = Provider.of<WishlistProvider>(context);
+
+    // List<String>? images = widget.roomData.imageUrl?.split(" ");
     return AnimatedBuilder(
       animation: widget.animationController,
       builder: (BuildContext context, Widget? child) {
@@ -44,33 +53,41 @@ class _RoomBookViewState extends State<RoomBookView> {
                   children: <Widget>[
                     AspectRatio(
                       aspectRatio: 1.5,
-                      child: PageView(
-                        controller: pageController,
-                        pageSnapping: true,
-                        scrollDirection: Axis.horizontal,
-                        children: <Widget>[
-                          for (var image in images)
-                            Image.asset(
-                              image,
-                              fit: BoxFit.cover,
-                            ),
-                        ],
+                      child: CachedNetworkImage(
+                        imageUrl: widget.roomData.roomType.imageUrl,
+                        placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Hiển thị khi ảnh đang load
+                        errorWidget: (context, url, error) => Icon(Icons.error),     // Hiển thị khi có lỗi tải ảnh
+                        fit: BoxFit.cover,
                       ),
+                      // child: PageView(
+                      //   controller: pageController,
+                      //   pageSnapping: true,
+                      //   scrollDirection: Axis.horizontal,
+                      //   children: <Widget>[
+                      //     for (var image in images!)
+                      //       CachedNetworkImage(
+                      //         imageUrl: image,
+                      //         placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Hiển thị khi ảnh đang load
+                      //         errorWidget: (context, url, error) => Icon(Icons.error),     // Hiển thị khi có lỗi tải ảnh
+                      //         fit: BoxFit.cover,
+                      //       )
+                      //   ],
+                      // ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SmoothPageIndicator(
-                        controller: pageController, // PageController
-                        count: 3,
-                        effect: WormEffect(
-                            activeDotColor: Theme.of(context).primaryColor,
-                            dotColor: Theme.of(context).scaffoldBackgroundColor,
-                            dotHeight: 10.0,
-                            dotWidth: 10.0,
-                            spacing: 5.0), // your preferred effect
-                        onDotClicked: (index) {},
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.all(8.0),
+                    //   child: SmoothPageIndicator(
+                    //     controller: pageController, // PageController
+                    //     count: 3,
+                    //     effect: WormEffect(
+                    //         activeDotColor: Theme.of(context).primaryColor,
+                    //         dotColor: Theme.of(context).scaffoldBackgroundColor,
+                    //         dotHeight: 10.0,
+                    //         dotWidth: 10.0,
+                    //         spacing: 5.0), // your preferred effect
+                    //     onDotClicked: (index) {},
+                    //   ),
+                    // ),
                   ],
                 ),
                 Padding(
@@ -82,7 +99,7 @@ class _RoomBookViewState extends State<RoomBookView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            widget.roomData.titleTxt,
+                            widget.roomData.type,
                             maxLines: 2,
                             textAlign: TextAlign.left,
                             style: TextStyles(context)
@@ -98,11 +115,49 @@ class _RoomBookViewState extends State<RoomBookView> {
                                 padding: const EdgeInsets.only(
                                     left: 16.0, right: 16.0, top: 4, bottom: 4),
                                 child: Text(
-                                  AppLocalizations(context).of("book_now"),
+                                  "Add to Wishlist",
                                   textAlign: TextAlign.center,
                                   style: TextStyles(context).getRegularStyle(),
                                 ),
                               ),
+                              onTap: () {
+                                BookingData value = new BookingData(
+                                  bookingID: "B003",
+                                  hotelName: widget.roomData.type,
+                                  // imagePath: widget.roomData.imageUrl,
+                                  // address:  widget.roomData.location.toString(),
+                                  startDate: widget.startDate,
+                                  endDate: widget.endDate,
+                                  numberOfAdults: 3,
+                                  numberOfChildren: 2,
+                                  pricePernight:widget.roomData.price.toDouble(),
+                                  typeRoom:  widget.roomData.type.toString(),
+                                  totalAmount: widget.endDate.difference(widget.startDate).inDays * widget.roomData.price.toDouble(),
+                                );
+                                print("add");
+                                wishlist.addBookingData(value);
+                                wishlist.addTotalPrice(widget.endDate.difference(widget.startDate).inDays * widget.roomData.price.toDouble());
+                                wishlist.addCounter();
+                                // Show SnackBar when product is added to the cart
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Row(
+                                      children: [
+                                        Icon(Icons.check_circle, color: Colors.green), // Add an icon
+                                        SizedBox(width: 10), // Space between icon and text
+                                        Expanded(child: Text('Product added to cart!')), // Message text
+                                      ],
+                                    ),
+                                    backgroundColor: Colors.black87, // Darker background for better contrast
+                                    duration: Duration(seconds: 3), // Duration of the SnackBar
+                                    behavior: SnackBarBehavior.floating, // Makes it float above the content
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(24),
+                                    ), // Rounded corners for better appearance
+                                    margin: EdgeInsets.all(16), // Adds some space around the SnackBar
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ],
@@ -111,7 +166,7 @@ class _RoomBookViewState extends State<RoomBookView> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            "\$${widget.roomData.perNight}",
+                            "\$${widget.roomData.price}",
                             textAlign: TextAlign.left,
                             style: TextStyles(context)
                                 .getBoldStyle()
@@ -133,8 +188,9 @@ class _RoomBookViewState extends State<RoomBookView> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            Helper.getPeopleandChildren(
-                                widget.roomData.roomData!),
+                            'Room data is fixing',
+                            // Helper.getPeopleandChildren(
+                            //     widget.roomData.roomData!),
                             // "${widget.roomData.dateTxt}",
                             textAlign: TextAlign.left,
                             style: TextStyles(context).getDescriptionStyle(),
@@ -182,4 +238,5 @@ class _RoomBookViewState extends State<RoomBookView> {
       },
     );
   }
+
 }

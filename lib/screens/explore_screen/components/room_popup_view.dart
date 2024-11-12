@@ -158,36 +158,8 @@ class _RoomPopupViewState extends State<RoomPopupView>
                               ),
                             ),
                           ),
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(32.0),
-                              onTap: () {
-                                setState(() {
-                                  if (popupTextType == PopupTextType.no) {
-                                    _roomData!.numberRoom += 1;
-                                  } else if (popupTextType ==
-                                      PopupTextType.ad) {
-                                    _roomData!.people += 1;
-                                  }
-                                });
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Icon(
-                                  Icons.add_circle_outline,
-                                  size: 28,
-                                  color: Theme.of(context).disabledColor,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Text(
-                            "  $count  ",
-                            style: TextStyles(context)
-                                .getRegularStyle()
-                                .copyWith(),
-                          ),
+
+
                           Material(
                             color: Colors.transparent,
                             child: InkWell(
@@ -211,6 +183,36 @@ class _RoomPopupViewState extends State<RoomPopupView>
                                 padding: const EdgeInsets.all(8.0),
                                 child: Icon(
                                   Icons.remove_circle_outline,
+                                  size: 28,
+                                  color: Theme.of(context).disabledColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Text(
+                            "  $count  ",
+                            style: TextStyles(context)
+                                .getRegularStyle()
+                                .copyWith(),
+                          ),
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(32.0),
+                              onTap: () {
+                                setState(() {
+                                  if (popupTextType == PopupTextType.no) {
+                                    _roomData!.numberRoom += 1;
+                                  } else if (popupTextType ==
+                                      PopupTextType.ad) {
+                                    _roomData!.people += 1;
+                                  }
+                                });
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Icon(
+                                  Icons.add_circle_outline,
                                   size: 28,
                                   color: Theme.of(context).disabledColor,
                                 ),

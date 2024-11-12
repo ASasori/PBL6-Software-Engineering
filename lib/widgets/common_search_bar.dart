@@ -8,7 +8,8 @@ class CommonSearchBar extends StatelessWidget {
   final double height;
   final IconData? iconData;
   final TextEditingController? textEditingController;
-  const CommonSearchBar({super.key, this.text,this.enabled = false, this.isShow = true, this.height = 48, this.iconData, this.textEditingController});
+  final ValueChanged<String>? onSubmitted; // Để nhận giá trị khi người dùng nhấn Enter
+  const CommonSearchBar({super.key, this.text,this.enabled = false, this.isShow = true, this.height = 48, this.iconData, this.textEditingController, this.onSubmitted});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class CommonSearchBar extends StatelessWidget {
           child: Center(
             child: Row(
               children: [
-                isShow == true ? Icon(iconData, size: 19, color: Theme.of(context).primaryColor,) : SizedBox(),
+                isShow == true ? Icon(iconData, size: 19, color: Theme.of(context).primaryColor) : SizedBox(),
                 isShow == true ? SizedBox(width: 8,) : SizedBox(),
                 Expanded(
                   child: TextField(
@@ -41,9 +42,9 @@ class CommonSearchBar extends StatelessWidget {
                         fontSize: 18
                       )
                     ),
+                    onSubmitted: onSubmitted,
                   ),
                 )
-
               ],
             ),
           ),
