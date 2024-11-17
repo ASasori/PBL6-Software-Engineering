@@ -51,8 +51,8 @@ class HotelServices {
   // final Dio _dio = Dio();
 
   final ApiService _apiService = ApiService();
-  static const String baseUrl = 'http://10.10.28.64:8000';
-  // static const String baseUrl = 'http://192.168.1.4:8000';
+  // static const String baseUrl = 'http://10.10.28.64:8000';
+  static const String baseUrl = 'http://192.168.1.11:8000';
   // static const String baseUrl = 'http://192.168.1.59:8000';
   // static const String baseUrl = 'http://192.168.43.21:8000';
   // static const String baseUrl = 'http://192.168.2.25:8000';
@@ -130,7 +130,8 @@ class RoomService {
   final ApiService _apiService = ApiService();
   // static const String baseUrl = 'http://192.168.1.4:8000';
   // static const String baseUrl = 'http://192.168.1.59:8000';
-  static const String baseUrl = 'http://10.10.28.64:8000';
+  // static const String baseUrl = 'http://10.10.28.64:8000';
+  static const String baseUrl = 'http://192.168.1.11:8000';
 
   Future <List<Room>> fetchRoomsByHotelSlug (String hotelSlug) async{
     final response = await _apiService.dio.get('$baseUrl/api/hotels/$hotelSlug/room-types/');
@@ -162,11 +163,11 @@ class RoomService {
 class AuthService {
   final Dio _dio = Dio();
   // static const String baseUrl = 'http://10.10.3.44:8000';
-  // static const String baseUrl = 'http://192.168.1.4:8000';
+  static const String baseUrl = 'http://192.168.1.11:8000';
   // static const String baseUrl = 'http://192.168.1.59:8000';
   // static const String baseUrl = 'http://192.168.43.21:8000';
   // static const String baseUrl = 'http://192.168.2.25:8000';
-  static const String baseUrl = 'http://10.10.28.64:8000';
+  // static const String baseUrl = 'http://10.10.28.64:8000';
 
 
   // Future<String?> fetchCsrfToken() async {

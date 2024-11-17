@@ -130,9 +130,9 @@ class Hotel {
   });
 
   factory Hotel.fromJson(Map<String, dynamic> json) {
-    // const String baseUrl = 'http://192.168.1.4:8000';
+    const String baseUrl = 'http://192.168.1.11:8000';
     // const String baseUrl = 'http://192.168.1.59:8000';
-    const String baseUrl = 'http://10.10.28.64:8000';
+    // const String baseUrl = 'http://10.10.28.64:8000';
 
 
     // URL đầy đủ cho ảnh bản đồ (nếu có)
