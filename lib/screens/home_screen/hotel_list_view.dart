@@ -7,13 +7,14 @@ import 'package:booking_hotel_app/widgets/common_card.dart';
 import 'package:booking_hotel_app/widgets/list_cell_animation_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
+import 'package:booking_hotel_app/models/hotel.dart';
 import '../../utils/helper.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HotelListView extends StatelessWidget {
   final bool isShowData;
   final VoidCallback callback;
-  final HotelListData hotelListData;
+  final Hotel hotelListData;
   final AnimationController animationController;
   final Animation<double> animation;
   const HotelListView({super.key, this.isShowData = false, required this.callback, required this.hotelListData, required this.animationController, required this.animation});
@@ -37,7 +38,12 @@ class HotelListView extends StatelessWidget {
                         children: [
                           AspectRatio(
                             aspectRatio: 0.9,
-                            child: Image.asset(hotelListData.imagePath, fit: BoxFit.cover,),
+                            child: CachedNetworkImage(
+                              imageUrl: hotelListData.galleryImages[0].imageUrl,
+                              placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Hiển thị khi ảnh đang load
+                              errorWidget: (context, url, error) => Icon(Icons.error),     // Hiển thị khi có lỗi tải ảnh
+                              fit: BoxFit.cover, // Tùy chỉnh cách hiển thị ảnh
+                            ),
                           ),
                           Expanded(
                               child: Container(
@@ -49,7 +55,7 @@ class HotelListView extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      hotelListData.titleTxt,
+                                      hotelListData.name,
                                       maxLines: 2,
                                       textAlign: TextAlign.left,
                                       style: TextStyles(context).getBoldStyle().copyWith(
@@ -57,7 +63,7 @@ class HotelListView extends StatelessWidget {
                                       ),
                                     ),
                                     Text(
-                                      hotelListData.subTxt,
+                                      hotelListData.address,
                                       maxLines: 2,
                                       textAlign: TextAlign.left,
                                       style: TextStyles(context).getDescriptionStyle().copyWith(
@@ -78,24 +84,27 @@ class HotelListView extends StatelessWidget {
                                                     children: [
                                                       Icon(FontAwesomeIcons.mapMarkedAlt, size: 12, color: Theme.of(context).primaryColor),
                                                       SizedBox(width: 5,),
-                                                      Text(
-                                                        "${hotelListData.dist.toStringAsFixed(1)}",
-                                                        overflow: TextOverflow.ellipsis,
-                                                        textAlign: TextAlign.left,
-                                                        style: TextStyles(context).getDescriptionStyle().copyWith(
-                                                            fontSize: 16
-                                                        ),
-                                                      ),
                                                       Expanded(
-                                                        child: Text(
-                                                          AppLocalizations(context).of("km_to_city"),
-                                                          overflow: TextOverflow.ellipsis,
-                                                          textAlign: TextAlign.left,
-                                                          style: TextStyles(context).getDescriptionStyle().copyWith(
-                                                              fontSize: 16
+                                                          child: Text(
+                                                            // "${hotelListData.dist.toStringAsFixed(1)}",
+                                                            hotelListData.description,
+                                                            overflow: TextOverflow.ellipsis,
+                                                            textAlign: TextAlign.left,
+                                                            style: TextStyles(context).getDescriptionStyle().copyWith(
+                                                                fontSize: 16
+                                                            ),
                                                           ),
-                                                        ),
                                                       ),
+                                                      // Expanded(
+                                                      //   child: Text(
+                                                      //     AppLocalizations(context).of("km_to_city"),
+                                                      //     overflow: TextOverflow.ellipsis,
+                                                      //     textAlign: TextAlign.left,
+                                                      //     style: TextStyles(context).getDescriptionStyle().copyWith(
+                                                      //         fontSize: 16
+                                                      //     ),
+                                                      //   ),
+                                                      // ),
                                                       SizedBox(width: 10.0,)
                                                     ],
                                                   ),
@@ -111,30 +120,30 @@ class HotelListView extends StatelessWidget {
                                                 crossAxisAlignment: CrossAxisAlignment.end,
                                                 children: [
                                                   Text(
-                                                    "${hotelListData.perNight}",
+                                                    // "${hotelListData.perNight}",
+                                                    hotelListData.status,
                                                     textAlign: TextAlign.left,
                                                     style: TextStyles(context).getBoldStyle().copyWith(
                                                         fontSize: 22
                                                     ),
                                                   ),
-                                                  Text(
-                                                    AppLocalizations(context).of("per_night"),
-                                                    textAlign: TextAlign.left,
-                                                    style: TextStyles(context).getDescriptionStyle().copyWith(
-                                                        fontSize: 14
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
+                                                  // Text(
+                                                  //   AppLocalizations(context).of("per_night"),
+                                                  //   textAlign: TextAlign.left,
+                                                  //   style: TextStyles(context).getDescriptionStyle().copyWith(
+                                                  //       fontSize: 14
+                                                  //   ),
+                                                  // )
+                                              ],
                                             ),
-                                          )
-
-                                        ],
-                                      ),
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              )
+                                  ),
+                                ],
+                              ),
+                            )
                           )
                         ],
                       ),

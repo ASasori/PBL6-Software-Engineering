@@ -105,6 +105,11 @@
     "vn": "Họ"
   },
   {
+    "text_id": "phone_number",
+    "en": "Phone number",
+    "vn": "Số điện thoại"
+  },
+  {
     "text_id": "terms_agreed",
     "en": "By Signing up, you agreed with our terms of\n Services and privacy policy",
     "vn": "Bằng cách đăng ký, bạn đã đồng ý với các điều khoản dịch vụ và chính sách bảo mật của chúng tôi"
@@ -253,6 +258,11 @@
     "text_id": "reviews",
     "en": "Reviews",
     "vn": "Đánh giá"
+  },
+  {
+    "text_id": "views",
+    "en": "Views",
+    "vn": "Lượt xem"
   },
   {
     "text_id": "book_now",
@@ -813,6 +823,11 @@
     "text_id": "enter_last_name",
     "en": "enter last name",
     "vn": "nhập họ"
+  },
+  {
+    "text_id": "enter_phone_number",
+    "en": "Enter phone number",
+    "vn": "nhập số điện thoại"
   },
   {
     "text_id": "first_name_cannot_empty",

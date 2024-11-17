@@ -37,16 +37,17 @@ class _UpcomingListViewState extends State<UpcomingListView> {
                   curve: Curves.fastOutSlowIn)));
           widget.animationController.forward();
           //Upcoming UI view and hotel list
-          return HotelListView(
-            callback: () {
-              NavigationServices(context)
-                  .gotoRoomBookingScreen(hotelList[index]);
-            },
-            hotelData: hotelList[index],
-            animation: animation,
-            animationController: widget.animationController,
-            isShowDate: true,
-          );
+          // return HotelListView(
+          //   callback: () {
+          //     NavigationServices(context)
+          //         .gotoRoomBookingScreen(hotelList[index].titleTxt);
+          //   },
+          //   hotelData: hotelList[index],
+          //   animation: animation,
+          //   animationController: widget.animationController,
+          //   isShowDate: true,
+          // );
+          return Text('Fixing services, update later');
         },
       ),
     );

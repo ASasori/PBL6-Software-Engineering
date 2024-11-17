@@ -37,15 +37,16 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                   curve: Curves.fastOutSlowIn)));
           widget.animationController.forward();
           //Favorites hotel data list and UI View
-          return HotelListView(
-            callback: () {
-              NavigationServices(context)
-                  .gotoRoomBookingScreen(hotelList[index]);
-            },
-            hotelListData: hotelList[index],
-            animation: animation,
-            animationController: widget.animationController,
-          );
+          // return HotelListView(
+          //   callback: () {
+          //     NavigationServices(context)
+          //         .gotoRoomBookingScreen(hotelList[index].titleTxt);
+          //   },
+          //   hotelListData: hotelList[index],
+          //   animation: animation,
+          //   animationController: widget.animationController,
+          // );
+          return Text('Fixing services, update later');
         },
       ),
     );

@@ -323,4 +323,5 @@ class HotelListData {
       dateTxt: '12 - 14 Dec',
     ),
   ];
+
 }

@@ -1,3 +1,4 @@
+import 'package:booking_hotel_app/models/room.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

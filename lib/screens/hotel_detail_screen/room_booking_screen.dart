@@ -8,13 +8,15 @@ import 'package:booking_hotel_app/widgets/common_button.dart';
 import 'package:flutter/material.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:provider/provider.dart';
+import '../../models/hotel.dart';
+import '../../providers/room_provider.dart';
 import '../../utils/enum.dart';
 import '../../utils/text_styles.dart';
 
 class RoomBookingScreen extends StatefulWidget {
-  final HotelListData hotelListData;
+  final Hotel hotelBooking;
 
-  const RoomBookingScreen({super.key, required this.hotelListData});
+  const RoomBookingScreen({super.key, required this.hotelBooking});
 
   @override
   State<RoomBookingScreen> createState() => _RoomBookingScreenState();
@@ -22,6 +24,7 @@ class RoomBookingScreen extends StatefulWidget {
 
 class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProviderStateMixin{
   List<HotelListData> romeList = HotelListData.romeList;
+
   late AnimationController animationController;
 
   DateTime? startDate = DateTime.now(); // Store selected start date
@@ -31,6 +34,10 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
   void initState() {
     animationController = AnimationController(
         duration: Duration(milliseconds: 2000), vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      Provider.of<RoomProvider>(context, listen: false).getRoomList(widget.hotelBooking.slug);
+    });
+
     super.initState();
   }
 
@@ -61,35 +68,39 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
           Divider(
             height: 1,
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 8, bottom: 16),
-            child: Text(
-              "All room  available",
-              style: TextStyles(context).getRegularStyle(),
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.only(top: 8, bottom: 16),
+          //   child: Text(
+          //     "All room  available",
+          //     style: TextStyles(context).getRegularStyle(),
+          //   ),
+          // ),
           Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.all(0.0),
-              itemCount: romeList.length,
-              itemBuilder: (context, index) {
-                var count = romeList.length > 10 ? 10 : romeList.length;
-                var animation = Tween(begin: 0.0, end: 1.0).animate(
-                    CurvedAnimation(
-                        parent: animationController,
-                        curve: Interval((1 / count) * index, 1.0,
-                            curve: Curves.fastOutSlowIn)));
-                animationController.forward();
-                //room book view and room data
-                return RoomBookView(
-                  roomData: romeList[index],
-                  animation: animation,
-                  animationController: animationController,
-                  startDate: startDate!,
-                  endDate:  endDate!,
+            child: Consumer <RoomProvider> (
+                builder: (context,roomProvider, child) {
+                return ListView.builder(
+                  padding: EdgeInsets.all(0.0),
+                  itemCount: roomProvider.rooms.length,
+                  itemBuilder: (context, index) {
+                    var count = roomProvider.rooms.length > 10 ? 10 : roomProvider.rooms.length;
+                    var animation = Tween(begin: 0.0, end: 1.0).animate(
+                        CurvedAnimation(
+                            parent: animationController,
+                            curve: Interval((1 / count) * index, 1.0,
+                                curve: Curves.fastOutSlowIn)));
+                    animationController.forward();
+                    //room book view and room data
+                    return RoomBookView(
+                      roomData: roomProvider.rooms[index],
+                      animation: animation,
+                      animationController: animationController,
+                      startDate: startDate!,
+                      endDate:  endDate!,
+                    );
+                  },
                 );
-              },
-            ),
+              }
+            )
           ),
         ],
       ),
@@ -125,7 +136,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
           Expanded(
             child: Center(
               child: Text(
-                widget.hotelListData.titleTxt,
+                widget.hotelBooking.name,
                 style: TextStyles(context).getTitleStyle(),
                 overflow: TextOverflow.ellipsis,
               ),

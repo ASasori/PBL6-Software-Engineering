@@ -13,6 +13,7 @@ import 'package:booking_hotel_app/screens/profile_screen/setting_screen.dart';
 import 'package:flutter/material.dart';
 
 
+import '../models/hotel.dart';
 import '../screens/explore_screen/filter_screen/filter_screen.dart';
 import '../screens/explore_screen/explore_screen.dart';
 import '../screens/hotel_detail_screen/hotel_detail_screen.dart';
@@ -62,11 +63,12 @@ class NavigationServices {
     return _pushMasterialPageRoute(FiltersScreen());
   }
 
-  Future<dynamic> gotoRoomBookingScreen(HotelListData hotelListData) async {
-    return _pushMasterialPageRoute(RoomBookingScreen(hotelListData: hotelListData));
+  // truyền vào đây là hotel hoteldata
+  Future<dynamic> gotoRoomBookingScreen(Hotel hotelBooking) async {
+    return _pushMasterialPageRoute(RoomBookingScreen(hotelBooking: hotelBooking));
   }
 
-  Future<dynamic> gotoHotelDetails(HotelListData hotelData) {
+  Future<dynamic> gotoHotelDetails(Hotel hotelData) {
     return _pushMasterialPageRoute(HotelDetailScreen(
       hotelData: hotelData
     ));
@@ -93,6 +95,7 @@ class NavigationServices {
   Future<Future> gotoSettingsScreen()  async{
     return await _pushMasterialPageRoute(SettingsScreen());
   }
+
 
   
 }
