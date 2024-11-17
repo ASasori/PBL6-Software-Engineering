@@ -16,5 +16,5 @@ enum ColorType {
 
 enum LanguageType { en, vn }
 
-enum BottomBarType { Explore, Trips, Wishlist, Profile}
+enum BottomBarType {Home, Explore, Trips, Wishlist, Profile}
 

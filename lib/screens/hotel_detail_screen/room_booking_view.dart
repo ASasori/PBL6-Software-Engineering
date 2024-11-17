@@ -1,5 +1,6 @@
 import 'package:booking_hotel_app/models/booking.dart';
 import 'package:booking_hotel_app/providers/wish_list_provider.dart';
+import 'package:booking_hotel_app/screens/hotel_detail_screen/select_room_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -105,49 +106,14 @@ class _RoomBookViewState extends State<RoomBookView> {
                                 padding: const EdgeInsets.only(
                                     left: 16.0, right: 16.0, top: 4, bottom: 4),
                                 child: Text(
-                                  "Add to Wishlist",
+                                  "Select room",
                                   textAlign: TextAlign.center,
                                   style: TextStyles(context).getRegularStyle(),
                                 ),
                               ),
                               onTap: () {
-                                BookingData value = new BookingData(
-                                  bookingID: "B003",
-                                  hotelName: widget.roomData.titleTxt,
-                                  imagePath: widget.roomData.imagePath,
-                                  address:  widget.roomData.location.toString(),
-                                  startDate: widget.startDate,
-                                  endDate: widget.endDate,
-                                  numberOfAdults: 3,
-                                  numberOfChildren: 2,
-                                  pricePernight:widget.roomData.perNight.toDouble(),
-                                  typeRoom:  widget.roomData.titleTxt.toString(),
-                                  totalAmount: widget.endDate.difference(widget.startDate).inDays * widget.roomData.perNight.toDouble(),
-                                );
-                                print("add");
-                                wishlist.addBookingData(value);
-                                wishlist.addTotalPrice(widget.endDate.difference(widget.startDate).inDays * widget.roomData.perNight.toDouble());
-                                wishlist.addCounter();
-                                // Show SnackBar when product is added to the cart
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Row(
-                                      children: [
-                                        Icon(Icons.check_circle, color: Colors.green), // Add an icon
-                                        SizedBox(width: 10), // Space between icon and text
-                                        Expanded(child: Text('Product added to cart!')), // Message text
-                                      ],
-                                    ),
-                                    backgroundColor: Colors.black87, // Darker background for better contrast
-                                    duration: Duration(seconds: 3), // Duration of the SnackBar
-                                    behavior: SnackBarBehavior.floating, // Makes it float above the content
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(24),
-                                    ), // Rounded corners for better appearance
-                                    margin: EdgeInsets.all(16), // Adds some space around the SnackBar
-                                  ),
-                                );
-
+                                print("select room");
+                                _showSelectRoomDialog(context,  widget.roomData.titleTxt);
                               },
                             ),
                           ),
@@ -172,6 +138,8 @@ class _RoomBookViewState extends State<RoomBookView> {
                                   .copyWith(fontSize: 14),
                             ),
                           ),
+
+
                         ],
                       ),
                       Row(
@@ -213,6 +181,7 @@ class _RoomBookViewState extends State<RoomBookView> {
                               ),
                             ),
                           ),
+
                         ],
                       ),
                     ],
@@ -229,4 +198,19 @@ class _RoomBookViewState extends State<RoomBookView> {
     );
   }
 
+  void _showSelectRoomDialog(BuildContext context, String TypeRoom) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SelectRoomDialog(
+            RoomData: widget.roomData,
+            TypeRoom: TypeRoom,
+            startDate: widget.startDate,
+            endDate: widget.endDate
+        ) ;// Use the new StatefulWidget
+      },
+    );
+  }
+
 }
+

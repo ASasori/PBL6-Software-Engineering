@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
               child: Image.asset(
-                  Localfiles.introduction,
+                  Localfiles.introduction01,
                   fit: BoxFit.cover,
               ),
             ),
@@ -72,7 +72,7 @@ class _SplashScreenState extends State<SplashScreen> {
                         )
                       ]
                     ),
-                    child: Image.asset(Localfiles.appIcon),
+                    child: Image.asset(Localfiles.appIcon1),
                   ),
                 ),
                 const SizedBox(

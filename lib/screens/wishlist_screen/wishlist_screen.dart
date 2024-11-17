@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:booking_hotel_app/providers/wish_list_provider.dart';
 import 'package:booking_hotel_app/widgets/common_button.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 import '../../language/appLocalizations.dart';
 import '../../utils/helper.dart';
@@ -19,7 +24,8 @@ class WishlistScreen extends StatefulWidget {
 
 class _WishlistScreenState extends State<WishlistScreen> with TickerProviderStateMixin{
   late AnimationController _animationController;
-
+  String Publishablekey = "pk_test_51QJx9mIwmmeHUVs5keRVjcinLDUMSmvtPqv7BqdlyG97Nht9ogjFirsWrEwwC2rHxoCctETMw6sKQ1JzHTLM4o5M00Ih1oc8y1";
+  String Secretkey = "sk_test_51QJx9mIwmmeHUVs5y8Yp8ZNBqiQkqX9qnJ7lim35Hx9ioy6Hfj7SZ9KNz9N33Dy5HtmCdnKlcoS2mJovMznmS5Pp007B2Q5NTw";
   @override
   void initState() {
     context.read<WishlistProvider>().getData();
@@ -324,6 +330,91 @@ class _WishlistScreenState extends State<WishlistScreen> with TickerProviderStat
   }
 
   Widget getCheckoutBar(BuildContext context, WishlistProvider wishlist) {
+    Stripe.publishableKey = Publishablekey;
+    Stripe.instance.applySettings();
+
+    Map<String, dynamic>? intentPaymentData;
+
+    showPaymentSheet() async {
+      try {
+        await Stripe.instance.presentPaymentSheet().then((val) {
+          intentPaymentData = null;
+        }).onError((errorMsg, sTrace) {
+          if (kDebugMode){
+            print(errorMsg.toString() + sTrace.toString());
+          }
+        });
+      }
+      on StripeException catch (error) {
+        if (kDebugMode){
+          print(error);
+        }
+        showDialog(
+            context: context,
+            builder: (c) => const AlertDialog(
+              content: Text("Canceled"),
+            )
+        );
+      }
+      catch(errorMessage) {
+        if (kDebugMode){
+          print(errorMessage);
+        }
+        print(errorMessage);
+      }
+    }
+
+    makeIntentForPayment(amountToBeCharge, currency) async{
+      try {
+        Map<String, dynamic>? paymentInfo = {
+          "amount": (int.parse(amountToBeCharge)*100).toString(),
+          "currency": currency,
+          "payment_method_types[]": "card",
+        };
+        var responseFromStripeAPI = await http.post(
+          Uri.parse("https://api.stripe.com/v1/payment_intents"),
+          body: paymentInfo,
+          headers: {
+            "Authorization" : "Bearer $Secretkey",
+            "Content-Type" : "application/x-www-form-urlencoded"
+          }
+        );
+
+        print("response from API = " + responseFromStripeAPI.body);
+
+        return jsonDecode(responseFromStripeAPI.body);
+      } catch(errorMessage, s) {
+        if (kDebugMode){
+          print(s);
+        }
+        print(errorMessage);
+      }
+    }
+
+    paymentSheetInitialization(amountToBeCharge, currency) async{
+      try {
+        intentPaymentData = await makeIntentForPayment(amountToBeCharge, currency);
+
+        await Stripe.instance.initPaymentSheet(
+            paymentSheetParameters: SetupPaymentSheetParameters(
+              allowsDelayedPaymentMethods: true,
+              // Main params
+              merchantDisplayName: 'Flutter Stripe Store Demo',
+              paymentIntentClientSecret: intentPaymentData!['client_secret'],
+              style: ThemeMode.dark,
+            )
+        ).then( (val) {
+          print(val);
+        });
+        showPaymentSheet();
+      } catch(errorMessage, s) {
+        if (kDebugMode){
+          print(s);
+        }
+        print(errorMessage);
+      }
+    }
+
     return Container(
       height: 100,
 
@@ -375,6 +466,11 @@ class _WishlistScreenState extends State<WishlistScreen> with TickerProviderStat
                   duration: Duration(seconds: 2),
                 ),
               );
+              paymentSheetInitialization(
+                 wishlist.getTotalPrice().round().toString(),
+                  "USD"
+              );
+
             },
             child: Text(
               "Checkout",

@@ -13,9 +13,11 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../../utils/enum.dart';
 import '../../utils/text_styles.dart';
 import '../../utils/themes.dart';
 import '../../widgets/common_search_bar.dart';
+import '../bottom_tab/bottom_tab_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final AnimationController animationController;
@@ -190,7 +192,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
                     child: CommonButton(
                       onTap: (){
                         if (opacity!=0){
-                          NavigationServices(context).gotoHotelHomeScreen();
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => BottomTabScreen(initialBottomBarType: BottomBarType.Explore)));
                         }
                       },
                       buttonTextWidget: Padding(
@@ -226,7 +231,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
         child: InkWell(
           borderRadius: BorderRadius.all(Radius.circular(30)),
           onTap: () {
-            NavigationServices(context).gotoHotelHomeScreen();
+
+            NavigationServices(context).gotoExploreScreen();
           },
           child: CommonSearchBar(
             iconData: FontAwesomeIcons.search,

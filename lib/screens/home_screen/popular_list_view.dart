@@ -71,7 +71,7 @@ class _PopularListViewState extends State<PopularListView> with TickerProviderSt
                           animation: animation,
                           callback: () {
                             widget.callBack(index);
-                            NavigationServices(context).gotoHotelHomeScreen(popularList[index].titleTxt);
+                            NavigationServices(context).gotoExploreScreen(popularList[index].titleTxt);
                           } 
                         );
                       }

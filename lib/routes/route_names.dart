@@ -54,7 +54,7 @@ class NavigationServices {
     return _pushMasterialPageRoute(BottomTabScreen(initialBottomBarType: bottomBarType==null ? BottomBarType.Explore : bottomBarType,));
   }
 
-  Future<dynamic> gotoHotelHomeScreen([String place = ""]) async {
+  Future<dynamic> gotoExploreScreen([String place = ""]) async {
     return _pushMasterialPageRoute(ExploreScreen(placeName: place,));
   }
 
@@ -75,6 +75,7 @@ class NavigationServices {
   Future<dynamic> gotoReviewsListScreen() {
     return _pushMasterialPageRoute(ReviewListScreen());
   }
+
 
   Future<Future> gotoEditProfileScreen()  async{
     return await _pushMasterialPageRoute(EditProfileScreen());

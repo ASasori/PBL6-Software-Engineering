@@ -46,7 +46,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     return index == 0
                         ? getProfileUI()
                         : InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        _showEditDialog(context, index);
+                      },
                       child: Column(
                         children: <Widget>[
                           Padding(
@@ -83,7 +85,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ),
                                     ),
                                   ),
-                                )
+                                ),
+                                Icon(Icons.edit, color: Colors.grey),
                               ],
                             ),
                           ),
@@ -107,6 +110,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
+  void _showEditDialog(BuildContext context, int index) {
+    String? newValue; // To store the edited value
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Edit ${AppLocalizations(context).of(
+              userInfoList[index].titleTxt)}'),
+          content: TextField(
+            onChanged: (value) {
+              newValue = value;
+            },
+            controller: TextEditingController(text: userInfoList[index].subTxt), // Pre-fill with current value
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Save'),
+              onPressed: () {
+                if (newValue != null) {
+                  setState(() {
+                    userInfoList[index].subTxt = newValue!; // Update the value in the list
+                  });
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
   Widget getProfileUI() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),

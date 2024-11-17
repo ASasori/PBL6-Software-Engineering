@@ -49,9 +49,15 @@ dependencies:
   smooth_star_rating_null_safety: ^1.0.4+2
   syncfusion_flutter_datepicker: 27.1.53
   badges: ^3.1.2
+  flutter_stripe: ^11.2.0
+
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  flutter_launcher_icons: ^0.14.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -59,6 +65,15 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/images/ic_launcher.png"
+  adaptive_icon_foreground: "assets/images/ic_launcher.png" # Set the foreground image (same or different from image_path)
+  adaptive_icon_background: "#5F8F3C"
+  min_sdk_android: 21
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

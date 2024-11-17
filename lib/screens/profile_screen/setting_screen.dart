@@ -21,8 +21,8 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen>  {
   List<SettingsListData> settingsList = SettingsListData.settingsList;
-  var country = 'Australia';
-  var currency = '\$ AUD';
+  var country = 'USA';
+  var currency = '\$ Dollar';
   int selectedradioTile = 0;
   List<String> data = ["English", "Vietnamese"];
 
@@ -410,7 +410,7 @@ class _SettingsScreenState extends State<SettingsScreen>  {
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Text(
-                      AppLocalizations(context).of("Selected color"),
+                      AppLocalizations(context).of("Selected_color"),
                       style: TextStyles(context)
                           .getBoldStyle()
                           .copyWith(fontSize: 22),
@@ -490,7 +490,7 @@ class _SettingsScreenState extends State<SettingsScreen>  {
                   Padding(
                     padding: const EdgeInsets.only(top: 16.0, bottom: 8),
                     child: Text(
-                      AppLocalizations(context).of("Selected language"),
+                      AppLocalizations(context).of("Selected_language"),
                       style: TextStyles(context)
                           .getBoldStyle()
                           .copyWith(fontSize: 22),

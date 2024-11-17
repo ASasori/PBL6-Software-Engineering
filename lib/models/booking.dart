@@ -8,6 +8,7 @@ class BookingData {
   DateTime? startDate, endDate;
   int numberOfAdults, numberOfChildren;
   String typeRoom;
+  String room;
   double pricePernight;
   double totalAmount;
 
@@ -19,6 +20,7 @@ class BookingData {
     this.numberOfAdults = 0,
     this.numberOfChildren = 0,
     this.typeRoom = "",
+    this.room = "",
     this.pricePernight = 0,
     this.totalAmount = 0,
     this.startDate,

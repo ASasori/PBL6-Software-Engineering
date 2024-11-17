@@ -665,6 +665,11 @@
     "vn": "Ngôn ngữ đã chọn"
   },
   {
+    "text_id": "home",
+    "en": "Home",
+    "vn": "Trang chủ"
+  },
+  {
     "text_id": "Country",
     "en": "Country",
     "vn": "Quốc gia"

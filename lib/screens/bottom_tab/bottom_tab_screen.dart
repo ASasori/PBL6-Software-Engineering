@@ -1,5 +1,6 @@
 import 'package:booking_hotel_app/language/appLocalizations.dart';
 import 'package:booking_hotel_app/screens/bottom_tab/components/tap_bottom_UI.dart';
+import 'package:booking_hotel_app/screens/explore_screen/explore_screen.dart';
 import 'package:booking_hotel_app/screens/profile_screen/profile_screen.dart';
 import 'package:booking_hotel_app/screens/wishlist_screen/wishlist_screen.dart';
 import 'package:booking_hotel_app/utils/themes.dart';
@@ -38,6 +39,8 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (bottomBarType == BottomBarType.Wishlist) {
         _LoadingWishlistScreen();
+      } if (bottomBarType == BottomBarType.Explore) {
+        _LoadingExploreScreen();
       } else {
         _startLoadingScreen();
       }
@@ -51,6 +54,15 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
     setState(() {
       _isFirstTime = false;
       _indexView = HomeScreen(animationController: animationController,);
+      animationController.forward();
+    });
+  }
+
+  Future _LoadingExploreScreen() async  {
+    await Future.delayed(const Duration(milliseconds: 480));
+    setState(() {
+      _isFirstTime = false;
+      _indexView = ExploreScreen();
       animationController.forward();
     });
   }
@@ -96,6 +108,14 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
           Row(
             children: [
               TapBottomUi(
+                icon: Icons.home,
+                isSelected: bottomBarType == BottomBarType.Home,
+                text: AppLocalizations(context).of("home"),
+                onTap: () {
+                  tabClick(BottomBarType.Home);
+                },
+              ),
+              TapBottomUi(
                   icon: Icons.search,
                   isSelected: bottomBarType == BottomBarType.Explore,
                   text: AppLocalizations(context).of("explore"),
@@ -140,12 +160,17 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
     if (tabType != bottomBarType){
       bottomBarType = tabType;
       animationController.reverse().then((value) {
-          if (tabType == BottomBarType.Explore){
+          if (tabType == BottomBarType.Home){
             setState(() {
               _isFirstTime = false;
               _indexView = HomeScreen(animationController: animationController);
             });
-          } else if (tabType == BottomBarType.Trips) {
+          }else if (tabType == BottomBarType.Explore) {
+            setState(() {
+              _indexView = ExploreScreen();
+            });
+          }
+          else if (tabType == BottomBarType.Trips) {
             setState(() {
               _indexView = MyTripsScreen(animationController: animationController);
             });
