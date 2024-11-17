@@ -48,7 +48,6 @@ NOTIFICATION_TYPE = (
 
 
 # Create your models here.
-
 class Hotel(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null = True)
     
@@ -68,7 +67,7 @@ class Hotel(models.Model):
     date = models.DateField(auto_now_add=True)
 
     def __str__(self) -> str:
-        return self.name
+        return self.name or ""
     
     def save(self,*args,**kwargs):
         if self.slug == "" or self.slug == None:
@@ -94,7 +93,7 @@ class HotelGallery(models.Model):
     hgid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz")
 
     def __str__(self):
-        return str(self.hotel)
+        return str(self.hotel) if self.hotel else "No Hotel"
 
     class Meta:
         verbose_name_plural = "Hotel Gallery"
@@ -108,7 +107,7 @@ class HotelFeatures(models.Model):
     hfid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz")
 
     def __str__(self):
-        return str(self.hotel)
+        return str(self.hotel) if self.hotel else "No Hotel"
     
     class Meta:
         verbose_name_plural = "Hotel Features"
@@ -122,7 +121,7 @@ class HotelFAQs(models.Model):
     hfid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz")
 
     def __str__(self):
-        return str(self.hotel)
+        return str(self.hotel) if self.hotel else "No Hotel"
     
     class Meta:
         verbose_name_plural = "Hotel FAQs"
@@ -140,7 +139,7 @@ class RoomType(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.type} - {self.hotel.name} - {self.price}"
+        return f"{self.type} - {self.hotel.name if self.hotel else 'No Hotel'} - {self.price}"
 
     def rooms_count(self):
         return Room.objects.filter(room_type=self).count()
@@ -163,7 +162,7 @@ class Room(models.Model):
     date = models.DateTimeField(auto_now_add=True) 
 
     def __str__(self):
-        return f"{self.hotel.name} - {self.room_type.type} -  Room {self.room_number}"
+        return f"{self.hotel.name if self.hotel else 'No Hotel'} - {self.room_type.type if self.room_type else 'No Type'} - Room {self.room_number}"
 
     def price(self):
         return self.room_type.price
@@ -210,7 +209,7 @@ class Booking(models.Model):
 
 
     def __str__(self):
-        return f"{self.booking_id}"
+        return f"{self.booking_id or 'No Booking ID'}"
     
     def rooms(self):
         return self.room.all().count()
@@ -224,7 +223,7 @@ class ActivityLog(models.Model):
     date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     def __str__(self):
-        return str(self.booking)
+        return str(self.booking) if self.booking else "No Booking"
 
 #Thông tin nhân viên đặt phòng
 class StaffOnDuty(models.Model):
@@ -233,7 +232,7 @@ class StaffOnDuty(models.Model):
     date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     def __str__(self):
-        return str(self.staff_id)
+        return str(self.staff_id) if self.staff_id else "No Staff ID"
     
 class Coupon(models.Model):
     code = models.CharField(max_length=1000)
@@ -247,9 +246,8 @@ class Coupon(models.Model):
     valid_to = models.DateField()
     cid = ShortUUIDField(length=10, max_length=25, alphabet="abcdefghijklmnopqrstuvxyz")
 
-    
     def __str__(self):
-        return self.code
+        return self.code or "No Code"
     
     class Meta:
         ordering =['-id']
@@ -263,7 +261,7 @@ class Notification(models.Model):
     date= models.DateField(auto_now_add=True)
     
     def __str__(self):
-        return str(self.user.username)
+        return str(self.user.username if self.user else "No User")
     
     class Meta:
         ordering = ['-date']
@@ -277,7 +275,9 @@ class Review(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return f"Review by {self.user.username} for {self.hotel.name if self.hotel else self.room_type.type}"
+        user_str = self.user.username if self.user else "No User"
+        hotel_str = self.hotel.name if self.hotel else (self.room_type.type if self.room_type else "No Hotel/Room")
+        return f"Review by {user_str} for {hotel_str}"
     
     class Meta:
         verbose_name_plural = "Reviews"
@@ -291,16 +291,27 @@ class Cart(models.Model):
     def total_price(self):
         return sum(item.total_price() for item in self.cart_items.all())
 
+    def total_cart_item(self):
+        return sum(item.total_cart_item() for item in self.cart_items.all())
+
     def __str__(self):
-        return f"Cart of {self.user.username}"
+        return f"Cart of {self.user.username if self.user else 'No User'}"
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="cart_items") 
     room = models.ForeignKey(Room, on_delete=models.CASCADE) 
-    quantity = models.PositiveIntegerField(default=1) 
+
+    check_in_date = models.DateField(null=True, blank=True)
+    check_out_date = models.DateField(null=True, blank=True)
+    num_adults = models.PositiveIntegerField(default=1)
+    num_children = models.PositiveIntegerField(default=0)
 
     def total_price(self):
         return self.room.price * self.quantity
 
+    def total_cart_item(self):
+        return self.quantity
+
     def __str__(self):
-        return f"{self.quantity} x {self.room.room_type.type} in cart"
+        room_type_str = self.room.room_type.type if self.room and self.room.room_type else "No Room Type"
+        return f"{self.quantity} x {room_type_str} in cart"

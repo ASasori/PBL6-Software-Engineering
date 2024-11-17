@@ -2,10 +2,11 @@ from django.http import JsonResponse
 from rest_framework import status, viewsets, permissions, generics
 from rest_framework.decorators import api_view, action
 from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from hotel.models import Hotel, Booking, ActivityLog, StaffOnDuty, Room, RoomType, Coupon, Notification
-from .serializers import HotelSerializer, RoomTypeSerializer, RoomSerializer
+from hotel.models import Hotel, Booking, ActivityLog, StaffOnDuty, Room, RoomType, Coupon, Notification, Cart, CartItem
+from .serializers import HotelSerializer, RoomTypeSerializer, RoomSerializer, CartSerializer, CartItemSerializer
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAdminUser
 from datetime import datetime
@@ -13,10 +14,9 @@ from django.conf import settings
 import stripe
 from django.urls import reverse
 from django.middleware.csrf import get_token
+from django.db import models
+from django.db.models import Q
 
-def csrf_token(request):
-    token = get_token(request)
-    return JsonResponse({'csrfToken': token})
 
 class HotelViewSet(viewsets.ModelViewSet):
     queryset = Hotel.objects.filter(status='Live')
@@ -27,10 +27,9 @@ class HotelViewSet(viewsets.ModelViewSet):
         queryset = self.queryset
         name = self.request.query_params.get('name', None)
         if name:
-            queryset = queryset.filter(name__icontains=name)  # Tìm kiếm không phân biệt chữ hoa chữ thường
+            queryset = queryset.filter(name__icontains=name)  
         return queryset
 
-#Endpoint : Ẩn/hiện khách sạn ....
     @action(methods=['POST'], detail=True, url_path='hide-hotel', url_name='hide_hotel')
     def hide_hotel(self, request,  slug=None):
         try:
@@ -118,6 +117,111 @@ def room_type_detail(request, slug, rt_slug):
         'room_type': room_type_serializer.data,
         'rooms': rooms_serializer.data
     })
+
+
+class CartViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=False, methods=['GET'], url_path='get-or-create')
+    def get_or_create_cart(self, request):
+        cart, created = Cart.objects.get_or_create(user=request.user, is_active=True)
+        serializer = CartSerializer(cart)
+        return Response(serializer.data, status=200)
+    
+    @action(detail=False, methods=['GET'], url_path='view_cart')
+    def view_cart(self, request):
+        try:
+            cart = Cart.objects.get(user=request.user, is_active=True)
+            cart_items = cart.cart_items.select_related('room__hotel', 'room__room_type').all()  # Tối ưu truy vấn
+            hotels_dict = {}
+            for item in cart_items:
+                hotel_name = item.room.hotel.name  
+                hotel_slug = item.room.hotel.slug,
+                room_info = {
+                    'room_id': item.room.id,
+                    'room_number': item.room.room_number,
+                    'price': item.room.room_type.price,
+                    'bed': item.room.room_type.number_of_beds,
+                    'room_type': item.room.room_type.type, 
+                    'item_cart_id': item.id
+                }
+                if hotel_name not in hotels_dict:
+                    hotels_dict[hotel_name] = {
+                        'hotel_id': item.room.hotel.id,
+                        'hotel_name': hotel_name,
+                        'hotel_slug': hotel_slug,
+                        'rooms': [room_info]  
+                    }
+                else:
+                    hotels_dict[hotel_name]['rooms'].append(room_info) 
+
+            items_list = list(hotels_dict.values())
+            total_items = cart_items.count()
+
+            return Response({
+                'total_items_in_cart': total_items,
+                'hotels': items_list
+            }, status=status.HTTP_200_OK)
+
+        except Cart.DoesNotExist:
+            return Response({'error': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=False, methods=['POST'], url_path='add_cart_item')
+    def add_cart_item(self, request):
+        cart, created = Cart.objects.get_or_create(user=request.user, is_active=True)
+        room_id = request.data.get('room')
+        checkin_date = request.data.get('check_in_date')
+        checkout_date = request.data.get('check_out_date')
+
+        
+        # if CartItem.objects.filter(cart=cart, room_id=room_id).exists():
+        #     return Response({'error': 'Room already in cart'}, status=status.HTTP_400_BAD_REQUEST)
+
+        overlapping_items = CartItem.objects.filter(cart=cart, room_id=room_id).filter(
+        (models.Q(check_in_date__lte=checkout_date) & models.Q(check_out_date__gte=checkin_date))
+    )
+
+        if overlapping_items.exists():
+            return Response({'error': 'Room is already booked for these dates'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        serializer  = CartItemSerializer(data=request.data)
+
+        if serializer.is_valid():
+            cart_item = serializer.save(cart=cart)
+            total_items = cart.cart_items.count()
+
+            return Response({
+                'cart_item_id': cart_item.id,
+                'total_items_in_cart': total_items,
+                'cart_item': serializer.data
+            }, status = status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['GET'], url_path='cart-item-count')
+    def get_cart_item_count(self, request):
+        cart = Cart.objects.filter(user=request.user, is_active=True).first()
+        total_items = cart.cart_items.count() if cart else 0
+        return Response({'total_items_in_cart': total_items}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['POST'], url_path='delete_cart_item')
+    def delete_cart_item(self, request):
+        item_cart_id = request.data.get('item_cart_id')
+        try:
+            cart = Cart.objects.get(user=request.user, is_active=True)      
+            cart_item = CartItem.objects.get(cart=cart, id=item_cart_id)
+            cart_item.delete()
+            total_items = cart.cart_items.count()
+            return Response({
+                'message': 'Cart item deleted successfully', 
+                'total_items': total_items
+            }, status=status.HTTP_204_NO_CONTENT)
+        
+        except CartItem.DoesNotExist:
+            return Response({'error': 'Cart item not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Cart.DoesNotExist:
+            return Response({'error': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
+
 @api_view(['POST'])
 def create_booking(request):
     try:
