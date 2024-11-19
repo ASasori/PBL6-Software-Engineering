@@ -125,11 +125,11 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pbl6',
-        'USER': 'root',
-        'PASSWORD': 'Javascript29',
-        'HOST': 'localhost',
-        'PORT': '3306',  # 3306 là cổng mặc định cho MySQL
+        'NAME': env("DATABASE_NAME"),
+        'USER': env("DATABASE_USERNAME"),
+        'PASSWORD': env("DATABASE_PASSWORD"),
+        'HOST': env("DATABASE_HOST"),
+        'PORT': env("DATABASE_PORT"),  # 3306 là cổng mặc định cho MySQL
     }
 }
 
