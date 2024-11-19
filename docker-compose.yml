@@ -28,6 +28,7 @@ services:
     tty: true
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./my.cnf:/etc/mysql/conf.d/custom.cnf
     networks:
       - mysql_network
     restart: always
