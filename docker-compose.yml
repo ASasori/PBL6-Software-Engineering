@@ -22,7 +22,7 @@ services:
     restart: always
 
   mysql:
-    image: mysql:latest
+    image: mysql:5.7
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: my-secret-pw
