@@ -22396,3 +22396,13 @@ select.selectpicker {
 .w-100 {
   width: 100%;
 }
+
+#header_part {
+  position: fixed; /* Để giữ header ở vị trí cố định */
+  top: 0; /* Căn lề trên cùng */
+  left: 0; /* Căn lề bên trái */
+  width: 100%; /* Để header chiếm toàn bộ chiều rộng */
+  z-index: 1000; /* Đảm bảo header nằm trên các yếu tố khác */
+  background-color: white; /* Màu nền cho header */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Để tạo hiệu ứng bóng */
+}

@@ -4,9 +4,10 @@ import axios from "axios";
 import Header from "../../baseComponent/Header";
 import Swal from 'sweetalert2';
 import { useNavigate } from "react-router-dom";
-
+import { useAuth } from '../../auth/AuthContext';
 
 const DetailHotel = () => {
+    const { token } = useAuth();
     const { slug } = useParams(); 
     const [detailHotel, setDetailHotel] = useState(null);
     const [roomTypes, setRoomTypes] = useState([]);
@@ -17,6 +18,8 @@ const DetailHotel = () => {
     const [checkin, setCheckin] = useState(''); 
     const [checkout, setCheckout] = useState('');
     const [initRoomType, setInitRoomType] = useState('');
+    const [selectedRoom, setSelectedRoom] = useState(null);
+
     const navigate = useNavigate();
 
     const changeQuantity = (type, quantity) => {
@@ -28,7 +31,25 @@ const DetailHotel = () => {
         }
     }
     const handleCheckinDate = (e) => {
-        setCheckin(e.target.value); 
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
+        const dateCheckin = new Date(e.target.value);
+        console.log('current date: ', currentDate);
+        console.log('check-in date: ', dateCheckin);
+
+        if(dateCheckin < currentDate) {
+            setCheckin('');
+            Swal.fire({
+                icon: 'error',
+                title: 'Ngày Check in không hợp lệ!',
+                text: ' Bạn vui lòng nhập lại ngày Check in',
+                showConfirmButton: false,
+                timer: 3000
+            })
+        }
+        else {
+            setCheckin(e.target.value); 
+        }
     }
     const handleCheckoutDate = (e) => {
         const dateCheckout = e.target.value;
@@ -62,7 +83,11 @@ const DetailHotel = () => {
                 children: childrens
             };
     
-            axios.post(urlAPICheckRoomAvailability, data)
+            axios.post(urlAPICheckRoomAvailability, data, {
+                headers: {
+                    'Authorization': `Bearer ${token}` 
+                }
+            })
             .then(response => {
                 responseData = response.data
                 console.log('responseData : ', responseData)
@@ -82,14 +107,25 @@ const DetailHotel = () => {
             })
         }
     }
-  
+    
     useEffect(() => {
-      const fetchHotelDetails = async () => {
+        const fetchHotelDetails = async () => {
+        console.log('token :',token);
         try {
-          const responseHotelDetail = await axios.get(`http://127.0.0.1:8000/api/hotels/${slug}`);
-          setDetailHotel(responseHotelDetail.data);
+            const responseHotelDetail = await axios.get(`http://127.0.0.1:8000/api/hotels/${slug}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            setDetailHotel(responseHotelDetail.data);
 
-          const responseRoomType = await axios.get(`http://127.0.0.1:8000/api/hotels/${slug}/room-types`);
+            const responseRoomType = await axios.get(`http://127.0.0.1:8000/api/hotels/${slug}/room-types`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
           console.log(responseRoomType.data.roomtype);
           setRoomTypes(responseRoomType.data.roomtype);
         } catch (err) {
@@ -101,31 +137,34 @@ const DetailHotel = () => {
   
       fetchHotelDetails();
     }, [slug]);
+
+    const handleRoomClick = (roomType) => {
+        setSelectedRoom(roomType);
+    };
+
+    const handleCloseModal = () => {
+        setSelectedRoom(null);
+    };
+
+    const handleOutsideClick = (e) => {
+        if (e.target.className === 'modal') {
+            handleCloseModal();
+        }
+    };
   
     if (loading) return <p>Loading hotel details...</p>;
     if (error) return <p>Error: {error}</p>;
 
     return (
         <>
-            {/* <!-- Preloader Start --> */}
-            {/* <div class="preloader">
-                <div class="utf-preloader">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </div> */}
-            {/* <!-- Preloader End --> */}
-
-            {/* <!-- Wrapper --> */}
             <div id="main_wrapper">
                 <Header />
                 <div class="clearfix"></div>
                 <div id="utf_listing_gallery_part" class="utf_listing_section">
                     <div class="utf_listing_slider utf_gallery_container margin-bottom-0">
-                        <img src={detailHotel.image} alt="" class="item utf_gallery"/>
+                        <img src={detailHotel.map_image} alt="" class="item utf_gallery"/>
                         {/* <a href={`http://localhost:3000/detailhotel/intercontinental-danang`} class="utf_listing_item"/> */}
-                        <a href={detailHotel.image} data-background-image={detailHotel.image} class="item utf_gallery slick-slide slick-current slick-active slick-center"></a>
+                        <a href={detailHotel.map_image} data-background-image={detailHotel.map_image} class="item utf_gallery slick-slide slick-current slick-active slick-center"></a>
                         <a href="images/music_listing_02.jpg" data-background-image="images/music_listing_02.jpg" class="item utf_gallery"></a>
                         <a href="images/music_listing_03.jpg" data-background-image="images/music_listing_03.jpg" class="item utf_gallery"></a>
                         <a href="images/music_listing_04.jpg" data-background-image="images/music_listing_04.jpg" class="item utf_gallery"></a>
@@ -185,7 +224,11 @@ const DetailHotel = () => {
                                         <h4>Select Pass</h4>
                                         <ul>
                                             {roomTypes.map(roomType => (
-                                                <li>
+                                                <li 
+                                                key={roomType.id} 
+                                                onClick={() => handleRoomClick(roomType)} 
+                                                style={{ cursor: 'pointer' }}
+                                                >
                                                     <h5>{roomType.type}<sub class="ppl-offer label-light-success">20% Off</sub></h5>
                                                     <p><strong>Max :</strong> {roomType.room_capacity} Persons</p>
                                                     <span>{roomType.price} VNĐ</span>
@@ -194,8 +237,39 @@ const DetailHotel = () => {
                                         </ul>
                                     </div>
                                 </div>
-                                <a href="#" class="show-more-button" data-more-title="Show More" data-less-title="Show Less"><i class="fa fa-angle-double-down"></i></a>
                             </div>
+                            {/* Modal for room details */}
+                            {selectedRoom && (
+                                <div className="modal" onClick={handleOutsideClick} style={modalStyles}>
+                                    <div className="modal-content" style={modalContentStyles}>
+                                        <span className="close" onClick={handleCloseModal} style={closeButtonStyles}>&times;</span>
+                                        <h2>{selectedRoom.type}</h2>
+                                        <img 
+                                            src={`http://127.0.0.1:8000${selectedRoom.image}`} 
+                                            alt={selectedRoom.type} 
+                                            style={{ 
+                                                maxWidth: '100%',  
+                                                maxHeight: '400px', 
+                                                objectFit: 'contain' 
+                                            }}  
+                                        />
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: '20px' }}>
+                                            <div style={{ flex: '0 0 48%', marginBottom: '10px' }}>
+                                                <p><strong>Price:</strong> {selectedRoom.price} VNĐ</p>
+                                            </div>
+                                            <div style={{ flex: '0 0 48%', marginBottom: '10px' }}>
+                                                <p><strong>Description:</strong> {selectedRoom.description}</p>
+                                            </div>
+                                            <div style={{ flex: '0 0 48%', marginBottom: '10px' }}>
+                                                <p><strong>Number of Beds:</strong> {selectedRoom.number_of_beds}</p>
+                                            </div>
+                                            <div style={{ flex: '0 0 48%', marginBottom: '10px' }}>
+                                                <p><strong>Room Capacity:</strong> {selectedRoom.room_capacity} Persons</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             <div id="utf_listing_amenities" class="utf_listing_section">
                                 <h3 class="utf_listing_headline_part margin-top-50 margin-bottom-40">Amenities</h3>
@@ -638,7 +712,7 @@ const DetailHotel = () => {
                     </div>
                 </div>
 
-                <section class="fullwidth_block padding-top-20 padding-bottom-50">
+                {/* <section class="fullwidth_block padding-top-20 padding-bottom-50">
                     <div class="container">
                         <div class="row slick_carousel_slider">
                             <div class="col-md-12">
@@ -778,7 +852,7 @@ const DetailHotel = () => {
                             </div>
                         </div>
                     </div>
-                </section>
+                </section> */}
 
                 <section class="utf_cta_area_item utf_cta_area2_block">
                     <div class="container">
@@ -883,4 +957,55 @@ const DetailHotel = () => {
         </>
     )
 }
+
+const modalStyles = {
+    display: 'flex',
+    position: 'fixed',
+    zIndex: 1000, // Đảm bảo modal ở trên cùng
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100%',
+    overflow: 'auto',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+};
+
+const modalContentStyles = {
+    backgroundColor: '#fff',
+    padding: '20px',
+    borderRadius: '5px',
+    textAlign: 'center',
+    width: '80%',  // Thay đổi độ rộng modal
+    maxWidth: '600px', // Thiết lập độ rộng tối đa
+    height: 'auto', // Tự động điều chỉnh chiều cao
+};
+
+const closeButtonStyles = {
+    cursor: 'pointer',
+    float: 'right',
+    fontSize: '28px',
+    fontWeight: 'bold',
+};
+
+const imageStyles = {
+    maxWidth: '100%',
+    height: 'auto',
+};
+
+// CSS cho làm mờ
+const styles = `
+    .blurred {
+        filter: blur(5px);
+        pointer-events: none; /* Ngăn chặn tương tác với các phần tử mờ */
+    }
+`;
+
+// Thêm CSS vào trang (có thể thực hiện trong file CSS riêng hoặc trong component)
+const styleSheet = document.createElement("style");
+styleSheet.type = "text/css";
+styleSheet.innerText = styles;
+document.head.appendChild(styleSheet);
+
 export default DetailHotel

@@ -1,10 +1,12 @@
-
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useAuth } from '../auth/AuthContext';
+import { useRoomCount } from '../home/RoomCountContext/RoomCountContext'
+import { Link } from 'react-router-dom';
 
 const Header = () => {
     const { logout } = useAuth();
+    const { roomCount } = useRoomCount();
     const navigate = useNavigate();
     const handleLogout = () => {
         logout(); 
@@ -22,7 +24,7 @@ const Header = () => {
                 <div id="header">
                     <div class="container">
                         <div class="utf_left_side">
-                            <div id="logo"> <a href="index_1.html"><img src="images/logo.png" alt=""/></a> </div>
+                            <div id="logo"> <Link to='/'><img src="images/logo.png" alt=""/></Link> </div>
                             <div class="mmenu-trigger">
                                 <button class="hamburger utfbutton_collapse" type="button">
                                     <span class="utf_inner_button_box">
@@ -133,7 +135,11 @@ const Header = () => {
                             <div class="clearfix"></div>
                         </div>
                         <div class="utf_right_side">
-                            <div class="header_widget"> <a href="#dialog_signin_part" class="button border sign-in popup-with-zoom-anim"><i class="fa fa-th"></i> Dashboard</a> <a href="" class="button border with-icon" onClick={handleLogout}><i class="fa fa-sign-out"></i> Logout</a></div>
+                            <div class="header_widget"> 
+                                <Link to={`/selected_room`} class="button border sign-in popup-with-zoom-anim"><i class="fa fa-bed"></i>{roomCount}</Link>
+                                {/* <a href="#dialog_signin_part" class="button border sign-in popup-with-zoom-anim"><i class="fa fa-bed"></i>{roomCount}</a>  */}
+                                <a href="" class="button border with-icon" onClick={handleLogout}><i class="fa fa-sign-out"></i> Logout</a>
+                            </div>
                         </div>
                     </div>
                 </div>

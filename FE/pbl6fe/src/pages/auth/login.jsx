@@ -17,28 +17,12 @@ const Login = () => {
         }
     }, [token, navigate]);
 
-
-    const fetchCsrfToken = async () => {
-        try {
-            const response = await axios.get('http://127.0.0.1:8000/');
-            const cookies = response.headers['set-cookie'];
-            const csrfTokenMatch = cookies ? cookies.match(/csrftoken=([^;]+)/) : null;
-
-            return csrfTokenMatch ? csrfTokenMatch[1] : null;
-        } catch (error) {
-            console.error('Error fetching CSRF token:', error);
-            return null;
-        }
-    };
-
     const handleRegisterClick = () => {
         navigate('/register'); 
     };
 
     const handleLogin = async (e) => {
         e.preventDefault();
-
-        const csrfToken = await fetchCsrfToken();
 
         try {
             setMessage('Attempting to log in...');
@@ -47,19 +31,13 @@ const Login = () => {
                 {
                     email,
                     password,
-                },
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken || '', 
-                    },
                 }
             );
 
             if (response.status === 200) {
                 setMessage('Login successful');
                 console.log('Login successful:', response.data);
-                login(response.data.token); 
+                login(response.data.access); 
                 navigate('/');
                 Swal.fire({
                     icon: 'success',
@@ -697,6 +675,5 @@ const Login = () => {
     ) 
 }
 export default Login
-
 
 

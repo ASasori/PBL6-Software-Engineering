@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { useAuth } from './AuthContext';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -11,20 +12,7 @@ const Register = () => {
   const [phone, setPhone] = useState('');
   const [username, setUsername] = useState('');
   const [message, setMessage] = useState('');
-
-  const fetchCsrfToken = async () => {
-    try {
-      const response = await axios.get('http://127.0.0.1:8000/');
-      const cookies = response.headers['set-cookie'];
-      const csrfTokenMatch = cookies ? cookies.match(/csrftoken=([^;]+)/) : null;
-
-      return csrfTokenMatch ? csrfTokenMatch[1] : null;
-    } catch (error) {
-      console.error('Error fetching CSRF token:', error);
-      return null;
-    }
-  };
-
+  const { login, token } = useAuth();
   const navigate = useNavigate();
 
   const handleLoginClick = () => {
@@ -33,14 +21,17 @@ const Register = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-
     if (password !== confirmPassword) {
       setMessage('Passwords do not match');
+      Swal.fire({
+        icon: 'error',
+        title: 'Đăng ký thất bại!',
+        text: 'Mật khẩu không trùng khớp.',
+        showConfirmButton: false,
+        timer: 1500
+    });
       return;
     }
-
-    const csrfToken = await fetchCsrfToken();
-
     try {
       const response = await axios.post(
         'http://127.0.0.1:8000/user/api/userauths/register/',
@@ -50,18 +41,13 @@ const Register = () => {
           full_name,
           phone,
           username,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken || '',
-          },
         }
       );
 
       if (response.status === 201) {
         setMessage('Register successful! Please log in to use our service!');
         console.log('Register successful:', response.data);
+        login(response.data.access); 
         Swal.fire({
             icon: 'success',
             title: 'Đăng ký thành công!',
@@ -69,6 +55,7 @@ const Register = () => {
             showConfirmButton: false,
             timer: 1500
         });
+        navigate('/');
       }
     } catch (error) {
       setMessage('Register failed');
@@ -703,4 +690,3 @@ const Register = () => {
         )
 }
 export default Register
-

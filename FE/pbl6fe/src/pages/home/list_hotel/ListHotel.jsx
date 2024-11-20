@@ -2,6 +2,8 @@ import React, {useState, useEffect} from "react"
 import { useLocation } from 'react-router-dom';
 import axios from "axios"
 import Header from "../../baseComponent/Header";
+import { useAuth } from '../../auth/AuthContext';
+import { Link } from 'react-router-dom';
 
 const ListHotel = ()=> {
     const query = new URLSearchParams(useLocation().search);
@@ -10,10 +12,13 @@ const ListHotel = ()=> {
     const [searchTerm, setSearchTerm] = useState(initialHotelName);
     const [hotels, setHotels] = useState([]);
     const [error, setError] = useState([]);
+    const { token } = useAuth();
+
     console.log(initialHotelName);
+    console.log(token);
+
 
     const fetchHotels = async(hotelNames) => {
-        const token = localStorage.getItem('token');
         const baseURL = 'http://127.0.0.1:8000/api/hotels/';
         let url = baseURL 
         if(hotelNames) {
@@ -22,7 +27,7 @@ const ListHotel = ()=> {
         try {
             const response = await axios.get(url,{
                 headers: {
-                    'Authorization': `Bearer + ${token}`
+                    'Authorization': `Bearer ${token}`
                 }
             });
             setHotels(response.data);
@@ -31,13 +36,13 @@ const ListHotel = ()=> {
         }
     }
 
-        useEffect(() => {       
-                fetchHotels(hotelNames);
-        },[hotelNames]);
+    useEffect(() => {       
+        fetchHotels(hotelNames);
+    },[hotelNames]);
         
-        const handleUpdateNameHotel = () => {
-            setHotelNames(searchTerm);
-        }
+    const handleUpdateNameHotel = () => {
+        setHotelNames(searchTerm);
+    }
 
     return (
         <>
@@ -130,9 +135,9 @@ const ListHotel = ()=> {
                                         <li key={hotel.id}>
                                             <div class="col-lg-12 col-md-12">
                                                 <div class="utf_listing_item-container list-layout">
-                                                    <a href={`http://localhost:3000/detailhotel/${hotel.slug}`} class="utf_listing_item">
+                                                    <Link to={`/detailhotel/${hotel.slug}`} className="utf_listing_item">
                                                         <div class="utf_listing_item-image">
-                                                            <img src={hotel.image} alt=""/>
+                                                            <img src={hotel.map_image} alt=""/>
                                                             <span class="like-icon"></span>
                                                             <span class="tag"><i class="im im-icon-Hotel"></i> Hotels</span>
                                                             <div class="utf_listing_prige_block utf_half_list">
@@ -152,7 +157,7 @@ const ListHotel = ()=> {
                                                                 <p>{hotel.description}</p>
                                                             </div>
                                                         </div>
-                                                    </a>
+                                                    </Link>
                                                 </div>
                                             </div>
                                         </li>

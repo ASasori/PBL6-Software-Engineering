@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Header from '../baseComponent/Header';
+import { useRoomCount } from './RoomCountContext/RoomCountContext';
+
 
 const Index = ()=>{
     const { logout } = useAuth();
@@ -13,6 +15,8 @@ const Index = ()=>{
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [hotelName, setHotelName] = useState('');
+    const { setRoomCount } = useRoomCount();
+    const { token } = useAuth();
   
     const handleSearch = () => {
         if(hotelName != '')
@@ -23,7 +27,6 @@ const Index = ()=>{
 
     useEffect(() => {
         const fetchHotels = async () => {
-            const token = localStorage.getItem('token');
             try {
                 const response = await axios.get('http://127.0.0.1:8000/api/hotels/',
                 {
@@ -38,7 +41,26 @@ const Index = ()=>{
                 setLoading(false);
             }
         };
-    
+
+        const fetchCartItemCount = async () => {
+            const urlAPIGetCartCount = 'http://127.0.0.1:8000/api/get_cart_item_count'; 
+            try {
+                const response = await axios.get(urlAPIGetCartCount, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    }
+                });
+                const totalItems = response.data.total_items_in_cart; 
+                console.log('Total items in cart:', totalItems); 
+                setRoomCount(totalItems);
+            } catch (error) {
+                console.error('Error fetching cart count', error);
+            }
+        };
+        if (token) {
+            console.log('access token:', token);
+            fetchCartItemCount();
+        }
         fetchHotels();
       }, []);
     
@@ -199,7 +221,7 @@ const Index = ()=>{
                                             <li key={hotel.id}>
                                                 <div class="utf_carousel_item">
                                                     <a href="listings_single_page_1.html" class="utf_listing_item-container compact">
-                                                        <div class="utf_listing_item"> <img src="images/utf_listing_item-01.jpg" alt=""/> <span class="tag"><i class="im im-icon-Chef-Hat"></i> Restaurant</span> <span class="featured_tag">Featured</span>
+                                                        <div class="utf_listing_item"> <img src={hotel.map_image} alt=""/> <span class="tag"><i class="im im-icon-Chef-Hat"></i> Restaurant</span> <span class="featured_tag">Featured</span>
                                                             <span class="utf_open_now">Open Now</span>
                                                             <div class="utf_listing_item_content">
                                                                 <div class="utf_listing_prige_block">

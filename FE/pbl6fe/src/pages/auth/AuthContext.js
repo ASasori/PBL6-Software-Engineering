@@ -1,32 +1,25 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, {createContext, useState, useContext} from 'react';
 
-// Tạo context
-const AuthContext = createContext();
+const AuthContext = createContext('AuthContext');
 
-// Tạo provider
-export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(() => {
-    return localStorage.getItem('token') || null;
-  });
+export const AuthProvider = ({children}) => {
+  const [token, setToken] = useState(null);
 
-  const login = (newToken) => {
-    setToken(newToken);
-    localStorage.setItem('token', newToken);
+  const login = (token) => {
+    setToken(token);
   };
 
   const logout = () => {
     setToken(null);
-    localStorage.removeItem('token');
   };
 
   return (
-    <AuthContext.Provider value={{ token, login, logout }}>
+    <AuthContext.Provider value={{token, login, logout}}>
       {children}
     </AuthContext.Provider>
-  );
+  )
 };
 
-// Tạo hook để sử dụng context
 export const useAuth = () => {
   return useContext(AuthContext);
 };
