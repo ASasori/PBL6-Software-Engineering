@@ -4,12 +4,14 @@ import 'package:provider/provider.dart';
 
 import '../../models/booking.dart';
 import '../../models/hotel_list_data.dart';
+import '../../providers/room_provider.dart';
 import '../../providers/wish_list_provider.dart';
 
 class SelectRoomDialog extends StatefulWidget {
   final RoomType roomTypeData ;
+  final String hotelSlug;
   final DateTime startDate,endDate;
-  const SelectRoomDialog({Key? key, required this.roomTypeData, required this.startDate, required this.endDate}) : super(key: key);
+  const SelectRoomDialog({Key? key, required this.roomTypeData, required this.hotelSlug, required this.startDate, required this.endDate}) : super(key: key);
 
   @override
   _SelectRoomDialogState createState() => _SelectRoomDialogState();
@@ -17,13 +19,18 @@ class SelectRoomDialog extends StatefulWidget {
 class _SelectRoomDialogState extends State<SelectRoomDialog> {
   String? selectedRoom;
   List<String> rooms = ['room1', 'room2', 'room3']; // Replace with your actual room data
-
+  List<String> roomName = [];
+  @override
+  void initState (){
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      Provider.of<RoomProvider>(context, listen: false).getRoomsInRoomtype(widget.hotelSlug, widget.roomTypeData);
+    });
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     var wishlist = Provider.of<WishlistProvider>(context); // Access wishlist provider
-
     return AlertDialog(
-
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -46,25 +53,39 @@ class _SelectRoomDialogState extends State<SelectRoomDialog> {
           borderRadius: BorderRadius.circular(8), // Add rounded corners
         ),
         child: DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
-            value: selectedRoom,
-            padding: EdgeInsets.only(left: 10),
-            hint: Text('Select a room'),
-            isExpanded: true,
-            icon: Icon(Icons.arrow_drop_down),
-            style: TextStyle(fontSize: 16, color: Colors.black),
-            items: rooms.map((String room) {
-              return DropdownMenuItem<String>(
-                value: room,
-                child: Text(room),
+          child: Consumer <RoomProvider> (
+            builder: (context,roomProvider, child) {
+              if (roomProvider.isLoading){
+                return Center(child: CircularProgressIndicator(),);
+              }
+              var allRoomsData = roomProvider.allRoomsInRoomType;
+              if (allRoomsData.isEmpty){
+                return Center(child: Text('No room is available'),);
+              }
+              // for (Room room in allRoomsData){
+              //   roomName.add(room.roomNumber);
+              // }
+              return DropdownButton<String>(
+                value: selectedRoom,
+                padding: EdgeInsets.only(left: 10),
+                hint: Text('Select a room'),
+                isExpanded: true,
+                icon: Icon(Icons.arrow_drop_down),
+                style: TextStyle(fontSize: 16, color: Colors.black),
+                items: rooms.map((String room) {
+                  return DropdownMenuItem<String>(
+                    value: room,
+                    child: Text(room),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedRoom = newValue;
+                  });
+                },
               );
-            }).toList(),
-            onChanged: (String? newValue) {
-              setState(() {
-                selectedRoom = newValue;
-              });
-            },
-          ),
+            }
+          )
         ),
       ),
       actions: <Widget>[

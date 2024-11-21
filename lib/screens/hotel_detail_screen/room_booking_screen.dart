@@ -90,6 +90,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
                     //room book view and room data
                     return RoomBookView(
                       roomTypeData: roomProvider.allRoomtypes[index],
+                      hotelSlug: widget.hotelBooking.slug,
                       animation: animation,
                       animationController: animationController,
                       startDate: startDate!,

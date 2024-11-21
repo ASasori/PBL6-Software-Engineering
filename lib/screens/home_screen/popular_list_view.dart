@@ -50,6 +50,7 @@ class _PopularListViewState extends State<PopularListView> with TickerProviderSt
           child: Consumer<HotelProvider> (
             builder: (context, hotelProvider, child) {
               if (hotelProvider.isLoading){
+                return Center(child: CircularProgressIndicator(),);
               }
               var locations = hotelProvider.locations;
               if (locations.isEmpty){

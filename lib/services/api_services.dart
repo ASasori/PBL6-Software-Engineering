@@ -127,29 +127,20 @@ class RoomService {
   final ApiService _apiService = ApiService();
   static const String baseUrl = 'http://192.168.1.225:8000';
 
-  Future <List<Room>> fetchRoomsByHotelSlug (String hotelSlug) async{
-    final response = await _apiService.dio.get('$baseUrl/api/hotels/$hotelSlug/room-types/');
-    if (response.statusCode == 200) {
-      Map<String, dynamic> data = response.data;
-      List<Room> allRooms = [];
-      for (var roomTypeData in data['roomtype']){
-        RoomType roomType = RoomType.fromJson(roomTypeData);
-        String rt_slug = roomType.slug;
-        final roomResponse = await _apiService.dio.get('$baseUrl/api/hotels/$hotelSlug/room-types/$rt_slug/rooms/');
-        if (roomResponse.statusCode == 200){
-          Map<String, dynamic> roomData = roomResponse.data;
-          for (var roomJson in roomData['listroom']) {
-            Room room = Room.fromJson(roomJson, roomType);
-            allRooms.add(room);
-          }
-        }else {
-          throw Exception('Failed to load rooms for room type $rt_slug');
-        }
+  Future <List<Room>> fetchRoomsInRoomtype (String hotelSlug, RoomType roomtype) async{
+     String rt_slug = roomtype.slug;
+     List<Room> allRoomsInRoomType = [];
+     final roomResponse = await _apiService.dio.get('$baseUrl/api/hotels/$hotelSlug/room-types/$rt_slug/rooms/');
+     if (roomResponse.statusCode == 200){
+      Map<String, dynamic> roomData = roomResponse.data;
+      for (var roomJson in roomData['listroom']) {
+        Room room = Room.fromJson(roomJson, roomtype);
+        allRoomsInRoomType.add(room);
       }
-      return allRooms;
     }else {
-      throw Exception('Failed to load room types');
+      throw Exception('Failed to load rooms for room type $rt_slug');
     }
+    return allRoomsInRoomType;
   }
   Future<List<RoomType>> fetchRoomtypes(String hotelSlug) async {
     try {
@@ -165,7 +156,6 @@ class RoomService {
     } catch (e) {
       print('Error fetching roomtypes: $e');
       rethrow;
-      return [];
     }
   }
 

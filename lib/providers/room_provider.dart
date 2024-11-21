@@ -5,11 +5,11 @@ import '../services/api_services.dart';
 
 class RoomProvider with ChangeNotifier {
   List<RoomType> _allRoomtypes = [];
-  List<Room> _roomsByRoomType = [];
+  List<Room> _allRoomsInRoomType = [];
   bool isLoading = true;
 
   List<RoomType> get allRoomtypes => _allRoomtypes;
-  List<Room> get roomsByRoomType => _roomsByRoomType;
+  List<Room> get allRoomsInRoomType => _allRoomsInRoomType;
 
   Future<void> getAllRoomtypeList(String hotelSlug) async {
     isLoading = true;
@@ -24,17 +24,17 @@ class RoomProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-  // Future<void> getRoomByRoomType (String hotelSlug, String rtSlug) async {
-  //   isLoading = true;
-  //   notifyListeners();
-  //   try {
-  //     _allRooms = await RoomService().fetchRoomsByHotelSlug(hotelSlug);
-  //     print('Total rooms: ${_allRooms.length}');
-  //   } catch (error) {
-  //     print('Error fetching rooms: $error');
-  //   } finally {
-  //     isLoading = false;
-  //     notifyListeners();
-  //   }
-  // }
+  Future<void> getRoomsInRoomtype (String hotelSlug, RoomType roomtype) async {
+    isLoading = true;
+    notifyListeners();
+    try {
+      _allRoomsInRoomType = await RoomService().fetchRoomsInRoomtype(hotelSlug, roomtype );
+      print('Total rooms: ${_allRoomsInRoomType.length}');
+    } catch (error) {
+      print('Error fetching rooms: $error');
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
 }

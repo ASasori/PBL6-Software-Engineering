@@ -16,6 +16,7 @@ import '../../widgets/common_button.dart';
 
 class RoomBookView extends StatefulWidget {
   final RoomType roomTypeData;
+  final String hotelSlug;
   final AnimationController animationController;
   final Animation<double> animation;
   final DateTime startDate,endDate;
@@ -23,6 +24,7 @@ class RoomBookView extends StatefulWidget {
   const RoomBookView(
       {Key? key,
         required this.roomTypeData,
+        required this.hotelSlug,
         required this.animationController,
         required this.animation, required this.startDate, required this.endDate})
       : super(key: key);
@@ -212,6 +214,7 @@ class _RoomBookViewState extends State<RoomBookView> {
       builder: (BuildContext context) {
         return SelectRoomDialog(
             roomTypeData: widget.roomTypeData,
+            hotelSlug: widget.hotelSlug,
             startDate: widget.startDate,
             endDate: widget.endDate
         ) ;// Use the new StatefulWidget
