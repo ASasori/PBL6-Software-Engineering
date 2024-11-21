@@ -12,7 +12,7 @@ router.register('roomtypes', views_api.RoomTypeViewSet)
 
 urlpatterns = [
 #     path('hotels/', index, name='hotel_list'),  # List all live hotels
-#     path('hotels/<slug>/', hotel_detail, name='hotel_detail'),  # Get hotel details by slug
+    path('hotels/<slug>/', hotel_detail, name='hotel_detail'),  # Get hotel details by slug
 #     path('hotels/<slug:slug>/room-types/<slug:rt_slug>/', room_type_detail, name='room_type_detail'),  # Get room type details for a specific hotel
     path('bookings/create/', create_booking, name='create_booking'),  # Create a new booking
     path('checkout-api/<int:booking_id>/', checkout_api, name='checkout_api'), # API to handle checkout and coupon application
