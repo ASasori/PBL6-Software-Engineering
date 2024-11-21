@@ -32,7 +32,7 @@ const Index = ()=>{
         const fetchHotels = async () => {
             console.log('baseURL: ' + baseURL);
             try {
-                const response = await axios.get(`${baseURL}api/hotels/`,
+                const response = await axios.get(`${baseURL}/api/hotels/`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -47,7 +47,7 @@ const Index = ()=>{
         };
 
         const fetchCartItemCount = async () => {
-            const urlAPIGetCartCount = `${baseURL}api/get_cart_item_count`; 
+            const urlAPIGetCartCount = `${baseURL}/api/get_cart_item_count`; 
             try {
                 const response = await axios.get(urlAPIGetCartCount, {
                     headers: {
