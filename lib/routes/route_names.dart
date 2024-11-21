@@ -52,7 +52,7 @@ class NavigationServices {
   }
 
   Future<dynamic> gotoBottomTabScreen({BottomBarType? bottomBarType}) async {
-    return _pushMasterialPageRoute(BottomTabScreen(initialBottomBarType: bottomBarType==null ? BottomBarType.Explore : bottomBarType,));
+    return _pushMasterialPageRoute(BottomTabScreen(initialBottomBarType: bottomBarType==null ? BottomBarType.Home : bottomBarType,));
   }
 
   Future<dynamic> gotoExploreScreen([String place = ""]) async {
@@ -83,7 +83,6 @@ class NavigationServices {
     return await _pushMasterialPageRoute(EditProfileScreen());
   }
 
-
   Future<Future> gotoChangePasswordScreen()  async{
     return await _pushMasterialPageRoute(ChangePasswordScreen());
   }
@@ -95,7 +94,4 @@ class NavigationServices {
   Future<Future> gotoSettingsScreen()  async{
     return await _pushMasterialPageRoute(SettingsScreen());
   }
-
-
-  
 }

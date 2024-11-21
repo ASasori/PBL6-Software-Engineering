@@ -211,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     child: CommonButton(
                       onTap: () {
                         if (opacity != 0) {
-                          //NavigationServices(context).gotoHotelHomeScreen();
+                          NavigationServices(context).gotoExploreScreen();
                         }
                       },
                       buttonTextWidget: Padding(
@@ -249,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         child: InkWell(
           borderRadius: BorderRadius.all(Radius.circular(30)),
           onTap: () {
-            //NavigationServices(context).gotoHotelHomeScreen();
+            NavigationServices(context).gotoExploreScreen(_searchController.text.trim());
           },
           child: CommonSearchBar(
             iconData: FontAwesomeIcons.search,
@@ -257,7 +257,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             text: AppLocalizations(context).of("where_are_you_going"),
             textEditingController: _searchController,
             onSubmitted: (String value) {
-             // NavigationServices(context).gotoHotelHomeScreen(value);
+              NavigationServices(context).gotoExploreScreen(value);
             },
           ),
         ),

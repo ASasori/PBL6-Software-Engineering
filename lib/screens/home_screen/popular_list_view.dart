@@ -50,7 +50,6 @@ class _PopularListViewState extends State<PopularListView> with TickerProviderSt
           child: Consumer<HotelProvider> (
             builder: (context, hotelProvider, child) {
               if (hotelProvider.isLoading){
-                return const Center (child: CircularProgressIndicator());
               }
               var locations = hotelProvider.locations;
               if (locations.isEmpty){
@@ -82,7 +81,7 @@ class _PopularListViewState extends State<PopularListView> with TickerProviderSt
                             animation: animation,
                             callback: () {
                               widget.callBack(index);
-                         //     NavigationServices(context).gotoHotelHomeScreen(locations[index].location);
+                               NavigationServices(context).gotoExploreScreen(locations[index].location);
                             }
                           );
                         }

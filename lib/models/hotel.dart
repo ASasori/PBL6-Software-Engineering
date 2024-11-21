@@ -84,7 +84,7 @@ class HotelGallery {
   });
 
   factory HotelGallery.fromJson(Map<String, dynamic> json) {
-    const String baseUrl = 'http://192.168.1.11:8000';
+    const String baseUrl = 'http://192.168.1.225:8000';
     return HotelGallery(
       id: json['hgid'] ?? '', // Sử dụng giá trị mặc định nếu `hgid` bị thiếu
       imageUrl: '$baseUrl${json['image']}', // Thêm baseUrl vào đường dẫn ảnh
@@ -130,7 +130,7 @@ class Hotel {
   });
 
   factory Hotel.fromJson(Map<String, dynamic> json) {
-    const String baseUrl = 'http://192.168.1.11:8000';
+    const String baseUrl = 'http://192.168.1.225:8000';
     // const String baseUrl = 'http://192.168.1.59:8000';
     // const String baseUrl = 'http://10.10.28.64:8000';
 

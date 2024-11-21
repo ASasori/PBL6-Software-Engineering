@@ -1,5 +1,6 @@
 import 'package:booking_hotel_app/models/booking.dart';
 import 'package:booking_hotel_app/providers/wish_list_provider.dart';
+import 'package:booking_hotel_app/screens/hotel_detail_screen/select_room_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,14 +15,14 @@ import '../../utils/text_styles.dart';
 import '../../widgets/common_button.dart';
 
 class RoomBookView extends StatefulWidget {
-  final Room roomData;
+  final RoomType roomTypeData;
   final AnimationController animationController;
   final Animation<double> animation;
   final DateTime startDate,endDate;
 
   const RoomBookView(
       {Key? key,
-        required this.roomData,
+        required this.roomTypeData,
         required this.animationController,
         required this.animation, required this.startDate, required this.endDate})
       : super(key: key);
@@ -54,8 +55,8 @@ class _RoomBookViewState extends State<RoomBookView> {
                     AspectRatio(
                       aspectRatio: 1.5,
                       child: CachedNetworkImage(
-                        imageUrl: widget.roomData.roomType.imageUrl,
-                        placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Hiển thị khi ảnh đang load
+                        placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                        imageUrl: widget.roomTypeData.imageUrl, // Hiển thị khi ảnh đang load
                         errorWidget: (context, url, error) => Icon(Icons.error),     // Hiển thị khi có lỗi tải ảnh
                         fit: BoxFit.cover,
                       ),
@@ -99,7 +100,7 @@ class _RoomBookViewState extends State<RoomBookView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            widget.roomData.type,
+                            widget.roomTypeData.type,
                             maxLines: 2,
                             textAlign: TextAlign.left,
                             style: TextStyles(context)
@@ -121,8 +122,7 @@ class _RoomBookViewState extends State<RoomBookView> {
                                 ),
                               ),
                               onTap: () {
-                                print("select room");
-                                _showSelectRoomDialog(context,  widget.roomData.type);
+                                _showSelectRoomDialog(context,  widget.roomTypeData.type);
                               },
                             ),
                           ),
@@ -132,7 +132,7 @@ class _RoomBookViewState extends State<RoomBookView> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            "\$${widget.roomData.price}",
+                            "\$${widget.roomTypeData.price}",
                             textAlign: TextAlign.left,
                             style: TextStyles(context)
                                 .getBoldStyle()
@@ -147,28 +147,26 @@ class _RoomBookViewState extends State<RoomBookView> {
                                   .copyWith(fontSize: 14),
                             ),
                           ),
-
-
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          Text(
-                            'Room data is fixing',
-                            // Helper.getPeopleandChildren(
-                            //     widget.roomData.roomData!),
-                            // "${widget.roomData.dateTxt}",
-                            textAlign: TextAlign.left,
-                            style: TextStyles(context).getDescriptionStyle(),
-                          ),
+                          // Text(
+                          //   'Room data is fixing',
+                          //   // Helper.getPeopleandChildren(
+                          //   //     widget.roomData.roomData!),
+                          //   // "${widget.roomData.dateTxt}",
+                          //   textAlign: TextAlign.left,
+                          //   style: TextStyles(context).getDescriptionStyle(),
+                          // ),
                           InkWell(
                             borderRadius:
                             BorderRadius.all(Radius.circular(4.0)),
                             onTap: () {},
                             child: Padding(
-                              padding: const EdgeInsets.only(left: 8, right: 4),
+                              padding: const EdgeInsets.only(left: 0, right: 4),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -209,17 +207,16 @@ class _RoomBookViewState extends State<RoomBookView> {
   }
 
   void _showSelectRoomDialog(BuildContext context, String TypeRoom) {
-    // showDialog(
-    //   context: context,
-    //   builder: (BuildContext context) {
-    //     return SelectRoomDialog(
-    //         RoomData: widget.roomData,
-    //         TypeRoom: TypeRoom,
-    //         startDate: widget.startDate,
-    //         endDate: widget.endDate
-    //     ) ;// Use the new StatefulWidget
-    //   },
-    // );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SelectRoomDialog(
+            roomTypeData: widget.roomTypeData,
+            startDate: widget.startDate,
+            endDate: widget.endDate
+        ) ;// Use the new StatefulWidget
+      },
+    );
   }
 
 }

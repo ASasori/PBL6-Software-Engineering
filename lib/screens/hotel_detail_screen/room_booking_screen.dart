@@ -23,8 +23,6 @@ class RoomBookingScreen extends StatefulWidget {
 }
 
 class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProviderStateMixin{
-  List<HotelListData> romeList = HotelListData.romeList;
-
   late AnimationController animationController;
 
   DateTime? startDate = DateTime.now(); // Store selected start date
@@ -35,7 +33,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
     animationController = AnimationController(
         duration: Duration(milliseconds: 2000), vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_){
-      Provider.of<RoomProvider>(context, listen: false).getRoomList(widget.hotelBooking.slug);
+      Provider.of<RoomProvider>(context, listen: false).getAllRoomtypeList(widget.hotelBooking.slug);
     });
 
     super.initState();
@@ -80,9 +78,9 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
                 builder: (context,roomProvider, child) {
                 return ListView.builder(
                   padding: EdgeInsets.all(0.0),
-                  itemCount: roomProvider.rooms.length,
+                  itemCount: roomProvider.allRoomtypes.length,
                   itemBuilder: (context, index) {
-                    var count = roomProvider.rooms.length > 10 ? 10 : roomProvider.rooms.length;
+                    var count = roomProvider.allRoomtypes.length > 10 ? 10 : roomProvider.allRoomtypes.length;
                     var animation = Tween(begin: 0.0, end: 1.0).animate(
                         CurvedAnimation(
                             parent: animationController,
@@ -91,7 +89,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
                     animationController.forward();
                     //room book view and room data
                     return RoomBookView(
-                      roomData: roomProvider.rooms[index],
+                      roomTypeData: roomProvider.allRoomtypes[index],
                       animation: animation,
                       animationController: animationController,
                       startDate: startDate!,

@@ -7,10 +7,9 @@ import '../../models/hotel_list_data.dart';
 import '../../providers/wish_list_provider.dart';
 
 class SelectRoomDialog extends StatefulWidget {
-  final HotelListData RoomData ;
-  final String TypeRoom;
+  final RoomType roomTypeData ;
   final DateTime startDate,endDate;
-  const SelectRoomDialog({Key? key, required this.RoomData, required this.TypeRoom, required this.startDate, required this.endDate}) : super(key: key);
+  const SelectRoomDialog({Key? key, required this.roomTypeData, required this.startDate, required this.endDate}) : super(key: key);
 
   @override
   _SelectRoomDialogState createState() => _SelectRoomDialogState();
@@ -34,7 +33,7 @@ class _SelectRoomDialogState extends State<SelectRoomDialog> {
           ),
           SizedBox(height: 8),
           Text(
-            'Room type: ${widget.TypeRoom}', // Display TypeRoom here
+            'Room type: ${widget.roomTypeData.type}', // Display TypeRoom here
             style: TextStyle(fontSize: 14, color: Colors.grey),
           )
         ],
@@ -84,21 +83,21 @@ class _SelectRoomDialogState extends State<SelectRoomDialog> {
               onPressed:() {
                 if (selectedRoom != null) {
                   // Access the roomData from RoomBookView using a callback
-                  final roomData = widget.RoomData;
+                  final roomtypeData = widget.roomTypeData;
 
-                  if (roomData != null) {
+                  if (roomtypeData != null) {
                     BookingData value = new BookingData(
                       bookingID: "B003",
-                      hotelName: roomData.titleTxt,
-                      imagePath: roomData.imagePath,
-                      address: roomData.location.toString(),
+                      hotelName: roomtypeData.type,
+                      imagePath: roomtypeData.imageUrl,
+                      // address: roomData.location.toString(),
                       startDate: widget.startDate, // Assuming dateTxt is a DateTime
                       endDate: widget.endDate, // Assuming dateTxt is a DateTime
                       numberOfAdults: 3,
                       numberOfChildren: 2,
-                      pricePernight: roomData.perNight.toDouble(),
+                      pricePernight: roomtypeData.price.toDouble(),
                       typeRoom: selectedRoom!, // Set the selected room
-                      totalAmount: widget.endDate.difference(widget.startDate).inDays * widget.RoomData.perNight.toDouble(),
+                      totalAmount: widget.endDate.difference(widget.startDate).inDays * widget.roomTypeData.price.toDouble(),
                     );
                     print("add");
                     wishlist.addBookingData(value);

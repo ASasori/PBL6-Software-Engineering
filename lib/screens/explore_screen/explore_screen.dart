@@ -13,7 +13,6 @@ import '../../utils/text_styles.dart';
 import '../../widgets/common_card.dart';
 import '../../widgets/common_search_bar.dart';
 import 'components/filter_bar_UI.dart';
-import 'components/time_date_view.dart';
 
 class ExploreScreen extends StatefulWidget {
   final String placeName ;
@@ -32,12 +31,6 @@ class _HotelHomeScreenState extends State<ExploreScreen> with TickerProviderStat
 
   var hotelList = HotelListData.hotelList;
   ScrollController scrollController = new ScrollController();
-
-  int room = 1;
-  int add = 2;
-
-  DateTime startDate = DateTime.now();
-  DateTime endDate = DateTime.now().add(Duration(days: 5));
 
   bool _isShowMap = false;
 
@@ -163,13 +156,11 @@ class _HotelHomeScreenState extends State<ExploreScreen> with TickerProviderStat
                                             children: <Widget>[
                                               //hotel search view
                                               _getSearchBarUI(hotelProvider),
-                                              // time date and number of rooms view
-                                              // TimeDateView(),
                                             ],
                                           ),
                                         ),
                                         //hotel price & facilitate  & distance
-                                        FilterBarUI(),
+                                        FilterBarUI(totalHotel: hotelProvider.hotelsByLocation.length),
                                       ],
                                     ),
                                   );

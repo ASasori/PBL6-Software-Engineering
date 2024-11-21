@@ -7,6 +7,8 @@ import '../../../utils/themes.dart';
 
 
 class FilterBarUI extends StatelessWidget {
+  final int totalHotel;
+  FilterBarUI ({super.key, required this.totalHotel});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -21,7 +23,7 @@ class FilterBarUI extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    "530",
+                    "$totalHotel",
                     style: TextStyles(context).getRegularStyle(),
                   ),
                 ),

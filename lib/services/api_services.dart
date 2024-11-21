@@ -51,11 +51,8 @@ class HotelServices {
   // final Dio _dio = Dio();
 
   final ApiService _apiService = ApiService();
-  // static const String baseUrl = 'http://10.10.28.64:8000';
-  static const String baseUrl = 'http://192.168.1.11:8000';
-  // static const String baseUrl = 'http://192.168.1.59:8000';
+  static const String baseUrl = 'http://192.168.1.225:8000';
   // static const String baseUrl = 'http://192.168.43.21:8000';
-  // static const String baseUrl = 'http://192.168.2.25:8000';
 
   Future<List<Hotel>> fetchHotels() async {
     try {
@@ -128,10 +125,7 @@ class HotelServices {
 
 class RoomService {
   final ApiService _apiService = ApiService();
-  // static const String baseUrl = 'http://192.168.1.4:8000';
-  // static const String baseUrl = 'http://192.168.1.59:8000';
-  // static const String baseUrl = 'http://10.10.28.64:8000';
-  static const String baseUrl = 'http://192.168.1.11:8000';
+  static const String baseUrl = 'http://192.168.1.225:8000';
 
   Future <List<Room>> fetchRoomsByHotelSlug (String hotelSlug) async{
     final response = await _apiService.dio.get('$baseUrl/api/hotels/$hotelSlug/room-types/');
@@ -157,13 +151,31 @@ class RoomService {
       throw Exception('Failed to load room types');
     }
   }
+  Future<List<RoomType>> fetchRoomtypes(String hotelSlug) async {
+    try {
+      final response = await _apiService.dio.get(
+          '$baseUrl/api/hotels/$hotelSlug/room-types/');
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = response.data;
+        List<dynamic> roomtypeData = data["roomtype"];
+        return roomtypeData.map((json) => RoomType.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load roomtypes by $hotelSlug');
+      }
+    } catch (e) {
+      print('Error fetching roomtypes: $e');
+      rethrow;
+      return [];
+    }
+  }
+
 }
 
 // call api auth
 class AuthService {
   final Dio _dio = Dio();
   // static const String baseUrl = 'http://10.10.3.44:8000';
-  static const String baseUrl = 'http://192.168.1.11:8000';
+  static const String baseUrl = 'http://192.168.1.225:8000';
   // static const String baseUrl = 'http://192.168.1.59:8000';
   // static const String baseUrl = 'http://192.168.43.21:8000';
   // static const String baseUrl = 'http://192.168.2.25:8000';
