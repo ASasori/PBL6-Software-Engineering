@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useAuth } from './AuthContext';
+import API_BASE_URL from '../../config/apiConfig';
+
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -14,6 +16,7 @@ const Register = () => {
   const [message, setMessage] = useState('');
   const { login, token } = useAuth();
   const navigate = useNavigate();
+  const baseURL = API_BASE_URL;
 
   const handleLoginClick = () => {
     navigate('/login'); 
@@ -34,7 +37,7 @@ const Register = () => {
     }
     try {
       const response = await axios.post(
-        'http://127.0.0.1:8000/user/api/userauths/register/',
+        `${baseURL}/user/api/userauths/register/`,
         {
           email,
           password,

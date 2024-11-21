@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useAuth } from "../../auth/AuthContext";
 import { Link } from "react-router-dom";
 import { useRoomCount } from '../RoomCountContext/RoomCountContext';
-
+import API_BASE_URL from '../../../config/apiConfig';
 
 const SelectedRoom = () => {
 
@@ -15,9 +15,11 @@ const SelectedRoom = () => {
     const [roomType, setRoomType] = useState({});
     const [selectedRoom, setSelectedRoom] = useState(null);
     const { setRoomCount } = useRoomCount();
+    const baseURL = API_BASE_URL;
+
 
     const fetchCart = async() => {
-        const URL = 'http://127.0.0.1:8000/api/view_cart';
+        const URL = `${baseURL}/api/view_cart`;
         try {
             const response = await axios.get(URL,{
                 headers: {
@@ -36,7 +38,7 @@ const SelectedRoom = () => {
     }
 
     const deleteCartItem = async (id) => {
-        const URL = 'http://127.0.0.1:8000/api/delete_cart_item';
+        const URL = `${baseURL}/api/delete_cart_item`;
         const data = {
             item_cart_id: id
         }
@@ -54,7 +56,7 @@ const SelectedRoom = () => {
     }
 
     const fetchTypeRoom = async(slugHotel, slugRoomtype) => {
-        const URL = `http://127.0.0.1:8000/api/hotels/${slugHotel}/room-types/${slugRoomtype}/rooms/`;
+        const URL = `${baseURL}/api/hotels/${slugHotel}/room-types/${slugRoomtype}/rooms/`;
         try {
             const respoonse = await axios.get(URL, {
                 headers: {
@@ -157,7 +159,7 @@ const SelectedRoom = () => {
                                         <span className="close" onClick={handleCloseModal} style={closeButtonStyles}>&times;</span>
                                         <h2>{selectedRoom.type}</h2>
                                         <img 
-                                            src={`http://127.0.0.1:8000${selectedRoom.image}`} 
+                                            src={`${baseURL}${selectedRoom.image}`} 
                                             alt={selectedRoom.type} 
                                             style={{ 
                                                 maxWidth: '100%',  

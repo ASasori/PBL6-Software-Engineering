@@ -7,6 +7,8 @@ import axios from "axios";
 import Swal from 'sweetalert2';
 import { useRoomCount } from '../RoomCountContext/RoomCountContext';
 import { useAuth } from '../../auth/AuthContext';
+import API_BASE_URL from '../../../config/apiConfig';
+
 
 const CheckRoomAvailability = () => {
     const [roomAvailabilities, setRoomAvailabilities] = useState([]);
@@ -15,6 +17,8 @@ const CheckRoomAvailability = () => {
     const [listRoomTypes, setListRoomTypes] = useState([]); // list roomtypes
     const [error, setError] = useState([]);
     const [selectedRoom, setSelectedRoom] = useState(null);
+    const baseURL = API_BASE_URL;
+
 
     const { token } = useAuth();
     const { slug } = useParams();
@@ -39,7 +43,7 @@ const CheckRoomAvailability = () => {
     useEffect(() => {
         const fetchRoomAvailability = async () => {
             try {
-                const responseRoomAvailability = await axios.get(`http://127.0.0.1:8000/api/hotels/${slug}/room-types/${initialRoomType}/rooms`,{
+                const responseRoomAvailability = await axios.get(`${baseURL}/api/hotels/${slug}/room-types/${initialRoomType}/rooms`,{
                     headers: {
                         'Authorization': `Bearer ${token}`  
                     }
@@ -49,7 +53,7 @@ const CheckRoomAvailability = () => {
                 setRoomType(responseRoomAvailability.data.roomtype);
                 setNameHotel(responseRoomAvailability.data.hotel)
 
-                const responseListRoomType = await axios.get(`http://127.0.0.1:8000/api/hotels/${slug}/room-types`, {
+                const responseListRoomType = await axios.get(`${baseURL}/api/hotels/${slug}/room-types`, {
                     headers: {
                         'Authorization': `Bearer ${token}`  
                     }
@@ -64,7 +68,7 @@ const CheckRoomAvailability = () => {
     },[initialRoomType])
 
     const fetchTypeRoom = async(slugHotel, slugRoomtype) => {
-        const URL = `http://127.0.0.1:8000/api/hotels/${slugHotel}/room-types/${slugRoomtype}/rooms/`;
+        const URL = `${baseURL}/api/hotels/${slugHotel}/room-types/${slugRoomtype}/rooms/`;
         try {
             const respoonse = await axios.get(URL, {
                 headers: {
@@ -118,7 +122,7 @@ const CheckRoomAvailability = () => {
         console.log(responseData)
         if((checkin && checkout) && (new Date(checkin) < new Date(checkout))) {
             if(roomTypeInit && checkin && checkout && adults && childrens) {
-                const urlAPICheckRoomAvailability = 'http://127.0.0.1:8000/booking/api/booking/check-room-availability/'
+                const urlAPICheckRoomAvailability = `${baseURL}/booking/api/booking/check-room-availability/`
                 const data = {
                     hotel_id: nameHotel.id,
                     room_type: roomTypeInit,
@@ -165,7 +169,7 @@ const CheckRoomAvailability = () => {
 
     const handleAddToSelection = (roomId, checkin, checkout, adults, childrens) => {
         let responseData;
-        const urlAPIAddToSelection = 'http://127.0.0.1:8000/api/add-cart-item';
+        const urlAPIAddToSelection = `${baseURL}/api/add-cart-item`;
         const data = {
             "room": roomId,
             "check_in_date": checkin,
@@ -274,7 +278,7 @@ const CheckRoomAvailability = () => {
                                         <span className="close" onClick={handleCloseModal} style={closeButtonStyles}>&times;</span>
                                         <h2>{selectedRoom.type}</h2>
                                         <img 
-                                            src={`http://127.0.0.1:8000${selectedRoom.image}`} 
+                                            src={`${baseURL}${selectedRoom.image}`} 
                                             alt={selectedRoom.type} 
                                             style={{ 
                                                 maxWidth: '100%',  

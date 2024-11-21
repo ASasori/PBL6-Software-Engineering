@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import API_BASE_URL from '../../config/apiConfig';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -10,6 +11,7 @@ const Login = () => {
     const [message, setMessage] = useState('');
     const { login, token } = useAuth();
     const navigate = useNavigate();
+    const baseURL = API_BASE_URL;
 
     useEffect(() => {
         if (token) {
@@ -27,7 +29,7 @@ const Login = () => {
         try {
             setMessage('Attempting to log in...');
             const response = await axios.post(
-                'http://127.0.0.1:8000/user/api/userauths/login/',
+                `${baseURL}/user/api/userauths/login/`,
                 {
                     email,
                     password,

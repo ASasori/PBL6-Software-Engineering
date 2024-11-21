@@ -5,6 +5,8 @@ import Header from "../../baseComponent/Header";
 import Swal from 'sweetalert2';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../auth/AuthContext';
+import API_BASE_URL from '../../../config/apiConfig';
+
 
 const DetailHotel = () => {
     const { token } = useAuth();
@@ -19,6 +21,7 @@ const DetailHotel = () => {
     const [checkout, setCheckout] = useState('');
     const [initRoomType, setInitRoomType] = useState('');
     const [selectedRoom, setSelectedRoom] = useState(null);
+    const baseURL = API_BASE_URL;
 
     const navigate = useNavigate();
 
@@ -73,7 +76,7 @@ const DetailHotel = () => {
     const handleCheckRoomAvailability = () => {
         let responseData
         if(initRoomType && checkin && checkout && adults && childrens) {
-            const urlAPICheckRoomAvailability = 'http://127.0.0.1:8000/booking/api/booking/check-room-availability/'
+            const urlAPICheckRoomAvailability = `${baseURL}/booking/api/booking/check-room-availability/`
             const data = {
                 hotel_id: detailHotel.id,
                 room_type: initRoomType,
@@ -112,7 +115,7 @@ const DetailHotel = () => {
         const fetchHotelDetails = async () => {
         console.log('token :',token);
         try {
-            const responseHotelDetail = await axios.get(`http://127.0.0.1:8000/api/hotels/${slug}`,
+            const responseHotelDetail = await axios.get(`${baseURL}/api/hotels/${slug}`,
             {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -120,7 +123,7 @@ const DetailHotel = () => {
             });
             setDetailHotel(responseHotelDetail.data);
 
-            const responseRoomType = await axios.get(`http://127.0.0.1:8000/api/hotels/${slug}/room-types`,
+            const responseRoomType = await axios.get(`${baseURL}/api/hotels/${slug}/room-types`,
             {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -245,7 +248,7 @@ const DetailHotel = () => {
                                         <span className="close" onClick={handleCloseModal} style={closeButtonStyles}>&times;</span>
                                         <h2>{selectedRoom.type}</h2>
                                         <img 
-                                            src={`http://127.0.0.1:8000${selectedRoom.image}`} 
+                                            src={`${baseURL}${selectedRoom.image}`} 
                                             alt={selectedRoom.type} 
                                             style={{ 
                                                 maxWidth: '100%',  

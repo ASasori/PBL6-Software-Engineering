@@ -4,6 +4,8 @@ import axios from "axios"
 import Header from "../../baseComponent/Header";
 import { useAuth } from '../../auth/AuthContext';
 import { Link } from 'react-router-dom';
+import API_BASE_URL from '../../../config/apiConfig';
+
 
 const ListHotel = ()=> {
     const query = new URLSearchParams(useLocation().search);
@@ -19,7 +21,7 @@ const ListHotel = ()=> {
 
 
     const fetchHotels = async(hotelNames) => {
-        const baseURL = 'http://127.0.0.1:8000/api/hotels/';
+        const baseURL = `${API_BASE_URL}/api/hotels/`;
         let url = baseURL 
         if(hotelNames) {
             url += `?name=${encodeURIComponent(hotelNames)}`;
