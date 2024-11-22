@@ -2,6 +2,7 @@ import 'package:booking_hotel_app/models/booking.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../utils/localfiles.dart';
+import '../services/wishlist_services.dart';
 
 class WishlistProvider with ChangeNotifier{
   int _counter = 2;

@@ -29,7 +29,6 @@ class _HotelHomeScreenState extends State<ExploreScreen> with TickerProviderStat
   TextEditingController placeNameController = TextEditingController();
   TextEditingController HotelNameController = TextEditingController();
 
-  var hotelList = HotelListData.hotelList;
   ScrollController scrollController = new ScrollController();
 
   bool _isShowMap = false;
@@ -62,11 +61,6 @@ class _HotelHomeScreenState extends State<ExploreScreen> with TickerProviderStat
     super.initState();
   }
 
-  Future<bool> getData() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    return true;
-  }
-
   @override
   void dispose() {
     animationController.dispose();
@@ -82,11 +76,230 @@ class _HotelHomeScreenState extends State<ExploreScreen> with TickerProviderStat
               onclick: () {
                 FocusScope.of(context).requestFocus(FocusNode());
               },
-              child: Consumer <HotelProvider> (
+              child: Consumer<HotelProvider>(
+                builder: (context, hotelProvider, child) {
+                  return Column(
+                    children: [
+                      _getAppBarUI(),
+                      Expanded(
+                        child: Stack(
+                          children: [
+                            if (hotelProvider.isLoading)
+                              Center(child: CircularProgressIndicator())
+                            else if (hotelProvider.hotelsByLocation.isEmpty)
+                              Center(child: Text('No hotels found'))
+                            else ListView.builder(
+                              controller: scrollController,
+                              itemCount: hotelProvider.hotelsByLocation.length,
+                              padding: EdgeInsets.only(top: 8 + 158 + 52.0),
+                              scrollDirection: Axis.vertical,
+                              itemBuilder: (context, index) {
+                                var count = hotelProvider.hotelsByLocation.length > 10 ? 10 : hotelProvider.hotelsByLocation.length;
+                                var animation = Tween(
+                                begin: 0.0, end: 1.0).animate(CurvedAnimation(
+                                    parent: animationController,
+                                    curve: Interval((1 / count) * index, 1.0, curve: Curves.fastOutSlowIn)));
+                                animationController.forward();
+                                var hotel = hotelProvider.hotelsByLocation[index];
+                                return HotelListView(
+                                  hotelByLocation: hotel,
+                                  animationController: animationController,
+                                  animation: animation,
+                                  callback: () {
+                                    NavigationServices(context)
+                                        .gotoHotelDetails(hotelProvider.hotelsByLocation[index]);
+                                    }
+                                  );
+                                },
+                              ),
+                            AnimatedBuilder(
+                              animation: _animationController,
+                              builder: (BuildContext context, Widget? child) {
+                                return Positioned(
+                                  top: -searchBarHeight * (_animationController.value),
+                                  left: 0,
+                                  right: 0,
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        color: Theme.of(context).scaffoldBackgroundColor,
+                                        child: _getSearchBarUI(hotelProvider),
+                                      ),
+                                      FilterBarUI(totalHotel: hotelProvider.hotelsByLocation.length),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              )
+
+            )
+          ],
+        ),
+    );
+  }
+
+  Widget _getSearchBarUI(HotelProvider hotelProvider) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+      child: Column(
+        children: [
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: Padding(
+                  padding:
+                  const EdgeInsets.only(right: 8, top: 8, bottom: 8, left: 8),
+                  child: CommonCard(
+                    color: AppTheme.backgroundColor,
+                    radius: 36,
+                    child: CommonSearchBar(
+                      textEditingController: HotelNameController ,
+                      enabled: true,
+                      isShow: false,
+                      text: "Hotel name ",
+                    ),
+                  ),
+                ),
+              ),
+
+              CommonCard(
+                color: AppTheme.primaryColor,
+                radius: 36,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: (){
+                      String name = HotelNameController.text.trim();
+                      String location = placeNameController.text.trim();
+                      hotelProvider.fetchHotelsByLocation(location, name);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Icon(FontAwesomeIcons.search,
+                          size: 20, color: AppTheme.backgroundColor),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding:
+                  const EdgeInsets.only(right: 8, top: 8, bottom: 8, left: 8),
+                  child: CommonCard(
+                    color: AppTheme.backgroundColor,
+                    radius: 36,
+                    child: CommonSearchBar(
+                      textEditingController: placeNameController ,
+                      enabled: true,
+                      isShow: false,
+                      text: "Country",
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _getAppBarUI() {
+    return Padding(
+      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top, left: 8, right: 8),
+      child:Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Container(
+            width: AppBar().preferredSize.height ,
+            height: AppBar().preferredSize.height,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(Icons.arrow_back),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: Text(
+                AppLocalizations(context).of("explore"),
+                style: TextStyles(context).getTitleStyle(),
+              ),
+            ),
+          ),
+          Container(
+            width: AppBar().preferredSize.height + 40,
+            height: AppBar().preferredSize.height,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(32.0),
+                    ),
+                    onTap: () {},
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(Icons.favorite_border),
+                    ),
+                  ),
+                ),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(32.0),
+                    ),
+                    onTap: () {
+                      setState(() {
+                        _isShowMap = !_isShowMap;
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(_isShowMap
+                          ? Icons.sort
+                          : FontAwesomeIcons.mapMarkedAlt),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+/*
+Consumer <HotelProvider> (
                 builder: (context, hotelProvider, child){
                   return Column(
                     children: [
-                      _getAppBarUI(hotelProvider),
+                      _getAppBarUI(),
                       Expanded(
                           child: Stack(
                             children: [
@@ -171,158 +384,6 @@ class _HotelHomeScreenState extends State<ExploreScreen> with TickerProviderStat
                   );
                 },
               )
-            )
-          ],
-        ),
-    );
-  }
 
-  Widget _getSearchBarUI(HotelProvider hotelProvider) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
-      child: Column(
-        children: [
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Padding(
-                  padding:
-                  const EdgeInsets.only(right: 8, top: 8, bottom: 8, left: 8),
-                  child: CommonCard(
-                    color: AppTheme.backgroundColor,
-                    radius: 36,
-                    child: CommonSearchBar(
-                      textEditingController: HotelNameController ,
-                      enabled: true,
-                      isShow: false,
-                      text: "Hotel name ",
-                    ),
-                  ),
-                ),
-              ),
 
-              CommonCard(
-                color: AppTheme.primaryColor,
-                radius: 36,
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () async {
-                      String name = HotelNameController.text.trim();
-                      String location = placeNameController.text.trim();
-                      await hotelProvider.fetchHotelsByLocation(location, name);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Icon(FontAwesomeIcons.search,
-                          size: 20, color: AppTheme.backgroundColor),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding:
-                  const EdgeInsets.only(right: 8, top: 8, bottom: 8, left: 8),
-                  child: CommonCard(
-                    color: AppTheme.backgroundColor,
-                    radius: 36,
-                    child: CommonSearchBar(
-                      textEditingController: placeNameController ,
-                      enabled: true,
-                      isShow: false,
-                      text: "Country",
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _getAppBarUI(HotelProvider hotelProvider) {
-    return Padding(
-      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top, left: 8, right: 8),
-      child:Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            width: AppBar().preferredSize.height ,
-            height: AppBar().preferredSize.height,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(Icons.arrow_back),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Center(
-              child: Text(
-                AppLocalizations(context).of("explore"),
-                style: TextStyles(context).getTitleStyle(),
-              ),
-            ),
-          ),
-          Container(
-            width: AppBar().preferredSize.height + 40,
-            height: AppBar().preferredSize.height,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(32.0),
-                    ),
-                    onTap: () {},
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(Icons.favorite_border),
-                    ),
-                  ),
-                ),
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(32.0),
-                    ),
-                    onTap: () {
-                      setState(() {
-                        _isShowMap = !_isShowMap;
-                      });
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(_isShowMap
-                          ? Icons.sort
-                          : FontAwesomeIcons.mapMarkedAlt),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
+ */

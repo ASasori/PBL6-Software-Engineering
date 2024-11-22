@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import '../models/hotel.dart';
 import '../models/location.dart';
-import '../services/api_services.dart';
+import '../services/hotel_services.dart';
 
 class HotelProvider with ChangeNotifier {
   final HotelServices _hotelServices = HotelServices();
@@ -65,17 +65,18 @@ class HotelProvider with ChangeNotifier {
   }
 
   Future<List<Hotel>> fetchHotelsByLocation(String location, String name) async {
-    _isLoading = true;
-    // notifyListeners();
     try {
+      _isLoading = true;
       _hotelsByLocation = await _hotelServices.fetchHotelsByLocation(location, name);
+      notifyListeners();
       return _hotelsByLocation;
     } catch (e) {
       print(e);
       return [];
     } finally {
       _isLoading = false;
-      // notifyListeners();
+      notifyListeners();
     }
   }
+
 }

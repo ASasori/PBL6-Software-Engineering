@@ -1,4 +1,4 @@
-import 'dart:convert';
+import '../utils/localfiles.dart';
 
 class RoomType {
   final String hotelId;
@@ -22,16 +22,16 @@ class RoomType {
     required this.slug,
     required this.dateAdded,
   });
-
   // Tạo RoomType từ JSON
   factory RoomType.fromJson(Map<String, dynamic> json) {
+    final Localfiles local = Localfiles();
+    final String baseUrl = local.baseUrl ;
     return RoomType(
       hotelId: json['hotel_id'] ?? '',
       type: json['type'] ?? '',
       price:double.parse(json['price']) ?? 0.0,
       numberOfBeds: json['number_of_beds'] ?? 0,
-      imageUrl: json['image'] = 'http://192.168.43.21:8000${json['image']}',
-      // imageUrl: json['image'] = 'http://192.168.1.225:8000${json['image']}',
+      imageUrl: json['image'] = '$baseUrl${json['image']}',
       roomCapacity: json['room_capacity'] ?? 0,
       rtid: json['rtid'] ?? '',
       slug: json['slug'] ?? '',

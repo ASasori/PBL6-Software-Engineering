@@ -1,13 +1,12 @@
+import "../utils/localfiles.dart";
+
 class ImageLocation {
   String imagePath;
   ImageLocation({required this.imagePath});
 
   factory ImageLocation.fromJson(Map<String, dynamic> json){
-    // String baseUrl = 'http://192.168.1.23:8000';
-    String baseUrl = 'http://192.168.43.21:8000';
-    // String baseUrl = 'http://192.168.1.225:8000';
-    // String baseUrl = 'http://192.168.1.59:8000';
-    // const String baseUrl = 'http://10.10.28.64:8000';
+    final Localfiles local = Localfiles();
+    final String baseUrl = local.baseUrl ;
     String fullImagePath = '$baseUrl${json['imagePath']}';
     return ImageLocation(imagePath: fullImagePath,);
   }

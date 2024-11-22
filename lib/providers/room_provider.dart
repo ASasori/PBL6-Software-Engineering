@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import '../models/room.dart';
-import '../services/api_services.dart';
+import '../services/room_services.dart';
 
 class RoomProvider with ChangeNotifier {
   List<RoomType> _allRoomtypes = [];

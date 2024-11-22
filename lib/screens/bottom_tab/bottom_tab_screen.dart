@@ -39,10 +39,8 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (bottomBarType == BottomBarType.Wishlist) {
-        print ('123456789');
         _LoadingWishlistScreen();
       } if (bottomBarType == BottomBarType.Explore) {
-        print ('000000');
         _LoadingExploreScreen();
       } else {
         _startLoadingScreen();
@@ -173,7 +171,7 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
             });
           }else if (tabType == BottomBarType.Explore) {
             setState(() {
-              _indexView = ExploreScreen();
+              _indexView = ExploreScreen(placeName: "");
             });
           }
           else if (tabType == BottomBarType.Trips) {

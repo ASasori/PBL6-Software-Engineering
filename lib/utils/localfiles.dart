@@ -65,4 +65,5 @@ class Localfiles {
   static const String room_12 = BaseImageUrl + 'room_12.jpg';
   static const String birghtness = BaseImageUrl + 'birghtness.png';
   static const String parth = BaseImageUrl + 'parth.png';
+  final String baseUrl = 'http://192.168.1.28:8000';
 }

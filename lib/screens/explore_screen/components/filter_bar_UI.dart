@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../language/appLocalizations.dart';
 import '../../../routes/route_names.dart';
 import '../../../utils/text_styles.dart';
