@@ -25,6 +25,7 @@ class _LoginScreen extends State<LoginScreen> {
   TextEditingController _emailController = TextEditingController();
   String _errorPassword = '';
   TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,7 +73,13 @@ class _LoginScreen extends State<LoginScreen> {
                             hintText: AppLocalizations(context).of(
                                 "enter_password"),
                             onChanged: (String txt) {},
-                            isObsecureText: true,
+                            isObsecureText: !_isPasswordVisible,
+                            isPasswordField: true,
+                            togglePasswordVisibility: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
                             keyboardType: TextInputType.text,
                           ),
                           _forgotYourPassword(),

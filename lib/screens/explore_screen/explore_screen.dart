@@ -108,15 +108,13 @@ class _HotelHomeScreenState extends State<ExploreScreen> with TickerProviderStat
                                   } else {
                                     return ListView.builder(
                                       controller: scrollController,
-                                      itemCount: hotelProvider.hotelsByLocation
-                                          .length,
+                                      itemCount: hotelProvider.hotelsByLocation.length,
                                       padding: EdgeInsets.only(
                                           top: 8 + 158 + 52.0
                                       ),
                                       scrollDirection: Axis.vertical,
                                       itemBuilder: (context, index) {
-                                        var count = hotelProvider
-                                            .hotelsByLocation.length > 10 ? 10 : hotelProvider.hotelsByLocation.length;
+                                        var count = hotelProvider.hotelsByLocation.length > 10 ? 10 : hotelProvider.hotelsByLocation.length;
                                         var animation = Tween(
                                             begin: 0.0, end: 1.0)
                                             .animate(CurvedAnimation(

@@ -77,9 +77,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 children: [
                   Container(
                     color: AppTheme.scaffoldBackgroundColor,
-                    child: hotelProvider.isLoading
-                        ? Center(child: CircularProgressIndicator()) // Loading indicator
-                        : ListView.builder(
+                    child: ListView.builder(
                         controller: controller,
                         itemCount: 4,
                         // Số lượng mục cần hiển thị

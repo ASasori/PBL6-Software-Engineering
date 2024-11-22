@@ -1,5 +1,6 @@
 import 'package:booking_hotel_app/models/hotel_list_data.dart';
 import 'package:booking_hotel_app/providers/wish_list_provider.dart';
+import 'package:booking_hotel_app/routes/route_names.dart';
 import 'package:booking_hotel_app/screens/bottom_tab/bottom_tab_screen.dart';
 import 'package:booking_hotel_app/screens/explore_screen/components/time_date_view.dart';
 import 'package:booking_hotel_app/screens/hotel_detail_screen/room_booking_view.dart';
@@ -155,10 +156,11 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
 
             child: IconButton(
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => BottomTabScreen(initialBottomBarType: BottomBarType.Wishlist)));
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => BottomTabScreen(initialBottomBarType: BottomBarType.Wishlist)));
+                NavigationServices(context).gotoBottomTabScreen(bottomBarType: BottomBarType.Wishlist);
               },
               icon: const Icon(Icons.shopping_cart),
             ),

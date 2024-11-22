@@ -11,8 +11,11 @@ class CommonTextFieldView extends StatelessWidget {
   final Function(String)? onChanged;
   final TextInputType keyboardType;
   final TextEditingController? controller;
+  final bool isPasswordField;
+  final VoidCallback? togglePasswordVisibility;
 
-  const CommonTextFieldView({super.key, this.titleText, this.hintText, this.errorText,  this.isObsecureText = false,  this.isAllowTopTitleView = true, required this.padding, this.onChanged, required this.keyboardType, this.controller,});
+  const CommonTextFieldView({super.key, this.titleText, this.hintText, this.errorText,  this.isObsecureText = false,
+    this.isAllowTopTitleView = true, required this.padding, this.onChanged, required this.keyboardType, this.controller, this.isPasswordField = false, this.togglePasswordVisibility,});
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -52,7 +55,17 @@ class CommonTextFieldView extends StatelessWidget {
                       errorText: null,
                       border: InputBorder.none,
                       hintText: hintText,
-                      hintStyle: TextStyle(color: Theme.of(context).disabledColor)
+                      hintStyle: TextStyle(color: Theme.of(context).disabledColor),
+                      suffixIcon: isPasswordField ? IconButton(
+                        icon: Icon(
+                          isObsecureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        onPressed: togglePasswordVisibility,
+                      )
+                          : null,
                     ),
                     keyboardType: keyboardType,
                   ),

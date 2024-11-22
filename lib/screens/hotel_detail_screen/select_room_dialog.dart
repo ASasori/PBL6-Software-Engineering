@@ -18,12 +18,18 @@ class SelectRoomDialog extends StatefulWidget {
 }
 class _SelectRoomDialogState extends State<SelectRoomDialog> {
   String? selectedRoom;
-  List<String> rooms = ['room1', 'room2', 'room3']; // Replace with your actual room data
-  List<String> roomName = [];
+  // List<String> rooms = ['room1', 'room2', 'room3']; // Replace with your actual room data
+  List<String> roomNumber = [];
   @override
   void initState (){
     WidgetsBinding.instance.addPostFrameCallback((_){
-      Provider.of<RoomProvider>(context, listen: false).getRoomsInRoomtype(widget.hotelSlug, widget.roomTypeData);
+      Provider.of<RoomProvider>(context, listen: false).getRoomsInRoomtype(widget.hotelSlug, widget.roomTypeData).then((_){
+        setState(() {
+          roomNumber =  Provider.of<RoomProvider>(context, listen: false).allRoomsInRoomType
+                        .map((room) => room.roomNumber)
+                        .toList();
+        });
+      });
     });
     super.initState();
   }
@@ -53,39 +59,26 @@ class _SelectRoomDialogState extends State<SelectRoomDialog> {
           borderRadius: BorderRadius.circular(8), // Add rounded corners
         ),
         child: DropdownButtonHideUnderline(
-          child: Consumer <RoomProvider> (
-            builder: (context,roomProvider, child) {
-              if (roomProvider.isLoading){
-                return Center(child: CircularProgressIndicator(),);
-              }
-              var allRoomsData = roomProvider.allRoomsInRoomType;
-              if (allRoomsData.isEmpty){
-                return Center(child: Text('No room is available'),);
-              }
-              // for (Room room in allRoomsData){
-              //   roomName.add(room.roomNumber);
-              // }
-              return DropdownButton<String>(
-                value: selectedRoom,
-                padding: EdgeInsets.only(left: 10),
-                hint: Text('Select a room'),
-                isExpanded: true,
-                icon: Icon(Icons.arrow_drop_down),
-                style: TextStyle(fontSize: 16, color: Colors.black),
-                items: rooms.map((String room) {
-                  return DropdownMenuItem<String>(
-                    value: room,
-                    child: Text(room),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedRoom = newValue;
-                  });
-                },
+          child: roomNumber.isEmpty? Center(child: CircularProgressIndicator(),)
+            : DropdownButton<String>(
+            value: selectedRoom,
+            padding: EdgeInsets.only(left: 10),
+            hint: Text('Select a room'),
+            isExpanded: true,
+            icon: Icon(Icons.arrow_drop_down),
+            style: TextStyle(fontSize: 16, color: Colors.black),
+            items: roomNumber.map((String room) {
+              return DropdownMenuItem<String>(
+                value: room,
+                child: Text(room),
               );
-            }
-          )
+            }).toList(),
+            onChanged: (String? newValue) {
+              setState(() {
+                selectedRoom = newValue;
+              });
+            },
+          ),
         ),
       ),
       actions: <Widget>[

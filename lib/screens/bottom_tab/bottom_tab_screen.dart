@@ -36,10 +36,13 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
       vsync: this
     );
     _indexView = Container();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (bottomBarType == BottomBarType.Wishlist) {
+        print ('123456789');
         _LoadingWishlistScreen();
       } if (bottomBarType == BottomBarType.Explore) {
+        print ('000000');
         _LoadingExploreScreen();
       } else {
         _startLoadingScreen();
@@ -69,11 +72,14 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
 
   Future _LoadingWishlistScreen() async  {
     await Future.delayed(const Duration(milliseconds: 480));
-    setState(() {
-      _isFirstTime = false;
-      _indexView = WishlistScreen(animationController: animationController,);
-      animationController.forward();
-    });
+    if (mounted) {
+      setState(() {
+        print("WishList okee");
+        _isFirstTime = false;
+        _indexView = WishlistScreen(animationController: animationController);
+        animationController.forward();
+      });
+    }
   }
 
 
