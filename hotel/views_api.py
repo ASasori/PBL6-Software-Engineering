@@ -5,8 +5,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from hotel.models import Hotel, Booking, ActivityLog, StaffOnDuty, Room, RoomType, Coupon, Notification, Cart, CartItem
-from .serializers import HotelSerializer, RoomTypeSerializer, RoomSerializer, CartSerializer, CartItemSerializer
+from hotel.models import Hotel, Booking, ActivityLog, StaffOnDuty, Room, RoomType, Coupon, Notification, Cart, CartItem, Review
+from .serializers import HotelSerializer, RoomTypeSerializer, RoomSerializer, CartSerializer, CartItemSerializer, ReviewSerializer
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAdminUser
 from datetime import datetime
@@ -16,7 +16,8 @@ from django.urls import reverse
 from django.middleware.csrf import get_token
 from django.db import models
 from django.db.models import Q
-
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 class HotelViewSet(viewsets.ModelViewSet):
     queryset = Hotel.objects.filter(status='Live')
@@ -378,3 +379,42 @@ def payment_failed(request, booking_id):
     booking.payment_status = "failed"
     booking.save()
     return Response({'message': 'Payment failed'}, status=status.HTTP_200_OK)
+
+
+class ReviewViewSet(viewsets.ViewSet):
+    """
+    A ViewSet for handling Reviews.
+    """
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+    @swagger_auto_schema(
+        operation_description="Create a new review",
+        request_body=ReviewSerializer,  # Specify the serializer here
+        responses={201: ReviewSerializer}  # Define the response schema
+    )
+    @action(detail=False, methods=['post'], url_path='post')
+    def create_review(self, request):
+        """Create a review."""
+        try:
+            serializer = ReviewSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save(user=request.user)  # Ensure user is set to the logged-in user
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=True, methods=['get'], url_path='hotel-reviews')
+    def get_reviews_by_hotel(self, request, pk=None):
+        """Fetch all reviews for a specific hotel."""
+        try:
+            hotel = Hotel.objects.get(hid=pk)
+            #hotel = get_object_or_404(Hotel, hid=pk)
+            reviews = Review.objects.filter(hotel=hotel)
+            serializer = ReviewSerializer(reviews, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Hotel.DoesNotExist:
+            return Response({'error': 'Hotel not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

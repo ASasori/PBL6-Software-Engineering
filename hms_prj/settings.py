@@ -238,6 +238,7 @@ JAZZMIN_SETTINGS = {
         "hotel.Notification":"fas fa-bell",
         "hotel.Coupon":"fas fa-tag",
         "hotel.Bookmark":"fas fa-heart",
+        "hotel.Review": "fas fa-star", 
     },
 
 

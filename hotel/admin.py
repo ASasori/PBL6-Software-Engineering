@@ -1,5 +1,5 @@
 from django.contrib import admin
-from hotel.models import Hotel, Booking, ActivityLog, StaffOnDuty, Room, RoomType, HotelGallery, Coupon
+from hotel.models import Hotel, Booking, ActivityLog, StaffOnDuty, Room, RoomType, HotelGallery, Coupon, Review
 from userauths.models import User, Receptionist
 
 class HotelGalleryInline(admin.TabularInline):
@@ -53,6 +53,15 @@ class RoomAdmin(admin.ModelAdmin):
     #             kwargs["queryset"] = RoomType.objects.none()  # Không có RoomType nào nếu không có hotel
     #             print("None hotel")
     #     return super().formfield_for_foreignkey(db_field, request, **kwargs)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ['id', 'hotel', 'user', 'rating', 'review_text', 'date']
+    list_filter = ['hotel', 'rating', 'date']
+    search_fields = ['user__username', 'hotel__name', 'review_text']
+    ordering = ['-date']  # Sắp xếp theo thời gian tạo mới nhất
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related('hotel', 'user')  # Tối ưu hóa truy vấn
 
 
 # Đăng ký các model
@@ -63,3 +72,4 @@ admin.site.register(StaffOnDuty)
 admin.site.register(Room, RoomAdmin)
 admin.site.register(RoomType, RoomTypeAdmin)
 admin.site.register(Coupon)
+admin.site.register(Review, ReviewAdmin)

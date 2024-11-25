@@ -1,10 +1,10 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from hotel.models import Hotel, RoomType
+from hotel.models import Hotel, RoomType, Booking, Room
 from datetime import datetime
 from django.urls import reverse
-
+from django.db.models import Q
 
 @api_view(['POST'])
 def check_room_availability(request):
@@ -19,14 +19,37 @@ def check_room_availability(request):
         checkout = datetime.strptime(data['checkout'], '%Y-%m-%d')
         adult = data['adult']
         children = data['children']
+        total_guests = adult + children
 
-        # Logic to handle room availability checks can be added here
-        # For example, checking if rooms are available for the given dates
+        # Step 1: Get rooms of the selected type
+        rooms = Room.objects.filter(room_type=room_type, is_available=True)
 
-        # Generate the room detail URL as in the original view function
+        # Step 2: Exclude rooms already booked for the given dates
+        booked_rooms = Booking.objects.filter(
+            room__in=rooms
+        ).exclude(
+            Q(check_out_date__lte=checkin) | Q(check_in_date__gte=checkout)
+        ).values_list('room', flat=True)
+        available_rooms = rooms.exclude(id__in=booked_rooms)
+
+        # Step 3: Check room capacity
+        suitable_rooms = available_rooms.filter(room_type__room_capacity__gte=total_guests)
+
+        # If no rooms are available after filtering
+        if not suitable_rooms.exists():
+            return Response({
+                'message': 'No rooms available for the selected criteria.',
+                'checkin': checkin.date(),
+                'checkout': checkout.date(),
+                'adults': adult,
+                'children': children
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Generate the room detail URL
         room_type_url = reverse("hotel:room_type_detail", args=[hotel.slug, room_type.slug])
         url_with_params = f"{room_type_url}?hotel-id={data['hotel_id']}&checkin={data['checkin']}&checkout={data['checkout']}&adult={adult}&children={children}&room_type={room_type.slug}" 
-        # Return the URL and booking details in response
+
+        # Return the room details
         return Response({
             'slug': hotel.slug,
             'hotel': hotel.name,
@@ -34,8 +57,14 @@ def check_room_availability(request):
             'checkin': checkin.date(),
             'checkout': checkout.date(),
             'adults': adult,
-            'childrens': children,
-            'room_type_url': url_with_params  # URL with parameters for further action
+            'children': children,
+            'room_type_url': url_with_params,
+            'available_rooms': [
+                {
+                    'room_number': room.room_number,
+                    'capacity': room.room_type.room_capacity,
+                } for room in suitable_rooms
+            ]
         }, status=status.HTTP_200_OK)
 
     except Hotel.DoesNotExist:

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Hotel, RoomType, Room, Booking, Cart, CartItem, HotelGallery
+from .models import Hotel, RoomType, Room, Booking, Cart, CartItem, HotelGallery, Review
 from taggit.serializers import TagListSerializerField
 
 class HotelGallerySerializer(serializers.ModelSerializer):
@@ -44,3 +44,16 @@ class CartItemSerializer(serializers.ModelSerializer):
         model = CartItem
         fields = '__all__'
         read_only_fields = ['cart']
+
+class ReviewSerializer(serializers.ModelSerializer):
+    # room_type = serializers.SlugRelatedField(
+    #     queryset=RoomType.objects.all(),
+    #     slug_field='type'  # Trường 'type' của RoomType
+    # )
+    class Meta:
+        model = Review
+        fields = ['id', 'hotel', 'room_type', 'user', 'rating', 'review_text', 'date']
+        read_only_fields = ['id', 'user', 'date']
+        extra_kwargs = {
+            'room_type': {'required': False}  # Không bắt buộc
+        }
