@@ -27,11 +27,14 @@ const ListHotel = ()=> {
             url += `?name=${encodeURIComponent(hotelNames)}`;
         }
         try {
-            const response = await axios.get(url,{
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const response = await axios.get(url
+            //     ,
+            //     {
+            //     headers: {
+            //         'Authorization': `Bearer ${token}`
+            //     }
+            // }
+            );
             setHotels(response.data);
         } catch (err) {
             setError(err);
@@ -61,12 +64,12 @@ const ListHotel = ()=> {
                 <div id="titlebar" class="gradient">
                     <div class="container">
                         <div class="row">
-                            <div class="col-md-12">
-                                <h2>Layout List With Sidebar</h2>
+                            <div class="col-md-12 padding-top-60">
+                                <h2>List Hotel</h2>
                                 <nav id="breadcrumbs">
                                     <ul>
                                         <li><a href="index_1.html">Home</a></li>
-                                        <li>Layout List With Sidebar</li>
+                                        <li>List Hotel</li>
                                     </ul>
                                 </nav>
                             </div>
@@ -140,6 +143,7 @@ const ListHotel = ()=> {
                                                     <Link to={`/detailhotel/${hotel.slug}`} className="utf_listing_item">
                                                         <div class="utf_listing_item-image">
                                                             <img src={hotel.map_image} alt=""/>
+                                                            <p>{hotel.map_image}</p>
                                                             <span class="like-icon"></span>
                                                             <span class="tag"><i class="im im-icon-Hotel"></i> Hotels</span>
                                                             <div class="utf_listing_prige_block utf_half_list">

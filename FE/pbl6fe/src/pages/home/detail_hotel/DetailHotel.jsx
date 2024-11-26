@@ -21,6 +21,7 @@ const DetailHotel = () => {
     const [checkout, setCheckout] = useState('');
     const [initRoomType, setInitRoomType] = useState('');
     const [selectedRoom, setSelectedRoom] = useState(null);
+    const [hotelgalleries, setHotelGalleries] = useState([]);
     const baseURL = API_BASE_URL;
 
     const navigate = useNavigate();
@@ -86,11 +87,13 @@ const DetailHotel = () => {
                 children: childrens
             };
     
-            axios.post(urlAPICheckRoomAvailability, data, {
-                headers: {
-                    'Authorization': `Bearer ${token}` 
-                }
-            })
+            axios.post(urlAPICheckRoomAvailability, data
+                // , {
+                //     headers: {
+                //         'Authorization': `Bearer ${token}` 
+                //     }
+                // }
+            )
             .then(response => {
                 responseData = response.data
                 console.log('responseData : ', responseData)
@@ -115,22 +118,38 @@ const DetailHotel = () => {
         const fetchHotelDetails = async () => {
         console.log('token :',token);
         try {
-            const responseHotelDetail = await axios.get(`${baseURL}/api/hotels/${slug}`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const responseHotelDetail = await axios.get(`${baseURL}/api/hotels/${slug}`
+                // ,
+                // {
+                //     headers: {
+                //         'Authorization': `Bearer ${token}`
+                //     }
+                // }
+            );
             setDetailHotel(responseHotelDetail.data);
 
-            const responseRoomType = await axios.get(`${baseURL}/api/hotels/${slug}/room-types`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-          console.log(responseRoomType.data.roomtype);
-          setRoomTypes(responseRoomType.data.roomtype);
+            const responseRoomType = await axios.get(`${baseURL}/api/hotels/${slug}/room-types`
+                // ,
+                // {
+                //     headers: {
+                //         'Authorization': `Bearer ${token}`
+                //     }
+                // }
+            );
+            console.log(responseRoomType.data.roomtype);
+            setRoomTypes(responseRoomType.data.roomtype);
+
+            const responseHotelGallery = await axios.get(`${baseURL}/api/hotels/${slug}/gallery`
+                // ,
+                // {
+                //     headers: {
+                //         'Authorization': `Bearer ${token}`
+                //     }
+                // }
+            );
+            console.log(responseHotelGallery.data.gallery);
+            setHotelGalleries(responseHotelGallery.data.gallery)
+
         } catch (err) {
           setError(err.message);
         } finally {
@@ -161,16 +180,13 @@ const DetailHotel = () => {
     return (
         <>
             <div id="main_wrapper">
-                <Header />
+                {/* <Header /> */}
                 <div class="clearfix"></div>
                 <div id="utf_listing_gallery_part" class="utf_listing_section">
                     <div class="utf_listing_slider utf_gallery_container margin-bottom-0">
-                        <img src={detailHotel.map_image} alt="" class="item utf_gallery"/>
-                        {/* <a href={`http://localhost:3000/detailhotel/intercontinental-danang`} class="utf_listing_item"/> */}
-                        <a href={detailHotel.map_image} data-background-image={detailHotel.map_image} class="item utf_gallery slick-slide slick-current slick-active slick-center"></a>
-                        <a href="images/music_listing_02.jpg" data-background-image="images/music_listing_02.jpg" class="item utf_gallery"></a>
-                        <a href="images/music_listing_03.jpg" data-background-image="images/music_listing_03.jpg" class="item utf_gallery"></a>
-                        <a href="images/music_listing_04.jpg" data-background-image="images/music_listing_04.jpg" class="item utf_gallery"></a>
+                        {hotelgalleries.map(hotelgallery => (
+                                <img src={`${baseURL}${hotelgallery.image}`} alt="" class="item utf_gallery"/>
+                        ))}
                     </div>
                 </div>
                 <div class="container">
@@ -240,6 +256,13 @@ const DetailHotel = () => {
                                         </ul>
                                     </div>
                                 </div>
+                                <a
+                                href="#"
+                                class="show-more-button"
+                                data-more-title="Show More"
+                                data-less-title="Show Less"
+                                ><i class="fa fa-angle-double-down"></i>
+                                </a>
                             </div>
                             {/* Modal for room details */}
                             {selectedRoom && (

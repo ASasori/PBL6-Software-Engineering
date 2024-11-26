@@ -7,6 +7,7 @@ import Register from "./pages/auth/register";
 import ListHotel from "./pages/home/list_hotel/ListHotel";
 import DetailHotel from "./pages/home/detail_hotel/DetailHotel";
 import CheckRoomAvailability from "./pages/home/check_room_availability/CheckRoomAvailability";
+import Checkout from "./pages/home/check_out/Checkout";
 import SelectedRoom from "./pages/home/selected_rooms/SelectedRoom";
 import { RoomCountProvider } from './pages/home/RoomCountContext/RoomCountContext';
 import Header from './pages/baseComponent/Header';
@@ -21,6 +22,7 @@ export default function App() {
             <Route index element={<Home />} />
             <Route path="login" element={<Login />} />
             <Route path="selected_room" element={<SelectedRoom />} />
+            <Route path="checkout" element={<Checkout />} />
             <Route path="register" element={<Register />} />
             <Route path="listhotel" element={<ListHotel />} />
             <Route path="detailhotel/:slug" element={<DetailHotel />} />

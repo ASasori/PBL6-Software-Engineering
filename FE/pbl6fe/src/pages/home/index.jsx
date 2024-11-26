@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import Header from '../baseComponent/Header';
 import { useRoomCount } from './RoomCountContext/RoomCountContext';
 import API_BASE_URL from '../../config/apiConfig';
+import { Link } from 'react-router-dom';
 
 
 const Index = ()=>{
@@ -32,12 +33,15 @@ const Index = ()=>{
         const fetchHotels = async () => {
             console.log('baseURL: ' + baseURL);
             try {
-                const response = await axios.get(`${baseURL}/api/hotels/`,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                const response = await axios.get(`${baseURL}/api/hotels/`
+                // ,
+                // {
+                //     headers: {
+                //         'Authorization': `Bearer ${token}`
+                //     }
+                // }
+                );
+                console.log(response.data);
                 setHotels(response.data);
             } catch (err) {
                 setError(err.message);
@@ -73,7 +77,7 @@ const Index = ()=>{
       
     return (
         <div id="main_wrapper">
-            <Header />
+            {/* <Header /> */}
             <div class="clearfix"></div>
 
             {/* Banner */}
@@ -220,11 +224,11 @@ const Index = ()=>{
                         <div class="row">     
                             <div class="col-md-12">
                                 <div class="simple_slick_carousel_block utf_dots_nav">
-                                    <ul>
+                                    <ul className="hotels-list">
                                         {hotels.map(hotel=>(
-                                            <li key={hotel.id}>
+                                            <li>
                                                 <div class="utf_carousel_item">
-                                                    <a href="listings_single_page_1.html" class="utf_listing_item-container compact">
+                                                    <Link to={`/detailhotel/${hotel.slug}`} class="utf_listing_item-container compact">
                                                         <div class="utf_listing_item"> <img src={hotel.map_image} alt=""/> <span class="tag"><i class="im im-icon-Chef-Hat"></i> Restaurant</span> <span class="featured_tag">Featured</span>
                                                             <span class="utf_open_now">Open Now</span>
                                                             <div class="utf_listing_item_content">
@@ -242,32 +246,11 @@ const Index = ()=>{
                                                             <span class="utf_view_count"><i class="fa fa-eye"></i>{hotel.views}</span>
                                                             <span class="like-icon"></span>
                                                         </div>
-                                                    </a>
+                                                    </Link>
                                                 </div>
                                             </li>
                                         ))}
                                     </ul>
-                                    <div class="utf_carousel_item">
-                                        <a href="listings_single_page_1.html" class="utf_listing_item-container compact">
-                                            <div class="utf_listing_item"> <img src="images/utf_listing_item-06.jpg" alt=""/> <span class="tag"><i class="im im-icon-Chef-Hat"></i> Restaurant</span>
-                                                <span class="utf_open_now">Open Now</span>
-                                                <div class="utf_listing_item_content">
-                                                    <div class="utf_listing_prige_block">
-                                                        <span class="utf_meta_listing_price"><i class="fa fa-tag"></i> $25 - $45</span>
-                                                        <span class="utp_approve_item"><i class="utf_approve_listing"></i></span>
-                                                    </div>
-                                                    <h3>Fairmont Pacific Rim</h3>
-                                                    <span><i class="fa fa-map-marker"></i> The Ritz-Carlton, Hong Kong</span>
-                                                    <span><i class="fa fa-phone"></i> (+15) 124-796-3633</span>
-                                                </div>
-                                            </div>
-                                            <div class="utf_star_rating_section" data-rating="4.5">
-                                                <div class="utf_counter_star_rating">(4.5)</div>
-                                                <span class="utf_view_count"><i class="fa fa-eye"></i> 822+</span>
-                                                <span class="like-icon"></span>
-                                            </div>
-                                        </a>
-                                    </div>
                                 </div>
                             </div>
                         </div>

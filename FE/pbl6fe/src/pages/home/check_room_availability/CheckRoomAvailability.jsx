@@ -17,8 +17,8 @@ const CheckRoomAvailability = () => {
     const [listRoomTypes, setListRoomTypes] = useState([]); // list roomtypes
     const [error, setError] = useState([]);
     const [selectedRoom, setSelectedRoom] = useState(null);
-    const baseURL = API_BASE_URL;
 
+    const baseURL = API_BASE_URL;
 
     const { token } = useAuth();
     const { slug } = useParams();
@@ -43,38 +43,65 @@ const CheckRoomAvailability = () => {
     useEffect(() => {
         const fetchRoomAvailability = async () => {
             try {
-                const responseRoomAvailability = await axios.get(`${baseURL}/api/hotels/${slug}/room-types/${initialRoomType}/rooms`,{
-                    headers: {
-                        'Authorization': `Bearer ${token}`  
-                    }
-                })
+                const responseRoomAvailability = await axios.get(`${baseURL}/api/hotels/${slug}/room-types/${initialRoomType}/rooms`
+                    // ,{
+                    //     headers: {
+                    //         'Authorization': `Bearer ${token}`  
+                    //     }
+                    // }
+                )
                 setRoomAvailabilities(responseRoomAvailability.data.listroom);
                 console.log(responseRoomAvailability.data.listroom);
                 setRoomType(responseRoomAvailability.data.roomtype);
                 setNameHotel(responseRoomAvailability.data.hotel)
 
-                const responseListRoomType = await axios.get(`${baseURL}/api/hotels/${slug}/room-types`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`  
-                    }
-                });
+                const responseListRoomType = await axios.get(`${baseURL}/api/hotels/${slug}/room-types`
+                    // , {
+                    //     headers: {
+                    //         'Authorization': `Bearer ${token}`  
+                    //     }
+                    // }
+                );
                 console.log(responseListRoomType.data.roomtype);
                 setListRoomTypes(responseListRoomType.data.roomtype)
             } catch (error) {
                 setError(error)
             }
         };
+
+        const fetchCartItemCount = async () => {
+            const urlAPIGetCartCount = `${baseURL}/api/get_cart_item_count`; 
+            try {
+                const response = await axios.get(urlAPIGetCartCount, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    }
+                });
+                const totalItems = response.data.total_items_in_cart; 
+                console.log('Total items in cart:', totalItems); 
+                setRoomCount(totalItems);
+            } catch (error) {
+                console.error('Error fetching cart count', error);
+            }
+        };
+
+        if (token) {
+            console.log('access token:', token);
+            fetchCartItemCount();
+        }
         fetchRoomAvailability();
     },[initialRoomType])
 
     const fetchTypeRoom = async(slugHotel, slugRoomtype) => {
         const URL = `${baseURL}/api/hotels/${slugHotel}/room-types/${slugRoomtype}/rooms/`;
         try {
-            const respoonse = await axios.get(URL, {
-                headers: {
-                    'Authorization' : `Bearer ${token}`
-                }
-            });
+            const respoonse = await axios.get(URL
+                // , {
+                //     headers: {
+                //         'Authorization' : `Bearer ${token}`
+                //     }
+                // }
+            );
             setSelectedRoom(respoonse.data.roomtype);
         }
         catch (error) {
@@ -132,11 +159,13 @@ const CheckRoomAvailability = () => {
                     children: childrens
                 };
                 console.log(data)
-                axios.post(urlAPICheckRoomAvailability, data, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
+                axios.post(urlAPICheckRoomAvailability, data
+                    // , {
+                    //     headers: {
+                    //         'Authorization': `Bearer ${token}`
+                    //     }
+                    // }
+                )
                 .then(response => {
                     responseData = response.data
                     console.log('responseData : ', responseData)
@@ -189,15 +218,33 @@ const CheckRoomAvailability = () => {
             setRoomCount(prevCount => prevCount + 1);
         })
         .catch(error => {
-            if (error.response && error.response.data.error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: error.response.data.error,
-                    text: 'Vui lòng kiểm tra lại.',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            } else {
+            if (error.response) {
+                if (error.response.status === 401) {
+                    localStorage.setItem('redirectUrl', window.location.pathname + window.location.search);
+                    // Hiển thị thông báo lỗi 401
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Vui lòng đăng nhập!',
+                        text: 'Bạn cần đăng nhập để thực hiện hành động này.',
+                        confirmButtonText: 'Đăng nhập',
+                        // Chuyển hướng đến trang đăng nhập khi nhấn OK
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '/login'; // Đường dẫn đến trang đăng nhập
+                        }
+                    });
+                } else if (error.response.data.error) {
+                    // Xử lý các lỗi khác
+                    Swal.fire({
+                        icon: 'error',
+                        title: error.response.data.error,
+                        text: 'Vui lòng kiểm tra lại.',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                }
+            }
+            else {
                 console.error('There was an error', error);
             }
         });
@@ -221,16 +268,16 @@ const CheckRoomAvailability = () => {
         <>
             <div id="titlebar" class="gradient">
                 <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                    <h2>{nameHotel.name} - {initialRoomType} Room</h2>
-                    <nav id="breadcrumbs">
-                        <ul>
-                        <li><p>{roomAvailabilities.length} Available Rooms</p></li>
-                        </ul>
-                    </nav>
+                    <div class="row">
+                        <div class="col-md-12 padding-top-60">
+                        <h2>{nameHotel.name} - {initialRoomType} Room</h2>
+                        <nav id="breadcrumbs">
+                            <ul>
+                            <li><p>{roomAvailabilities.length} Available Rooms</p></li>
+                            </ul>
+                        </nav>
+                        </div>
                     </div>
-                </div>
                 </div>
             </div>
             <section class="fullwidth_block margin-top-0 padding-top-0 padding-bottom-50" data-background-color="#fff"> 

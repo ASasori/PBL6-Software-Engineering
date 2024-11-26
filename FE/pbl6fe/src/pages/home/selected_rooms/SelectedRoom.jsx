@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { useRoomCount } from '../RoomCountContext/RoomCountContext';
 import API_BASE_URL from '../../../config/apiConfig';
 
+
 const SelectedRoom = () => {
 
     const { token } = useAuth();
@@ -16,6 +17,7 @@ const SelectedRoom = () => {
     const [selectedRoom, setSelectedRoom] = useState(null);
     const { setRoomCount } = useRoomCount();
     const baseURL = API_BASE_URL;
+    const navigate = useNavigate();
 
 
     const fetchCart = async() => {
@@ -95,13 +97,17 @@ const SelectedRoom = () => {
         }
     };
 
+    const handleConfirm= () => {
+        navigate(`/checkout`);
+    }
+
     return (
         <>
             <div id="main_wrapper" class="selection-list">
                 <div id="titlebar" class="gradient">
                     <div class="container">
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-12 padding-top-60">
                             <h2>All Room Selections</h2>
                             <nav id="breadcrumbs">
                                 <ul>
@@ -142,7 +148,16 @@ const SelectedRoom = () => {
                                                                 >
                                                                     <strong>View detail...</strong>
                                                                 </p>
-                                                                <span> {room.price} VNĐ </span>
+                                                                {/* <span> {room.price} VNĐ </span> */}
+                                                                {(() => {
+                                                                    const checkInDate = new Date(room.check_in_date);
+                                                                    const checkOutDate = new Date(room.check_out_date);
+                                                                    const timeDifference = checkOutDate - checkInDate;
+                                                                    const dayDifference = timeDifference / (1000 * 3600 * 24); // Chuyển đổi từ milliseconds sang ngày
+                                                                    const totalPrice = room.price * dayDifference; 
+
+                                                                    return <span>{dayDifference} x {room.price} VNĐ</span>;
+                                                                })()}
                                                             </li>
                                                         </>
                                                     ))}
@@ -184,10 +199,25 @@ const SelectedRoom = () => {
                                     </div>
                                 </div>
                             )}
+
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px', marginBottom: '10px' }}>
+                                <button 
+                                    type="submit" 
+                                    className="button utf_booking_confirmation_button"
+                                    style={{ margin: '0' }} 
+                                    onClick={()=> handleConfirm()}
+                                >
+                                    Check again and confirm <i className="fas fa-right-arrow"></i>
+                                </button>
+                            </div>
+                            {/* <div class="col-lg-12">
+                                    <button type="submit" class="button utf_booking_confirmation_button margin-top-20 margin-bottom-10"><i class="fas fa-right-arrow"></i></button> 		
+                            </div> */}
+                
                             
                             
-                            <form class="utf_booking_listing_section_form margin-bottom-40" method="POST">
-                            {/* {% csrf_token %} */}
+                            {/* <form class="utf_booking_listing_section_form margin-bottom-40" method="POST">
+                    
                             <h3><i class="fas fa-user"></i> Billing Information</h3>
                             <div class="row">
                                 <div class="col-md-12">
@@ -210,17 +240,17 @@ const SelectedRoom = () => {
                                     <button type="submit" class="button utf_booking_confirmation_button margin-top-20 margin-bottom-10">Continue to checkout <i class="fas fa-right-arrow"></i></button> 		
                                 </div>
                             </div>
-                            </form>
+                            </form> */}
                         </div>
-                        <div class="col-lg-4 col-md-4 margin-top-0 utf_listing_payment_section">
+                        {/* <div class="col-lg-4 col-md-4 margin-top-0 utf_listing_payment_section">
                             <div class="utf_booking_listing_item_container compact utf_order_summary_widget_section">
                             <div class="listing-item">
                                 <img src="{{hotel.image.url}}" alt=""/>
                                 <div class="utf_listing_item_content">
-                                    {/* <h3>{{hotel.name}}</h3> */}
+                                    <h3>{{hotel.name}}</h3>
                                     <span><i class="fa fa-map-marker"></i> </span>
                                     <br/>
-                                    {/* <span><i class="fa fa-phone"></i> {{hotel.mobile}}</span>											 */}
+                                    <span><i class="fa fa-phone"></i> {{hotel.mobile}}</span>											
                                     <div class="utf_star_rating_section" data-rating="4.5">
                                         <div class="utf_counter_star_rating">(18) Reviews</div>
                                     </div>
@@ -230,16 +260,16 @@ const SelectedRoom = () => {
                             <div class="boxed-widget opening-hours summary margin-top-0">
                             <h3><i class="fa fa-calendar-check-o"></i> Booking Summary</h3>
                             <ul>
-                                {/* <li>Check-in <span>{{checkin}}</span></li>
+                                <li>Check-in <span>{{checkin}}</span></li>
                                 <li>Check-out <span>{{checkout}}</span></li>
                                 <li>Total Days <span>{{total_days}} Days</span></li>
                                 <li>Adults <span>{{ adult }} Adult</span></li>
                                 <li>Children <span>{{ children }} Children</span></li>
                                 <li>V.A.T <span>$0.00</span></li>
-                                <li class="total-costs">Total Cost <span>${{total}}</span></li> */}
+                                <li class="total-costs">Total Cost <span>${{total}}</span></li>
                             </ul>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

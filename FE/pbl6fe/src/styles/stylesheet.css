@@ -22406,3 +22406,16 @@ select.selectpicker {
   background-color: white; /* Màu nền cho header */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Để tạo hiệu ứng bóng */
 }
+
+.hotels-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 cột */
+  gap: 16px; /* Khoảng cách giữa các thẻ */
+  padding: 0;
+  list-style: none;
+}
+
+.hotels-list li {
+  box-sizing: border-box; /* Đảm bảo padding và border được tính vào chiều rộng */
+}
+

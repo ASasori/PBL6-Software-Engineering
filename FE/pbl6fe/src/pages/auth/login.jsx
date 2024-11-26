@@ -11,6 +11,7 @@ const Login = () => {
     const [message, setMessage] = useState('');
     const { login, token } = useAuth();
     const navigate = useNavigate();
+    const redirectUrl = localStorage.getItem('redirectUrl');
     const baseURL = API_BASE_URL;
 
     useEffect(() => {
@@ -40,7 +41,14 @@ const Login = () => {
                 setMessage('Login successful');
                 console.log('Login successful:', response.data);
                 login(response.data.access); 
-                navigate('/');
+                if (redirectUrl) {
+                    localStorage.removeItem('redirectUrl'); 
+                    // window.location.href = redirectUrl; 
+                    navigate(redirectUrl);
+                } else {
+                    // window.location.href = '/'; 
+                    navigate('/');
+                }
                 Swal.fire({
                     icon: 'success',
                     title: 'Đăng nhập thành công!',
