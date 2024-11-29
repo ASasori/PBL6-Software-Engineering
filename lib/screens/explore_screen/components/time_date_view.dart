@@ -24,8 +24,7 @@ class TimeDateView extends StatefulWidget {
 }
 
 class _TimeDateViewState extends State<TimeDateView> {
-  RoomData _roomData = RoomData(1, 2);
-
+  RoomData _roomData = RoomData(1, 2, 2);
   late DateTime startDate ;
   late DateTime endDate ;
   LanguageType _languageType = applicationcontext == null ? LanguageType.en : applicationcontext!.read<ThemeProvider>().languageType;
@@ -40,24 +39,25 @@ class _TimeDateViewState extends State<TimeDateView> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 16, bottom: 16, right: 16),
+      padding: EdgeInsets.only(left: 16, bottom: 22),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           _getDateRoomUi(AppLocalizations(context).of("choose_date"),
-              "${DateFormat("dd, MMM", _languageType.toString().split(".")[1]).format(startDate)} - ${DateFormat("dd, MMM", _languageType.toString().split(".")[1]).format(endDate)}",
+              "${DateFormat("dd, MMM", _languageType.toString().split(".")[1]).format(startDate ?? DateTime.now())} - ${DateFormat("dd, MMM", _languageType.toString().split(".")[1]).format(endDate ?? DateTime.now())}",
                   () {
                 _showDemoDialog(context);
               }),
+          SizedBox(width: 10,),
           Container(
             width: 1,
-            height: 42,
+            height: 100,
             color: Colors.grey.withOpacity(0.8),
           ),
-          _getDateRoomUi(AppLocalizations(context).of("number_room"),
-              Helper.getRoomText(_roomData), () {
-                _showPopUp();
-              }),
+          // _getDateRoomUi(AppLocalizations(context).of("number_room"),
+          // Helper.getRoomText(_roomData), () {
+          //   _showPopUp();
+          // }),
         ],
       ),
     );
@@ -83,7 +83,6 @@ class _TimeDateViewState extends State<TimeDateView> {
                   children: <Widget>[
                     Text(
                       title,
-                      // "Choose date",
                       style: TextStyles(context)
                           .getDescriptionStyle()
                           .copyWith(fontSize: 16),
@@ -126,8 +125,8 @@ class _TimeDateViewState extends State<TimeDateView> {
                     onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
                       setStateInDialog(() {
                         if (args.value is PickerDateRange) {
-                          startDate = args.value.startDate!;
-                          endDate = args.value.endDate!;
+                          startDate = args.value.startDate ?? DateTime.now(); // Gán giá trị mặc định nếu null
+                          endDate = args.value.endDate ?? args.value.startDate ?? DateTime.now();
                         }
                       });
                     },
@@ -161,18 +160,18 @@ class _TimeDateViewState extends State<TimeDateView> {
 
 
 
-  void _showPopUp() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => RoomPopupView(
-        roomData: _roomData,
-        barrierDismissible: true,
-        onChnage: (data) {
-          setState(() {
-            _roomData = data;
-          });
-        },
-      ),
-    );
-  }
+  // void _showPopUp() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) => RoomPopupView(
+  //       roomData: _roomData,
+  //       barrierDismissible: true,
+  //       onChnage: (data) {
+  //         setState(() {
+  //           _roomData = data;
+  //         });
+  //       },
+  //     ),
+  //   );
+  // }
 }

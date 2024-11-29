@@ -5,8 +5,7 @@ class ImageLocation {
   ImageLocation({required this.imagePath});
 
   factory ImageLocation.fromJson(Map<String, dynamic> json){
-    final Localfiles local = Localfiles();
-    final String baseUrl = local.baseUrl ;
+    const String baseUrl = Localfiles.baseUrl ;
     String fullImagePath = '$baseUrl${json['imagePath']}';
     return ImageLocation(imagePath: fullImagePath,);
   }

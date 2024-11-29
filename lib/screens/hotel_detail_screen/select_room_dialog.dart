@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/booking.dart';
 import '../../models/hotel_list_data.dart';
+import '../../models/room_data.dart';
 import '../../providers/room_provider.dart';
 import '../../providers/wish_list_provider.dart';
 
@@ -11,7 +12,8 @@ class SelectRoomDialog extends StatefulWidget {
   final RoomType roomTypeData ;
   final String hotelSlug;
   final DateTime startDate,endDate;
-  const SelectRoomDialog({Key? key, required this.roomTypeData, required this.hotelSlug, required this.startDate, required this.endDate}) : super(key: key);
+  final RoomData roomData;
+  const SelectRoomDialog({Key? key, required this.roomTypeData, required this.hotelSlug, required this.startDate, required this.endDate, required this.roomData}) : super(key: key);
 
   @override
   _SelectRoomDialogState createState() => _SelectRoomDialogState();
@@ -98,7 +100,8 @@ class _SelectRoomDialogState extends State<SelectRoomDialog> {
                 if (selectedRoom != null) {
                   // Access the roomData from RoomBookView using a callback
                   final roomtypeData = widget.roomTypeData;
-
+                  print("${ roomtypeData.type}, ${ roomtypeData.imageUrl}, ${ roomtypeData.price} \n"
+                      "${selectedRoom}, ${widget.startDate}, ${widget.endDate}, ${widget.roomData.adult}, ${widget.roomData.children}");
                   if (roomtypeData != null) {
                     BookingData value = new BookingData(
                       bookingID: "B003",

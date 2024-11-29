@@ -10,8 +10,7 @@ class HotelGallery {
   });
 
   factory HotelGallery.fromJson(Map<String, dynamic> json) {
-    final Localfiles local = Localfiles();
-    final String baseUrl = local.baseUrl ;
+    const String baseUrl = Localfiles.baseUrl ;
 
     return HotelGallery(
       id: json['hgid'] ?? '', // Sử dụng giá trị mặc định nếu `hgid` bị thiếu
@@ -58,8 +57,7 @@ class Hotel {
   });
 
   factory Hotel.fromJson(Map<String, dynamic> json) {
-    final Localfiles local = Localfiles();
-    final String baseUrl = local.baseUrl ;
+    const String baseUrl = Localfiles.baseUrl ;
 
     String? mapImageUrl = json['map_image'] != null ? '$baseUrl${json['map_image']}' : null;
     String desc = (json['description'] ?? '').replaceAll(RegExp(r'<[^>]*>'), '');

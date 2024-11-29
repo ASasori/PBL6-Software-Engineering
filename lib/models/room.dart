@@ -24,8 +24,7 @@ class RoomType {
   });
   // Tạo RoomType từ JSON
   factory RoomType.fromJson(Map<String, dynamic> json) {
-    final Localfiles local = Localfiles();
-    final String baseUrl = local.baseUrl ;
+    const String baseUrl = Localfiles.baseUrl ;
     return RoomType(
       hotelId: json['hotel_id'] ?? '',
       type: json['type'] ?? '',

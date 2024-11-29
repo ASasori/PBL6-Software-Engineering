@@ -730,6 +730,16 @@
     "vn": "Người"
   },
   {
+    "text_id": "adult_data",
+    "en": "Adult",
+    "vn": "Người lớn"
+  },
+  {
+    "text_id": "children_data",
+    "en": "Children",
+    "vn": "Trẻ em"
+  },
+  {
     "text_id": "room_data",
     "en": "Room",
     "vn": "Phòng"

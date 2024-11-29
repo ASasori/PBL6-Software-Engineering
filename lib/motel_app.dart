@@ -1,6 +1,5 @@
 import 'dart:ffi';
 import 'dart:io';
-
 import 'package:booking_hotel_app/common/common.dart';
 import 'package:booking_hotel_app/language/appLocalizations.dart';
 import 'package:booking_hotel_app/screens/splash/introductionScreen.dart';
@@ -96,6 +95,4 @@ class _MotelAppState extends State<MotelApp> {
       systemNavigationBarIconBrightness: brightness
     ));
   }
-
-  
 }

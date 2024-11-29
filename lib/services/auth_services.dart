@@ -2,11 +2,12 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:booking_hotel_app/models/token_manager.dart';
 import 'api_services.dart';
+import 'package:booking_hotel_app/utils/localfiles.dart';
 
 class AuthService {
   final Dio _dio = Dio();
-  final ApiService _apiService = ApiService();
-  static const String baseUrl = 'http://192.168.1.28:8000';
+  // final ApiService _apiService = ApiService();
+  static const String baseUrl = Localfiles.baseUrl ;
 
   Future<bool> login(String email, String password) async {
     try {

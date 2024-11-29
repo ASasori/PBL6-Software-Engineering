@@ -10,14 +10,14 @@ import '../../../widgets/common_button.dart';
 import '../../../widgets/common_card.dart';
 
 class RoomPopupView extends StatefulWidget {
-  final Function(RoomData) onChnage;
+  final Function(RoomData) onChange;
   final bool barrierDismissible;
   final RoomData roomData;
 
   const RoomPopupView({
     Key? key,
     required this.barrierDismissible,
-    required this.onChnage,
+    required this.onChange,
     required this.roomData,
   }) : super(key: key);
   @override
@@ -29,20 +29,20 @@ class _RoomPopupViewState extends State<RoomPopupView>
   PopupTextType popupTextType = PopupTextType.no;
   late AnimationController animationController;
 
-  DateTime? startDate;
-  DateTime? endDate;
   RoomData? _roomData;
   @override
   void initState() {
+
+    super.initState();
     animationController =
         AnimationController(duration: Duration(milliseconds: 400), vsync: this);
-
     animationController.forward();
+
     _roomData = RoomData(
       widget.roomData.numberRoom,
-      widget.roomData.people,
+      widget.roomData.adult,
+      widget.roomData.children,
     );
-    super.initState();
   }
 
   @override
@@ -90,8 +90,10 @@ class _RoomPopupViewState extends State<RoomPopupView>
                         ),
                         getRowView(AppLocalizations(context).of("number_room"),
                             _roomData!.numberRoom, PopupTextType.no),
-                        getRowView(AppLocalizations(context).of("people_data"),
-                            _roomData!.people, PopupTextType.ad),
+                        getRowView(AppLocalizations(context).of("adult_data"),
+                            _roomData!.adult, PopupTextType.ad),
+                        getRowView(AppLocalizations(context).of("children_data"),
+                            _roomData!.children, PopupTextType.ch),
                         // getRowView("Children", " (0-17)", ch, PopupTextType.ch),
                         Padding(
                           padding: const EdgeInsets.only(
@@ -101,11 +103,11 @@ class _RoomPopupViewState extends State<RoomPopupView>
                             AppLocalizations(context).of("Apply_date"),
                             onTap: () {
                               try {
-                                widget.onChnage(
-                                  _roomData!,
-                                );
+                                widget.onChange(_roomData!);
                                 Navigator.pop(context);
-                              } catch (e) {}
+                              } catch (e) {
+                                debugPrint("Error: $e");
+                              }
                             },
                           ),
                         )
@@ -171,10 +173,15 @@ class _RoomPopupViewState extends State<RoomPopupView>
                                     if (_roomData!.numberRoom < 0) {
                                       _roomData!.numberRoom = 0;
                                     }
+                                  } else if (popupTextType == PopupTextType.ad){
+                                    _roomData!.adult -= 1;
+                                    if (_roomData!.adult < 0) {
+                                      _roomData!.adult = 0;
+                                    }
                                   } else {
-                                    _roomData!.people -= 1;
-                                    if (_roomData!.people < 0) {
-                                      _roomData!.people = 0;
+                                    _roomData!.children -= 1;
+                                    if (_roomData!.children < 0) {
+                                      _roomData!.children = 0;
                                     }
                                   }
                                 });
@@ -205,7 +212,9 @@ class _RoomPopupViewState extends State<RoomPopupView>
                                     _roomData!.numberRoom += 1;
                                   } else if (popupTextType ==
                                       PopupTextType.ad) {
-                                    _roomData!.people += 1;
+                                    _roomData!.adult += 1;
+                                  } else {
+                                    _roomData!.children += 1;
                                   }
                                 });
                               },

@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:booking_hotel_app/models/token_manager.dart';
+import 'package:booking_hotel_app/utils/localfiles.dart';
 
 class ApiService {
   final Dio _dio = Dio();
-  final String _baseUrl = 'http://192.168.1.28:8000';
+  static const String _baseUrl = Localfiles.baseUrl;
 
   ApiService() {
     _dio.interceptors.add(InterceptorsWrapper(

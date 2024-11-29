@@ -9,6 +9,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../language/appLocalizations.dart';
 import '../../models/hotel_list_data.dart';
 import '../../models/room.dart';
+import '../../models/room_data.dart';
 import '../../utils/helper.dart';
 import '../../utils/localfiles.dart';
 import '../../utils/text_styles.dart';
@@ -20,13 +21,18 @@ class RoomBookView extends StatefulWidget {
   final AnimationController animationController;
   final Animation<double> animation;
   final DateTime startDate,endDate;
+  final RoomData roomData;
 
   const RoomBookView(
       {Key? key,
         required this.roomTypeData,
         required this.hotelSlug,
         required this.animationController,
-        required this.animation, required this.startDate, required this.endDate})
+        required this.animation,
+        required this.startDate,
+        required this.endDate,
+        required this.roomData,
+      })
       : super(key: key);
 
   @override
@@ -155,14 +161,15 @@ class _RoomBookViewState extends State<RoomBookView> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          // Text(
-                          //   'Room data is fixing',
-                          //   // Helper.getPeopleandChildren(
-                          //   //     widget.roomData.roomData!),
-                          //   // "${widget.roomData.dateTxt}",
-                          //   textAlign: TextAlign.left,
-                          //   style: TextStyles(context).getDescriptionStyle(),
-                          // ),
+                          Text(
+                            // 'Room data is fixing',
+                            // Helper.getPeopleandChildren(
+                            //     widget.roomData),
+                            // "${widget.roomData}",
+                            "${widget.roomTypeData.roomCapacity} people",
+                            textAlign: TextAlign.left,
+                            style: TextStyles(context).getDescriptionStyle(),
+                          ),
                           InkWell(
                             borderRadius:
                             BorderRadius.all(Radius.circular(4.0)),
@@ -216,7 +223,8 @@ class _RoomBookViewState extends State<RoomBookView> {
             roomTypeData: widget.roomTypeData,
             hotelSlug: widget.hotelSlug,
             startDate: widget.startDate,
-            endDate: widget.endDate
+            endDate: widget.endDate,
+            roomData: widget.roomData,
         ) ;// Use the new StatefulWidget
       },
     );
