@@ -1,5 +1,5 @@
 from django.urls import path, re_path, include
-from hotel.views_api import index, hotel_detail, room_type_detail, create_booking, create_checkout_session, payment_success, payment_failed, checkout_api, ReviewViewSet 
+from hotel.views_api import index, hotel_detail, room_type_detail, create_checkout_session, payment_success, payment_failed, checkout_api, ReviewViewSet, BookingViewSet
 from hotel import views, views_api
 from rest_framework.routers import DefaultRouter
 
@@ -10,12 +10,13 @@ router.register('hotels', views_api.HotelViewSet)
 router.register('rooms', views_api.RoomViewSet)
 router.register('roomtypes', views_api.RoomTypeViewSet)
 router.register('reviews', ReviewViewSet, basename='review')
+router.register('bookings', BookingViewSet, basename='booking')
 
 urlpatterns = [
 #     path('hotels/', index, name='hotel_list'),  # List all live hotels
 #     path('hotels/<slug>/', hotel_detail, name='hotel_detail'),  # Get hotel details by slug
 #     path('hotels/<slug:slug>/room-types/<slug:rt_slug>/', room_type_detail, name='room_type_detail'),  # Get room type details for a specific hotel
-     path('booking/create/', create_booking, name='create_booking'),  # Create a new booking
+#    path('booking/create/', create_booking, name='create_booking'),  # Create a new booking
      path('checkout-api/<str:booking_id>/', checkout_api, name='checkout_api'),  # API to handle checkout and coupon application
      path('checkout/<str:booking_id>/', create_checkout_session, name='create_checkout_session'),  # Checkout for booking
      path('payment-success/<str:booking_id>/', payment_success, name='payment_success'),  # Payment success
@@ -37,6 +38,9 @@ urlpatterns = [
      path('view_cart', 
           views_api.CartViewSet.as_view({'get': 'view_cart'}), name='view_cart'),
     
+     path('bookings/create/', 
+          views_api.BookingViewSet.as_view({'post': 'create_booking'}), name='create_booking'),
+
        # Custom Review Endpoints
      path('reviews/post/', 
          ReviewViewSet.as_view({'post': 'create_review'}), name='create_review'),

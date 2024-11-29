@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from hotel.models import Hotel, Booking, ActivityLog, StaffOnDuty, Room, RoomType, Coupon, Notification, Cart, CartItem, Review
-from .serializers import HotelSerializer, RoomTypeSerializer, RoomSerializer, CartSerializer, CartItemSerializer, ReviewSerializer
+from .serializers import HotelSerializer, RoomTypeSerializer, RoomSerializer, CartSerializer, CartItemSerializer, ReviewSerializer, BookingSerializer
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAdminUser
 from datetime import datetime
@@ -336,72 +336,72 @@ class CartViewSet(viewsets.ModelViewSet):
 
 #     except (Hotel.DoesNotExist, RoomType.DoesNotExist):
 #         return Response({'error': 'Invalid hotel or room type'}, status=status.HTTP_400_BAD_REQUEST)
+class BookingViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = BookingSerializer
+    queryset = Booking.objects.all()
 
-@api_view(['POST'])
-def create_booking(request):
-    try:
-        # Retrieve cart for the user
-        cart = Cart.objects.get(user=request.user, is_active=True)
+    @action(detail=False, methods=['POST'], url_path='create')
+    def create_booking(self, request):
+        try:
+            hotel_id = request.data.get('hotel_id')
+            room_id = request.data.get('room_id')
+            check_in_date = request.data.get('checkin')
+            check_out_date = request.data.get('checkout')
+            num_adults = request.data.get('adult')
+            num_children = request.data.get('children')
+            room_type_slug = request.data.get('room_type')
+            before_discount = request.data.get('before_discount')
+            total = before_discount
+            full_name = request.data.get('full_name')
+            email = request.data.get('email')
+            phone = request.data.get('phone')
 
-        if not cart.cart_items.exists():
-            return Response({'error': 'No rooms selected in cart'}, status=status.HTTP_400_BAD_REQUEST)
+            hotel = Hotel.objects.get(id=hotel_id, status='Live')
+            room_type = RoomType.objects.get(slug=room_type_slug, hotel=hotel)
 
-        total_days = 0
-        booking_rooms = []
-        for cart_item in cart.cart_items.all():
-            room = cart_item.room
-            check_in_date = cart_item.check_in_date
-            check_out_date = cart_item.check_out_date
+            room = Room.objects.filter(room_type=room_type, id=room_id, is_available=True).first()
+            if not room:
+                return Response({'error': 'Room not available'}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Ensure room is available
-            if not room.is_available:
-                return Response({'error': f'Room {room.room_number} is not available'}, status=status.HTTP_400_BAD_REQUEST)
+            check_in_date_obj = datetime.strptime(check_in_date, '%Y-%m-%d')
+            check_out_date_obj = datetime.strptime(check_out_date, '%Y-%m-%d')
+            total_days = (check_out_date_obj - check_in_date_obj).days
 
-            # Calculate the total days for the booking
-            days = (check_out_date - check_in_date).days
-            total_days += days
+            if total_days <= 0:
+                return Response({'error': 'Check-out date must be after check-in date'}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Add the room to the booking
-            booking_rooms.append(room)
+            booking = Booking.objects.create(
+                user=request.user,
+                hotel=hotel,
+                room_type=room_type,
+                check_in_date=check_in_date,
+                check_out_date=check_out_date,
+                total_days=total_days,
+                num_adults=num_adults,
+                num_children=num_children,
+                full_name=full_name,
+                email=email,
+                phone=phone,
+                before_discount=before_discount,
+                total=total
+            )
 
-        # Create the booking based on data
-        full_name = request.data.get('full_name')
-        email = request.data.get('email')
-        phone = request.data.get('phone')
-        total = request.data.get('total')
+            booking.room.add(room) 
+            booking.save()
 
-        # Assuming only one hotel is involved in the cart
-        hotel = booking_rooms[0].hotel
-        room_type = booking_rooms[0].room_type
+            return Response({
+                'message': 'Booking created successfully',
+                'booking_id': booking.booking_id
+            }, status=status.HTTP_201_CREATED)
 
-        # Create the booking
-        booking = Booking.objects.create(
-            hotel=hotel,
-            room_type=room_type,
-            before_discount=total,
-            total=total,
-            check_in_date=check_in_date,
-            check_out_date=check_out_date,
-            total_days=total_days,
-            full_name=full_name,
-            email=email,
-            phone=phone
-        )
 
-        for room in booking_rooms:
-            booking.room.add(room)
-
-        booking.save()
-
-        # Clear the cart after booking (optional)
-        cart.cart_items.all().delete()
-
-        return Response({'message': 'Booking created successfully'}, status=status.HTTP_201_CREATED)
-
-    except Cart.DoesNotExist:
-        return Response({'error': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Hotel.DoesNotExist:
+            return Response({'error': 'Invalid hotel'}, status=status.HTTP_400_BAD_REQUEST)
+        except RoomType.DoesNotExist:
+            return Response({'error': 'Invalid room type'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST'])
