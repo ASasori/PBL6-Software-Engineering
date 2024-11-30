@@ -21,12 +21,18 @@ const ProductsTable = () => {
 	const [rooms, setRooms] = useState([])
 	const [roomTypes, setRoomTypes] = useState([])
 	const [filteredProducts, setFilteredProducts] = useState([])
-	const token = localStorage.getItem('authToken')
+	const token = localStorage.getItem('access')
+
+
 
 	useEffect(() => {
 		const fetchRooms = async () => {
 			try {
+				// const token = localStorage.getItem('access')
+				console.log('>>>check123 accesstoken: ' + token)
+
 				const roomsData = await RoomAPI.getRoom(token)
+				console.log("Fetched Rooms Data:", roomsData)
 				setRooms(roomsData)
 				setFilteredProducts(roomsData)
 
@@ -77,7 +83,7 @@ const ProductsTable = () => {
 			if (isEditMode) {
 				// Tạo đối tượng chứa các trường đã thay đổi
 				const updatedRoomData = {};
-	
+
 				if (newRoom.room_number !== editingRoom.room_number) {
 					updatedRoomData.room_number = newRoom.room_number;
 				}
@@ -87,28 +93,32 @@ const ProductsTable = () => {
 				if (newRoom.is_available !== editingRoom.is_available) {
 					updatedRoomData.is_available = newRoom.is_available;
 				}
-	
+				if (Object.keys(updatedRoomData).length === 0) {
+					toast.info("Không có thay đổi nào để cập nhật.");
+					return;
+				}
+
 				// Gửi yêu cầu cập nhật với các trường đã thay đổi
-				const updatedRoom = await RoomAPI.updateRoom(token, editingRoom.id, updatedRoomData);
-	
+				const updatedRoom = await RoomAPI.updateRoom(token, editingRoom.rid, updatedRoomData);
+
 				// Cập nhật danh sách phòng
 				const updatedRooms = rooms.map((room) =>
-					room.id === editingRoom.id ? { ...room, ...updatedRoom } : room
+					room.rid === editingRoom.rid ? { ...room, ...updatedRoom } : room
 				);
 				setRooms(updatedRooms);
 				setFilteredProducts(updatedRooms);
-	
+
 				toast.success("Phòng đã được cập nhật thành công!");
 			} else {
 				// Thêm phòng mới
 				const createdRoom = await RoomAPI.createRoom(token, newRoom);
-	
+
 				setRooms([...rooms, createdRoom]);
 				setFilteredProducts([...filteredProducts, createdRoom]);
-	
+
 				toast.success("Phòng đã được thêm thành công!");
 			}
-	
+
 			// Reset form và đóng modal
 			setNewRoom({
 				room_number: "",
@@ -127,10 +137,14 @@ const ProductsTable = () => {
 			}
 		}
 	};
-	
+
 
 
 	const handleEditRoom = (room) => {
+		if (!room || !room.rid) {
+			console.error("Room object is invalid or missing rID");
+			return;
+		}
 		setIsEditMode(true);
 		setNewRoom({
 			room_number: room.room_number,
@@ -145,8 +159,8 @@ const ProductsTable = () => {
 		if (window.confirm("Are you sure you want to delete this room?")) {
 			try {
 				await RoomAPI.deleteRoom(token, roomId)
-				setRooms(rooms.filter((room) => room.id !== roomId));
-				setFilteredProducts(filteredProducts.filter((room) => room.id !== roomId));
+				setRooms(rooms.filter((room) => room.rid !== roomId));
+				setFilteredProducts(filteredProducts.filter((room) => room.rid !== roomId));
 			} catch (e) {
 				console.error("Error deleting room:", e);
 			}
@@ -205,7 +219,7 @@ const ProductsTable = () => {
 					<tbody className='divide-y divide-gray-700'>
 						{filteredProducts.map((room) => (
 							<motion.tr
-								key={room.id}
+								key={room.rid}
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1 }}
 								transition={{ duration: 0.3 }}
@@ -220,11 +234,11 @@ const ProductsTable = () => {
 								</td>
 
 								<td className='px-6 py-4 text-sm text-gray-300 whitespace-nowrap'>
-									{roomTypes[room.room_type]?.type || "Unknown"}
+									{room.room_type.type || "Unknown"}
 								</td>
 
 								<td className='px-6 py-4 text-sm text-gray-300 whitespace-nowrap'>
-									${roomTypes[room.room_type]?.price || "N/A"}
+									${room.room_type.price || "N/A"}
 								</td>
 								<td className='px-6 py-4 whitespace-nowrap'>
 									<span
@@ -241,7 +255,7 @@ const ProductsTable = () => {
 									<button onClick={() => handleEditRoom(room)} className='mr-2 text-indigo-400 hover:text-indigo-300'>
 										<Edit size={18} />
 									</button>
-									<button onClick={() => handleDeleteRoom(room.id)} className='text-red-400 hover:text-red-300'>
+									<button onClick={() => handleDeleteRoom(room.rid)} className='text-red-400 hover:text-red-300'>
 										<Trash2 size={18} />
 									</button>
 								</td>

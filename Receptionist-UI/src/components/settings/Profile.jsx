@@ -26,31 +26,23 @@ const Profile = () => {
     const avatarInputRef = useRef(null);
     const identityInputRef = useRef(null);
 
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('access');
 
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
     const handleAvatarChange = (e) => {
-        const file = e.target.files[0]
+        const file = e.target.files[0];
         if (file) {
-            const reader = new FileReader()
-            reader.onloadend = () => {
-                setAvatar(reader.result)
-            }
-            reader.readAsDataURL(file)
+            setAvatar(file); // Lưu trữ đối tượng tệp thay vì Base64
         }
-    }
+    };
 
     const handleIdentityImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             setIdentityImageName(file.name);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setIdentityImage(reader.result);
-            };
-            reader.readAsDataURL(file);
+            setIdentityImage(file); // Lưu trữ đối tượng tệp thay vì Base64
         }
     };
 
@@ -85,7 +77,7 @@ const Profile = () => {
             const response = await updateProfile(formData, token)
             setSuccessMessage('Profile updated successfully!');
             setErrorMessage('');
-            console.log(response);
+            console.log(response.data);
         } catch (err) {
             setErrorMessage('Failed to update profile.');
             setSuccessMessage('');

@@ -22,7 +22,7 @@ const RoomTypesTable = () => {
 
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
-	const token = localStorage.getItem('authToken');
+	const token = localStorage.getItem('access');
 
 	useEffect(() => {
 		const fetchRoomTypes = async () => {
@@ -156,13 +156,13 @@ const RoomTypesTable = () => {
 			>
 				<div className='flex items-center justify-between mb-6'>
 					<h2 className='text-xl font-semibold text-gray-100'>Room Types</h2>
-					<button
+					{/* <button
 						onClick={handleAddRoomType}
 						className='flex items-center text-green-500 hover:text-green-400'
 					>
 						<Plus size={18} className='mr-2' />
 						Add Room Type
-					</button>
+					</button> */}
 					<div className='relative'>
 						<input
 							type='text'

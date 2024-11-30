@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {useNavigate} from 'react-router-dom'
 import login from '../api/login'
+
 const Login = ({ onLogin }) => {
 
     const [email, setEmail] = useState('');
@@ -8,7 +9,20 @@ const Login = ({ onLogin }) => {
     const [error, setError] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate()
-    
+
+    // useEffect(()=>{
+    //     const fetchCsrfToken = async () => {
+    //         try {
+    //             await Csrf.fetchCsrfToken();
+    //         } catch (error) {
+    //             console.error("Failed to fetch CSRF token:", error);
+    //             setError("Unable to fetch CSRF token. Please try again later.");
+    //         }
+    //     };
+
+    //     fetchCsrfToken();
+    // }, [])
+
     const handlePasswordToggle = () => {
         setShowPassword(prevState => !prevState);
     };
@@ -19,7 +33,7 @@ const Login = ({ onLogin }) => {
         try {
             const data = await login(email, password)
             if(data){
-                localStorage.setItem('authToken', data.token);
+                localStorage.setItem('access', data.token);
                 onLogin()
                 navigate('/')
             }

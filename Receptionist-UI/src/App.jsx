@@ -25,7 +25,7 @@ function App() {
 	const handleLogout = () => {
 		setIsLoggedIn(false);
 		localStorage.removeItem('isLoggedIn');
-		localStorage.removeItem('authToken'); // Xóa trạng thái đăng nhập
+		localStorage.removeItem('access'); // Xóa trạng thái đăng nhập
 	};
 
 	return (

@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 const DangerZone = () => {
 	const [errorMessage, setErrorMessage] = useState('');
 	const [successMessage, setSuccessMessage] = useState('');
-	const token = localStorage.getItem('authToken');
+	const token = localStorage.getItem('access');
 	const navigate = useNavigate(); // Khởi tạo useNavigate
 
 	const handleLogout = async () => {
@@ -15,7 +15,7 @@ const DangerZone = () => {
 			try {
 				await logout(token);
 				setSuccessMessage('Logout successful!'); // Thông báo thành công
-				localStorage.removeItem('authToken'); // Xóa token sau khi logout
+				localStorage.removeItem('access'); // Xóa token sau khi logout
 				localStorage.setItem('isLoggedIn', 'false'); // Cập nhật trạng thái đăng nhập
 
 				// Chuyển hướng đến trang /login

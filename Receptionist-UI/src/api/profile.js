@@ -1,21 +1,18 @@
 import axios from 'axios'
-import Csrf from './csrf'
-
+import BASE_URL from './config';
 
 const updateProfile = async (profileData, token) => {
     try{
         if(!token){
             throw new Error('Token is not authenticated')
         }
-        const csrfToken = Csrf.getToken()
 
         const response = await axios.patch(
-            'http://127.0.0.1:8000/receptionist/api/profile/update/',
+            `${BASE_URL}/receptionist/api/profile/update`,
             profileData,
             {
                 headers: {
-                    'Authorization': `Token ${token}`,
-                    'X-CSRFToken': csrfToken 
+                    'Authorization': `Bearer ${token}`,
                 }
             }
         );
@@ -28,4 +25,4 @@ const updateProfile = async (profileData, token) => {
     }
 }
 
-export default updateProfile
+export default updateProfile        

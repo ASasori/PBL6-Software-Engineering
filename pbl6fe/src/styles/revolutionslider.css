@@ -426,27 +426,27 @@ img.tp-slider-alternative-image {
   -ms-transition: opacity 0.3s;
   transition: opacity 0.3s;
   background-image: linear-gradient(
-    bottom,
+    to bottom,
     rgb(0, 0, 0) 13%,
     rgb(50, 50, 50) 100%
   );
   background-image: -o-linear-gradient(
-    bottom,
+    to bottom,
     rgb(0, 0, 0) 13%,
     rgb(50, 50, 50) 100%
   );
   background-image: -moz-linear-gradient(
-    bottom,
+    to bottom,
     rgb(0, 0, 0) 13%,
     rgb(50, 50, 50) 100%
   );
   background-image: -webkit-linear-gradient(
-    bottom,
+    to bottom,
     rgb(0, 0, 0) 13%,
     rgb(50, 50, 50) 100%
   );
   background-image: -ms-linear-gradient(
-    bottom,
+    to bottom,
     rgb(0, 0, 0) 13%,
     rgb(50, 50, 50) 100%
   );
@@ -1506,7 +1506,7 @@ img.tp-slider-alternative-image {
   border: 2px dashed #c0392b;
   position: absolute;
   top: 0px;
-  peft: 0px;
+  left: 0px;
   z-index: 0;
 }
 

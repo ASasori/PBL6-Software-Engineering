@@ -17,12 +17,15 @@ const ProductsPage = () => {
 
 	const [totalRooms, setTotalRooms] = useState(0)
 	const [totalRoomTypes, setTotalRoomTypes] = useState(0)
-	const token = localStorage.getItem('authToken')
+	const token = localStorage.getItem('access')
 
 	useEffect(() =>{
 		const fetchData = async () => {
 			try{
+				console.log('>>test token: ' + token)
 				const rooms = await RoomAPI.getRoom(token)
+	
+				
 				setTotalRooms(rooms.length)
 
 				const roomTypeAPI = new RoomTypeAPI()

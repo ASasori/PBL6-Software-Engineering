@@ -1,19 +1,20 @@
 import axios from 'axios';
+import BASE_URL from './config';
 
 const logout = async (token) => {
     try {
         // Gọi API logout
         const response = await axios.post(
-            'http://127.0.0.1:8000/user/api/userauths/logout/', 
+            `${BASE_URL}/user/api/userauths/logout/`, 
             {},
             {
                 headers: {
-                    'Authorization': `Token ${token}`
+                    'Authorization': `Bearer ${token}`
                 }
             }
         );
 
-        localStorage.removeItem('authToken');
+        localStorage.removeItem('access');
         console.log('Logout successful:', response.data);
         return response.data;
     } catch (e) {

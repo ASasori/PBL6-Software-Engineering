@@ -1,22 +1,22 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
-import getCustomers from '../../api/customer'
+import CustomerAPI from "../../api/customer"
 
 
 
 const UsersTable = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [customers, setCustomers] = useState([])
-	const token = localStorage.getItem('authToken');
+	const token = localStorage.getItem('access');
 	useEffect(() => {
-		const fetchCustomers = async()=>{
-			try{
-				const data = await getCustomers(token)
+		const fetchCustomers = async () => {
+			try {
+				const data = await CustomerAPI.getCustomers(token)
 				setCustomers(data)
-			}catch(e){
+			} catch (e) {
 				console.error(e)
-                // handle error here
+				// handle error here
 			}
 		}
 		fetchCustomers()
@@ -28,14 +28,22 @@ const UsersTable = () => {
 	};
 
 	const filteredUsers = useMemo(() => {
-		return customers.filter(
-			(user) =>
-				user.username.toLowerCase().includes(searchTerm) ||
-				user.email.toLowerCase().includes(searchTerm) ||
-				user.full_Name.toLowerCase().includes(searchTerm) ||
-				user.phone.includes(searchTerm)
-		);
+		return customers.filter((user) => {
+			const username = user.username ? user.username.toLowerCase() : "";
+			const email = user.email ? user.email.toLowerCase() : "";
+			const fullName = user.full_name ? user.full_name.toLowerCase() : "";
+			const phone = user.phone ? user.phone : "";
+
+			return (
+				username.includes(searchTerm) ||
+				email.includes(searchTerm) ||
+				fullName.includes(searchTerm) ||
+				phone.includes(searchTerm)
+			);
+		});
 	}, [searchTerm, customers]);
+
+
 
 	return (
 		<motion.div

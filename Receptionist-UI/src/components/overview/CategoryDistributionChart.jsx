@@ -12,7 +12,7 @@ const CategoryDistributionChart = () => {
 	useEffect(() => {
 		const fetchRooms = async () => {
 			try {
-				const token = localStorage.getItem('authToken'); 
+				const token = localStorage.getItem('access'); 
 				const rooms = await RoomAPI.getRoom(token); 
 
 				const availableRooms = rooms.filter(room => room.is_available).length;

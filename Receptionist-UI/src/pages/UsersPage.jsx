@@ -8,6 +8,9 @@ import UserGrowthChart from "../components/users/UserGrowthChart";
 import UserActivityHeatmap from "../components/users/UserActivityHeatmap";
 import UserDemographicsChart from "../components/users/UserDemographicsChart";
 
+import CustomerAPI from '../api/customer'
+import { useEffect, useState } from "react";
+
 const userStats = {
 	totalUsers: 152845,
 	newUsersToday: 243,
@@ -15,7 +18,40 @@ const userStats = {
 	churnRate: "2.4%",
 };
 
+
 const UsersPage = () => {
+
+	const [totalCus, setTotalCus] = useState(0)
+	const [totalCusToday, setTotalCusToday] = useState(0)
+	const token = localStorage.getItem('access')
+	
+	useEffect(() => {
+		const fetchCustomers = async () => {
+			if (token) {
+				try {
+					const customers = await CustomerAPI.getCustomers(token);
+					setTotalCus(customers.length);
+				} catch (error) {
+					console.error("Error fetching customers:", error);
+				}
+			}
+		};
+
+		const fetchCustomersToday = async () => {
+			if (token) {
+				try {
+					const customers = await CustomerAPI.getCustomersToday(token);
+					setTotalCusToday(customers.length);
+				} catch (error) {
+					console.error("Error fetching customers today:", error);
+				}
+			}
+		}
+		
+		fetchCustomers();
+		fetchCustomersToday();
+	}, [token]);
+
 	return (
 		<div className='relative z-10 flex-1 overflow-auto'>
 			<Header title='Users' />
@@ -31,10 +67,10 @@ const UsersPage = () => {
 					<StatCard
 						name='Total Users'
 						icon={UsersIcon}
-						value={userStats.totalUsers.toLocaleString()}
+						value={totalCus}
 						color='#6366F1'
 					/>
-					<StatCard name='New Users Today' icon={UserPlus} value={userStats.newUsersToday} color='#10B981' />
+					<StatCard name='New Users Today' icon={UserPlus} value={totalCusToday} color='#10B981' />
 					<StatCard
 						name='Active Users'
 						icon={UserCheck}
@@ -47,11 +83,11 @@ const UsersPage = () => {
 				<UsersTable />
 
 				{/* USER CHARTS */}
-				<div className='grid grid-cols-1 gap-6 mt-8 lg:grid-cols-2'>
+				{/* <div className='grid grid-cols-1 gap-6 mt-8 lg:grid-cols-2'>
 					<UserGrowthChart />
 					<UserActivityHeatmap />
 					<UserDemographicsChart />
-				</div>
+				</div> */}
 			</main>
 		</div>
 	);

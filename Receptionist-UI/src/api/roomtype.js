@@ -1,16 +1,16 @@
 import axios from 'axios'
-import Csrf from './csrf';
+import BASE_URL from './config';
 
 class RoomTypeAPI{
     constructor(){
-        this.baseURL = 'http://127.0.0.1:8000/receptionist/api/roomtypes/';
+        this.baseURL = `${BASE_URL}/receptionist/api/roomtypes/`;
     }
 
     async getRoomTypes(token){
         try{
             const response = await axios.get(this.baseURL,{
                 headers: {
-                    'Authorization': `Token ${token}`
+                    'Authorization': `Bearer ${token}`
                 },
             })
             return response.data;
@@ -24,9 +24,8 @@ class RoomTypeAPI{
         try{
             const response = await axios.post(`${this.baseURL}create/`, roomTypedata, {
                 headers:{
-                    'Authorization': `Token ${token}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': Csrf.getToken()
                 }
             })
             return response.data
@@ -40,8 +39,7 @@ class RoomTypeAPI{
         try{
             const response = await axios.delete(`${this.baseURL}${roomTypeId}/delete/`, {
                 headers: {
-                    'Authorization': `Token ${token}`,
-                    'X-CSRFToken': Csrf.getToken()
+                    'Authorization': `Bearer ${token}`
                 }
             })
 
@@ -60,9 +58,8 @@ class RoomTypeAPI{
         try{
             const response = await axios.put(`${this.baseURL}${roomTypeId}/update/`, updatedRoomType, {
                 headers: {
-                    'Authorization': `Token ${token}`,
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': Csrf.getToken()
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 }
             })
             return response.data

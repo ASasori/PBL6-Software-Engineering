@@ -1,16 +1,15 @@
 import axios from 'axios'
-import Csrf from './csrf';
-
+import BASE_URL from './config';
 class RoomAPI{
     constructor(){
-        this.baseURL = 'http://127.0.0.1:8000/receptionist/api/rooms/';
+        this.baseURL = `${BASE_URL}/receptionist/api/rooms/`;
     }
 
     async getRoom(token){
         try{
             const response = await axios.get(this.baseURL, {
                 headers: {
-                    'Authorization': `Token ${token}`
+                    'Authorization': `Bearer ${token}`
                 }
             });
             return response.data;
@@ -25,8 +24,7 @@ class RoomAPI{
         try{
             const response = await axios.delete(`${this.baseURL}${roomId}/delete/`, {
                 headers: {
-                    'Authorization': `Token ${token}`,
-                    'X-CSRFToken': Csrf.getToken()
+                    'Authorization': `Bearer ${token}`,
                 }
             })
             return response.data
@@ -40,9 +38,8 @@ class RoomAPI{
         try{
             const response = await axios.post(`${this.baseURL}create/`, roomData, {
                 headers: {
-                    'Authorization': `Token ${token}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': Csrf.getToken()
                 }
             })
             return response.data
@@ -56,9 +53,8 @@ class RoomAPI{
         try{
             const response = await axios.put(`${this.baseURL}${roomId}/update/`, updatedRoom, {
                 headers: {
-                    'Authorization': `Token ${token}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': Csrf.getToken()
                 }
             })
             return response.data
