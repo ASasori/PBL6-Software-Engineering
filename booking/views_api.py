@@ -1,4 +1,5 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from hotel.models import Hotel, RoomType, Booking, Room
@@ -7,11 +8,12 @@ from django.urls import reverse
 from django.db.models import Q
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def check_room_availability(request):
     try:
         # Extract data from the request
         data = request.data
-        hotel = Hotel.objects.get(status="Live", id=data['hotel_id'])
+        hotel = Hotel.objects.get(status="Live", slug=data['hotel_slug'])
         room_type = RoomType.objects.get(hotel=hotel, slug=data['room_type'])
 
         # Parse checkin and checkout dates
@@ -28,7 +30,9 @@ def check_room_availability(request):
         booked_rooms = Booking.objects.filter(
             room__in=rooms
         ).exclude(
-            Q(check_out_date__lte=checkin) | Q(check_in_date__gte=checkout)
+            Q(check_out_date__lte=checkin) 
+            | Q(check_in_date__gte=checkout)
+            | Q(payment_status='paid')
         ).values_list('room', flat=True)
         available_rooms = rooms.exclude(id__in=booked_rooms)
 
@@ -47,7 +51,7 @@ def check_room_availability(request):
 
         # Generate the room detail URL
         room_type_url = reverse("hotel:room_type_detail", args=[hotel.slug, room_type.slug])
-        url_with_params = f"{room_type_url}?hotel-id={data['hotel_id']}&checkin={data['checkin']}&checkout={data['checkout']}&adult={adult}&children={children}&room_type={room_type.slug}" 
+        url_with_params = f"{room_type_url}?hotel_slug={data['hotel_slug']}&checkin={data['checkin']}&checkout={data['checkout']}&adult={adult}&children={children}&room_type={room_type.slug}" 
 
         # Return the room details
         return Response({

@@ -1,5 +1,5 @@
 from django.urls import path, re_path, include
-from hotel.views_api import index, hotel_detail, room_type_detail, create_checkout_session, payment_success, payment_failed, checkout_api, ReviewViewSet, BookingViewSet
+from hotel.views_api import location, search_hotel_by_location_name, index, hotel_detail, room_type_detail, create_checkout_session, payment_success, payment_failed, checkout_api, ReviewViewSet, BookingViewSet
 from hotel import views, views_api
 from rest_framework.routers import DefaultRouter
 
@@ -37,13 +37,18 @@ urlpatterns = [
           views_api.CartViewSet.as_view({'post': 'delete_cart_item'}), name='delete_cart_item'),
      path('view_cart', 
           views_api.CartViewSet.as_view({'get': 'view_cart'}), name='view_cart'),
-    
+     path('cart/view_cart_item/<int:cart_item_id>/', 
+         views_api.CartViewSet.as_view({'get': 'view_cart_item'}), name='view_cart_item'),
      path('bookings/create/', 
           views_api.BookingViewSet.as_view({'post': 'create_booking'}), name='create_booking'),
 
-       # Custom Review Endpoints
+# Custom Review Endpoints
      path('reviews/post/', 
          ReviewViewSet.as_view({'post': 'create_review'}), name='create_review'),
      path('reviews/hotel-reviews/<str:pk>/', 
-         ReviewViewSet.as_view({'get': 'get_reviews_by_hotel'}), name='get_hotel_reviews'),      
+         ReviewViewSet.as_view({'get': 'get_reviews_by_hotel'}), name='get_hotel_reviews'),   
+
+# Location 
+     path('locations/', location, name = 'location'),
+     path('locations/hotels_by_location/', search_hotel_by_location_name, name = 'hotels_by_location'),
 ]
