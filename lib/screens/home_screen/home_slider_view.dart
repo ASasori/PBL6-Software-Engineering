@@ -111,7 +111,6 @@ class _HomeSliderViewState extends State<HomeSliderView> {
   }
 }
 
-
 class PagePopup extends StatelessWidget {
   final Hotel imageData;
   final double opValue;

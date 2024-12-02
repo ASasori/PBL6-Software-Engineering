@@ -1,11 +1,9 @@
 import "../utils/localfiles.dart";
 
 class HotelGallery {
-  final String id;
   final String imageUrl;
 
   HotelGallery({
-    required this.id,
     required this.imageUrl,
   });
 
@@ -13,14 +11,12 @@ class HotelGallery {
     const String baseUrl = Localfiles.baseUrl ;
 
     return HotelGallery(
-      id: json['hgid'] ?? '', // Sử dụng giá trị mặc định nếu `hgid` bị thiếu
-      imageUrl: '$baseUrl${json['image']}', // Thêm baseUrl vào đường dẫn ảnh
+      imageUrl: '${json['image']}',
     );
   }
 }
 
 class Hotel {
-  final int id;
   final String name;
   final String description;
   final String? mapImage;
@@ -38,7 +34,6 @@ class Hotel {
   final List<HotelGallery> galleryImages;
 
   Hotel({
-    required this.id,
     required this.name,
     required this.description,
     this.mapImage,
@@ -68,14 +63,12 @@ class Hotel {
         .toList() ??
         [];
 
-    // Parse danh sách các hình ảnh từ `HotelGallery`
-    List<HotelGallery> galleryImages = (json['galleryImages'] as List<dynamic>?)
+    List<HotelGallery> galleryImages = (json['hotel_gallery'] as List<dynamic>?)
         ?.map((item) => HotelGallery.fromJson(item as Map<String, dynamic>))
         .toList() ??
         [];
 
     return Hotel(
-      id: json['id'] ?? 0,
       name: json['name'] ?? '',
       description: desc,
       mapImage: mapImageUrl,

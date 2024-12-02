@@ -1,7 +1,8 @@
 import '../utils/localfiles.dart';
 
 class RoomType {
-  final String hotelId;
+  final int roomtypeId;
+  final int hotelId;
   final String type;
   final double price;
   final int numberOfBeds;
@@ -12,6 +13,7 @@ class RoomType {
   final DateTime dateAdded;
 
   RoomType({
+    required this.roomtypeId,
     required this.hotelId,
     required this.type,
     required this.price,
@@ -26,7 +28,8 @@ class RoomType {
   factory RoomType.fromJson(Map<String, dynamic> json) {
     const String baseUrl = Localfiles.baseUrl ;
     return RoomType(
-      hotelId: json['hotel_id'] ?? '',
+      roomtypeId: json['id'] ?? '',
+      hotelId: json['hotel'] ?? '',
       type: json['type'] ?? '',
       price:double.parse(json['price']) ?? 0.0,
       numberOfBeds: json['number_of_beds'] ?? 0,
@@ -41,7 +44,8 @@ class RoomType {
   // Chuyển RoomType sang JSON
   Map<String, dynamic> toJson() {
     return {
-      'hotel_id': hotelId,
+      'id': roomtypeId,
+      'hotel': hotelId,
       'type': type,
       'price': price,
       'number_of_beds': numberOfBeds,
@@ -55,7 +59,8 @@ class RoomType {
 }
 
 class Room {
-  final String hotelId;
+  final int roomId;
+  final int hotelId;
   final RoomType roomType; // Liên kết trực tiếp với RoomType thay vì chỉ lưu roomTypeId
   final String roomNumber;
   final bool isAvailable;
@@ -63,6 +68,7 @@ class Room {
   final DateTime dateAdded;
 
   Room({
+    required this.roomId,
     required this.hotelId,
     required this.roomType,
     required this.roomNumber,
@@ -74,7 +80,8 @@ class Room {
   // Tạo Room từ JSON
   factory Room.fromJson(Map<String, dynamic> json, RoomType roomType) {
     return Room(
-      hotelId: json['hotel_id'] ?? '',
+      roomId: json['id'] ?? '',
+      hotelId: json['hotel'] ?? '',
       roomType: roomType, // Ánh xạ RoomType khi tạo Room từ JSON
       roomNumber: json['room_number'] ?? '',
       isAvailable: json['is_available'] ?? true,
@@ -86,6 +93,7 @@ class Room {
   // Chuyển Room sang JSON
   Map<String, dynamic> toJson() {
     return {
+      'id': roomId,
       'hotel_id': hotelId,
       'room_type_id': roomType.rtid,
       'room_number': roomNumber,

@@ -78,5 +78,4 @@ class HotelProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-
 }

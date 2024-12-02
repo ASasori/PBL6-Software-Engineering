@@ -86,6 +86,9 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
           CommonButton(
             padding: EdgeInsets.only(top: 8, bottom: 24),
             buttonText: "Check Availability",
+            onTap: () {
+              
+            },
           ),
           Divider(
             height: 1,

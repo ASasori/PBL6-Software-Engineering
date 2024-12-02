@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:booking_hotel_app/models/hotel.dart';
 import 'package:booking_hotel_app/models/location.dart';
+import '../models/cart.dart';
 import 'api_services.dart';
 
 class HotelServices {
@@ -10,7 +11,7 @@ class HotelServices {
   final ApiService _apiService = ApiService();
   String? baseUrl;
 
-  HotelServices (){
+  HotelServices() {
     baseUrl = _apiService.baseUrl;
   }
 
@@ -29,6 +30,7 @@ class HotelServices {
       throw Exception('Error fetching data api');
     }
   }
+
   Future<List<Hotel>> fetchTopHotels() async {
     try {
       final response = await _apiService.dio.get('$baseUrl/api/hotels/');
@@ -44,6 +46,7 @@ class HotelServices {
       throw Exception('Error fetching data api');
     }
   }
+
   Future<List<Location>> fetchLocations() async {
     try {
       final response = await _apiService.dio.get('$baseUrl/api/locations/');
@@ -53,12 +56,14 @@ class HotelServices {
       } else {
         throw Exception('Failed to load location');
       }
-    } catch(e) {
+    } catch (e) {
       print(e);
       throw Exception('Error fetching data location');
     }
   }
-  Future<List<Hotel>> fetchHotelsByLocation(String location, String name) async {
+
+  Future<List<Hotel>> fetchHotelsByLocation(String location,
+      String name) async {
     try {
       final response = await _apiService.dio.post(
         '$baseUrl/api/locations/hotels_by_location/',

@@ -116,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               isLeftButton: true,
                             );
                           } else {
-                            return getDealListView(hotelProvider.hotels); // Hiển thị danh sách hotel
+                            return getDealListView(hotelProvider.hotels);
                           }
                         }
                     ),
@@ -172,8 +172,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           animation: _animationController,
           builder: (BuildContext context, Widget? child) {
             var opacity = 1.0 -
-                (_animationController.value > 0.64 ? 1.0 : _animationController
-                    .value);
+                (_animationController.value > 0.64 ? 1.0 : _animationController.value);
             return SizedBox(
                 height: sliderImageHeight * (1.0 - _animationController.value),
                 child: HomeSliderView(

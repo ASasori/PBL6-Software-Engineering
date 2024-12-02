@@ -1,4 +1,5 @@
 import 'package:booking_hotel_app/providers/auth_provider.dart';
+import 'package:booking_hotel_app/providers/booking_provider.dart';
 import 'package:booking_hotel_app/providers/hotel_provider.dart';
 import 'package:booking_hotel_app/providers/room_provider.dart';
 import 'package:booking_hotel_app/providers/wish_list_provider.dart';
@@ -32,6 +33,9 @@ Widget _setAllProviders() {
       ),
       ChangeNotifierProvider(
         create: (_) => RoomProvider(),
+      ),
+      ChangeNotifierProvider(
+        create: (_) => BookingProvider(),
       ),
       ChangeNotifierProvider(
           create: (_) => WishlistProvider()

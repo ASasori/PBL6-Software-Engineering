@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../models/booking.dart';
 import '../../models/hotel_list_data.dart';
 import '../../models/room_data.dart';
+import '../../providers/booking_provider.dart';
 import '../../providers/room_provider.dart';
 import '../../providers/wish_list_provider.dart';
 
@@ -19,17 +20,21 @@ class SelectRoomDialog extends StatefulWidget {
   _SelectRoomDialogState createState() => _SelectRoomDialogState();
 }
 class _SelectRoomDialogState extends State<SelectRoomDialog> {
-  String? selectedRoom;
-  // List<String> rooms = ['room1', 'room2', 'room3']; // Replace with your actual room data
-  List<String> roomNumber = [];
+  Map<String, dynamic>? selectedRoom; // Lưu roomId và roomNumber
+  List<Map<String, dynamic>> rooms = [];
+
   @override
   void initState (){
     WidgetsBinding.instance.addPostFrameCallback((_){
       Provider.of<RoomProvider>(context, listen: false).getRoomsInRoomtype(widget.hotelSlug, widget.roomTypeData).then((_){
         setState(() {
-          roomNumber =  Provider.of<RoomProvider>(context, listen: false).allRoomsInRoomType
-                        .map((room) => room.roomNumber)
-                        .toList();
+          rooms = Provider.of<RoomProvider>(context, listen: false)
+              .allRoomsInRoomType
+              .map((room) => {
+            'roomId': room.roomId,
+            'roomNumber': room.roomNumber,
+          })
+              .toList();
         });
       });
     });
@@ -61,28 +66,28 @@ class _SelectRoomDialogState extends State<SelectRoomDialog> {
           borderRadius: BorderRadius.circular(8), // Add rounded corners
         ),
         child: DropdownButtonHideUnderline(
-          child: roomNumber.isEmpty? Center(child: CircularProgressIndicator(),)
-            : DropdownButton<String>(
-            value: selectedRoom,
-            padding: EdgeInsets.only(left: 10),
-            hint: Text('Select a room'),
-            isExpanded: true,
-            icon: Icon(Icons.arrow_drop_down),
-            style: TextStyle(fontSize: 16, color: Colors.black),
-            items: roomNumber.map((String room) {
-              return DropdownMenuItem<String>(
-                value: room,
-                child: Text(room),
-              );
-            }).toList(),
-            onChanged: (String? newValue) {
-              setState(() {
-                selectedRoom = newValue;
-              });
-            },
-          ),
-        ),
-      ),
+          child: rooms.isEmpty? Center(child: CircularProgressIndicator(),)
+            : DropdownButton<Map<String, dynamic>>(
+                value: selectedRoom,
+                padding: EdgeInsets.only(left: 10),
+                hint: Text('Select a room'),
+                isExpanded: true,
+                icon: Icon(Icons.arrow_drop_down),
+                style: TextStyle(fontSize: 16, color: Colors.black),
+                items: rooms.map((Map<String, dynamic> room) {
+                  return DropdownMenuItem<Map<String, dynamic>>(
+                    value: room,
+                    child: Text(room['roomNumber']),
+                  );
+                }).toList(),
+                onChanged: (Map<String, dynamic>? newValue) {
+                  setState(() {
+                    selectedRoom = newValue;
+                  });
+                },
+              ),
+        )
+    ),
       actions: <Widget>[
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -96,38 +101,31 @@ class _SelectRoomDialogState extends State<SelectRoomDialog> {
             ),
             TextButton(
               child: Text('Add to Wishlist'),
-              onPressed:() {
+              onPressed:() async {
                 if (selectedRoom != null) {
-                  // Access the roomData from RoomBookView using a callback
                   final roomtypeData = widget.roomTypeData;
-                  print("${ roomtypeData.type}, ${ roomtypeData.imageUrl}, ${ roomtypeData.price} \n"
-                      "${selectedRoom}, ${widget.startDate}, ${widget.endDate}, ${widget.roomData.adult}, ${widget.roomData.children}");
+
                   if (roomtypeData != null) {
-                    BookingData value = new BookingData(
-                      bookingID: "B003",
-                      hotelName: roomtypeData.type,
-                      imagePath: roomtypeData.imageUrl,
-                      // address: roomData.location.toString(),
-                      startDate: widget.startDate, // Assuming dateTxt is a DateTime
-                      endDate: widget.endDate, // Assuming dateTxt is a DateTime
-                      numberOfAdults: 3,
-                      numberOfChildren: 2,
-                      pricePernight: roomtypeData.price.toDouble(),
-                      typeRoom: selectedRoom!, // Set the selected room
-                      totalAmount: widget.endDate.difference(widget.startDate).inDays * widget.roomTypeData.price.toDouble(),
-                    );
-                    print("add");
-                    wishlist.addBookingData(value);
+                    final bookingProvider = Provider.of<BookingProvider>(context, listen: false);
+                    final errorMessage = await bookingProvider.addCartItem(selectedRoom!['roomId'], widget.startDate, widget.endDate,
+                        widget.roomData.adult, widget.roomData.children);
+
                     wishlist.addTotalPrice(value.totalAmount);
                     wishlist.addCounter();
-                    // Show SnackBar when product is added to the cart
+
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Row(
                           children: [
-                            Icon(Icons.check_circle, color: Colors.green), // Add an icon
+                            errorMessage == null ? Icon(Icons.check_circle, color: Colors.green)
+                                : Icon(Icons.error_outline, color: Colors.red,), // Add an icon
                             SizedBox(width: 10), // Space between icon and text
-                            Expanded(child: Text('Product added to cart!')), // Message text
+                            Expanded(
+                              child: Text(
+                                errorMessage ?? 'Room successfully added to wishlist!',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ), // Message text
                           ],
                         ),
                         backgroundColor: Colors.black87, // Darker background for better contrast
@@ -146,7 +144,6 @@ class _SelectRoomDialogState extends State<SelectRoomDialog> {
             ),
           ],
         )
-
       ],
     );}
 }

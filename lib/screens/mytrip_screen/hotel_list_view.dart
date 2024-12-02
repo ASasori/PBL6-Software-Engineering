@@ -74,11 +74,20 @@ class HotelListView extends StatelessWidget {
                       children: <Widget>[
                         AspectRatio(
                           aspectRatio: 2,
-                          child: CachedNetworkImage(
+                          child: (hotelByLocation.galleryImages != null &&
+                              hotelByLocation.galleryImages.isNotEmpty)
+                              ? CachedNetworkImage(
                             imageUrl: hotelByLocation.galleryImages[1].imageUrl,
-                            placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Hiển thị khi ảnh đang load
-                            errorWidget: (context, url, error) => Icon(Icons.error),     // Hiển thị khi có lỗi tải ảnh
-                            fit: BoxFit.cover, // Tùy chỉnh cách hiển thị ảnh
+                            placeholder: (context, url) =>
+                                Center(child: CircularProgressIndicator()),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                            fit: BoxFit.cover,
+                          )
+                              : Container(
+                            color: Colors.grey.shade200,
+                            child: Icon(Icons.image_not_supported,
+                                color: Colors.grey, size: 40),
                           ),
                         ),
                         Row(
