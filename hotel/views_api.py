@@ -531,7 +531,6 @@ class ReviewViewSet(viewsets.ViewSet):
         responses={200: ReviewSerializer(many=True)},  # Define the response schema for a list of reviews
         tags=["Review"]
     )
-
     @action(detail=True, methods=['get'], url_path='hotel-reviews')
     def get_reviews_by_hotel(self, request, pk=None):
         """Fetch all reviews for a specific hotel."""
