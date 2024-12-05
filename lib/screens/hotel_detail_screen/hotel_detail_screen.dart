@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:booking_hotel_app/providers/review_provider.dart';
 import 'package:booking_hotel_app/screens/hotel_detail_screen/rating_view.dart';
 import 'package:booking_hotel_app/screens/hotel_detail_screen/review_data_view.dart';
 import 'package:booking_hotel_app/widgets/common_textfield_view.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:smooth_star_rating_null_safety/smooth_star_rating_null_safety.dart';
 
 import '../../language/appLocalizations.dart';
@@ -46,6 +48,8 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
 
   @override
   void initState() {
+    super.initState();
+
     animationController = AnimationController(
         duration: Duration(milliseconds: 2000), vsync: this);
     _animationController =
@@ -69,6 +73,9 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
         }
       }
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ReviewProvider>(context, listen: false).fetchReviewList(widget.hotelData.hid);
+    });
   }
 
   @override
@@ -79,6 +86,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
 
   @override
   Widget build(BuildContext context) {
+    final reviewProvider = Provider.of<ReviewProvider>(context);
     imageHieght = MediaQuery.of(context).size.height;
     var rating = 5.0;
     return Scaffold(
@@ -184,24 +192,25 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                 //
                 // // Hotel inside photo view
                 //
-                HotelRoomList(),
+                // HotelRoomList(),
                 // // review and comment of people
-                _getPhotoReviewUi("reviews", HotelListData.reviewsList.length,'view_all', Icons.arrow_forward,
+                _getPhotoReviewUi("reviews", reviewProvider.reviewList.length,'view_all', Icons.arrow_forward,
                         () {
-                      NavigationServices(context).gotoReviewsListScreen();
+                      NavigationServices(context).gotoReviewsListScreen(reviewProvider.reviewList);
                     }),
                 //
                 // feedback&Review data view
                 // này lấy ra đoạn đầu những review
                 // nếu review ít hơn thì lấy hết còn nếu nhiều thì lấy tầm 5,
                 // lấy những review mới nhất, cho chạy hàm ngược lại
-                for (var i = 0; i < 2; i++)
-                  ReviewsView(
-                    reviewsList: HotelListData.reviewsList[i],
-                    animation: animationController,
-                    animationController: animationController,
-                    callback: () {},
-                  ),
+                for (var i = 0; i < reviewProvider.reviewList.length; i++)
+                  if (i<=5)
+                    ReviewsView(
+                      review: reviewProvider.reviewList[i],
+                      animation: animationController,
+                      animationController: animationController,
+                      callback: () {},
+                    ),
 
                 Padding(
                   padding: EdgeInsets.only(left: 24, right: 24, top: 16),

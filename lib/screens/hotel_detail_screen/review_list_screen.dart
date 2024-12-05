@@ -2,16 +2,21 @@ import 'package:booking_hotel_app/screens/hotel_detail_screen/review_data_view.d
 import 'package:flutter/material.dart';
 
 import '../../models/hotel_list_data.dart';
+import '../../models/review.dart';
 import '../../widgets/common_appbar_view.dart';
 
 class ReviewListScreen extends StatefulWidget {
+  final List<Review> reviewList;
+  const ReviewListScreen({
+    Key? key,
+    required this.reviewList,
+  }) : super(key: key);
   @override
   _ReviewListScreenState createState() => _ReviewListScreenState();
 }
 
 class _ReviewListScreenState extends State<ReviewListScreen>
     with TickerProviderStateMixin {
-  List<HotelListData> reviewsList = HotelListData.reviewsList;
   late AnimationController animationController;
   @override
   void initState() {
@@ -38,7 +43,7 @@ class _ReviewListScreenState extends State<ReviewListScreen>
             onBackClick: () {
               Navigator.pop(context);
             },
-            titleText: "Review(${reviewsList.length})",
+            titleText: "Review(${widget.reviewList.length})",
           ),
           // animation of Review and feedback data
           Expanded(
@@ -46,9 +51,9 @@ class _ReviewListScreenState extends State<ReviewListScreen>
               physics: BouncingScrollPhysics(),
               padding: EdgeInsets.only(
                   top: 8, bottom: MediaQuery.of(context).padding.bottom + 8),
-              itemCount: reviewsList.length,
+              itemCount: widget.reviewList.length,
               itemBuilder: (context, index) {
-                var count = reviewsList.length > 10 ? 10 : reviewsList.length;
+                var count = widget.reviewList.length > 10 ? 10 : widget.reviewList.length;
                 var animation = Tween(begin: 0.0, end: 1.0).animate(
                     CurvedAnimation(
                         parent: animationController,
@@ -58,7 +63,7 @@ class _ReviewListScreenState extends State<ReviewListScreen>
                 // page to redirect the feedback and review data
                 return ReviewsView(
                   callback: () {},
-                  reviewsList: reviewsList[index],
+                  review: widget.reviewList[index],
                   animation: animation,
                   animationController: animationController,
                 );

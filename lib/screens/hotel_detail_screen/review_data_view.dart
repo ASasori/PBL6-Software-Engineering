@@ -1,8 +1,10 @@
+import 'package:booking_hotel_app/utils/localfiles.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_star_rating_null_safety/smooth_star_rating_null_safety.dart';
 
 import '../../language/appLocalizations.dart';
 import '../../models/hotel_list_data.dart';
+import '../../models/review.dart';
 import '../../utils/text_styles.dart';
 import '../../utils/themes.dart';
 import '../../widgets/common_card.dart';
@@ -10,13 +12,13 @@ import '../../widgets/list_cell_animation_view.dart';
 
 class ReviewsView extends StatelessWidget {
   final VoidCallback callback;
-  final HotelListData reviewsList;
+  final Review review;
   final AnimationController animationController;
   final Animation<double> animation;
 
   const ReviewsView({
     Key? key,
-    required this.reviewsList,
+    required this.review,
     required this.animationController,
     required this.animation,
     required this.callback,
@@ -47,7 +49,8 @@ class ReviewsView extends StatelessWidget {
                         child: AspectRatio(
                           aspectRatio: 1,
                           child: Image.asset(
-                            reviewsList.imagePath,
+                            // review.imagePath,
+                            Localfiles.avatar1,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -60,7 +63,8 @@ class ReviewsView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      reviewsList.titleTxt,
+                      // reviewsList.titleTxt,
+                      "User name",
                       style: TextStyles(context).getBoldStyle().copyWith(
                         fontSize: 14,
                       ),
@@ -80,7 +84,7 @@ class ReviewsView extends StatelessWidget {
                           width: 5,
                         ),
                         Text(
-                          reviewsList.dateTxt,
+                          review.date,
                           style: new TextStyles(context)
                               .getDescriptionStyle()
                               .copyWith(
@@ -93,7 +97,7 @@ class ReviewsView extends StatelessWidget {
                     Row(
                       children: <Widget>[
                         Text(
-                          "(${reviewsList.rating})",
+                          "(${review.rating})",
                           style: new TextStyles(context)
                               .getRegularStyle()
                               .copyWith(
@@ -103,7 +107,7 @@ class ReviewsView extends StatelessWidget {
                           SmoothStarRating(
                             allowHalfRating: true,
                             starCount: 5,
-                            rating: reviewsList.rating / 2,
+                            rating: review.rating.toDouble(),
                             size: 16,
                             color: Theme.of(context).primaryColor,
                             borderColor: Theme.of(context).primaryColor,
@@ -117,7 +121,7 @@ class ReviewsView extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 8, left: 8,right: 8,bottom: 16),
               child: Text(
-                reviewsList.subTxt,
+                review.reviewText!,
                 style: TextStyles(context).getDescriptionStyle().copyWith(
                   fontWeight: FontWeight.w100,
                   color: Colors.black87,

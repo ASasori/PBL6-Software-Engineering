@@ -15,7 +15,7 @@ class WishlistProvider with ChangeNotifier {
   Map<String, dynamic> _cart = {};
   int _counter = 0;
   List<WishlistItem> _wishlist = [];
-  late double _totalPrice;
+  double _totalPrice = 0.0;
 
   Map<String, dynamic> get cart => _cart;
 

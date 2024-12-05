@@ -1,6 +1,7 @@
 import 'package:booking_hotel_app/providers/auth_provider.dart';
 import 'package:booking_hotel_app/providers/booking_provider.dart';
 import 'package:booking_hotel_app/providers/hotel_provider.dart';
+import 'package:booking_hotel_app/providers/review_provider.dart';
 import 'package:booking_hotel_app/providers/room_provider.dart';
 import 'package:booking_hotel_app/providers/wish_list_provider.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +37,9 @@ Widget _setAllProviders() {
       ),
       ChangeNotifierProvider(
         create: (_) => BookingProvider(),
+      ),
+      ChangeNotifierProvider(
+        create: (_) => ReviewProvider(),
       ),
       ChangeNotifierProvider(
           create: (_) => WishlistProvider()
