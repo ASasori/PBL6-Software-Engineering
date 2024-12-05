@@ -35,13 +35,13 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
   RoomData roomData = RoomData(1,2,2);// Store selected end date
   @override
   void initState() {
+    super.initState();
     animationController = AnimationController(
         duration: Duration(milliseconds: 2000), vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_){
       Provider.of<RoomProvider>(context, listen: false).getAllRoomtypeList(widget.hotelBooking.slug);
+      Provider.of<WishlistProvider>(context, listen: false).getCartItemCount();
     });
-
-    super.initState();
   }
 
   @override
@@ -164,16 +164,17 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
           ),
           badges.Badge(
             badgeContent: Consumer<WishlistProvider>(
-              builder: (context, value, child) {
-                return Text(
-                  value.getCounter().toString(),
+              builder: (context, wishlistProvider, child) {
+                return Text (
+                  wishlistProvider.counter.toString(),
                   style: const TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 );
               },
             ),
             //position: badges.BadgePosition(start: 30, bottom: 30),
-
             child: IconButton(
               onPressed: () {
                 // Navigator.push(

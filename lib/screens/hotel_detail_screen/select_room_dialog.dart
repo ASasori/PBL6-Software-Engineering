@@ -106,11 +106,9 @@ class _SelectRoomDialogState extends State<SelectRoomDialog> {
                   final roomtypeData = widget.roomTypeData;
 
                   if (roomtypeData != null) {
-                    final bookingProvider = Provider.of<BookingProvider>(context, listen: false);
-                    final errorMessage = await bookingProvider.addCartItem(selectedRoom!['roomId'], widget.startDate, widget.endDate,
+                    final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
+                    final errorMessage = await wishlistProvider.addCartItem(selectedRoom!['roomId'], widget.startDate, widget.endDate,
                         widget.roomData.adult, widget.roomData.children);
-
-                    wishlist.addTotalPrice(value.totalAmount);
                     wishlist.addCounter();
 
                     ScaffoldMessenger.of(context).showSnackBar(

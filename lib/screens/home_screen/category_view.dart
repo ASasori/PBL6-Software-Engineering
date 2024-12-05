@@ -85,9 +85,9 @@ class _CategoryViewState extends State<CategoryView> {
                         String imagePath =  widget.porpularLocation.imageLocationList[index].imagePath;
                         return CachedNetworkImage(
                           imageUrl: imagePath,
-                          placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Hiển thị khi ảnh đang load
-                          errorWidget: (context, url, error) => Icon(Icons.error),     // Hiển thị khi có lỗi tải ảnh
-                          fit: BoxFit.cover, // Tùy chỉnh cách hiển thị ảnh
+                          placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                          errorWidget: (context, url, error) => Icon(Icons.error),
+                          fit: BoxFit.cover,
                         );
                       },
                     ),

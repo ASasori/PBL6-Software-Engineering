@@ -14,8 +14,21 @@ class CommonTextFieldView extends StatelessWidget {
   final bool isPasswordField;
   final VoidCallback? togglePasswordVisibility;
 
-  const CommonTextFieldView({super.key, this.titleText, this.hintText, this.errorText,  this.isObsecureText = false,
-    this.isAllowTopTitleView = true, required this.padding, this.onChanged, required this.keyboardType, this.controller, this.isPasswordField = false, this.togglePasswordVisibility,});
+  const CommonTextFieldView({
+    super.key,
+    this.titleText,
+    this.hintText,
+    this.errorText,
+    this.isObsecureText = false,
+    this.isAllowTopTitleView = true,
+    required this.padding,
+    this.onChanged,
+    required this.keyboardType,
+    this.controller,
+    this.isPasswordField = false,
+    this.togglePasswordVisibility,
+  });
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -25,19 +38,20 @@ class CommonTextFieldView extends StatelessWidget {
         children: [
           if (isAllowTopTitleView && titleText != '')
             Padding(
-                padding: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
-                child: Text(
-                  titleText ?? "",
-                  style: TextStyles(context).getDescriptionStyle(),
-                ),
+              padding: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
+              child: Text(
+                titleText ?? "",
+                style: TextStyles(context).getDescriptionStyle(),
+              ),
             ),
           Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24),
             ),
-            shadowColor: Colors.black12.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.6 : 0.2),
+            shadowColor: Colors.black12.withOpacity(
+                Theme.of(context).brightness == Brightness.dark ? 0.6 : 0.2),
             child: Padding(
-              padding: EdgeInsets.only(left: 16,right: 16),
+              padding: EdgeInsets.only(left: 16, right: 16),
               child: SizedBox(
                 height: 48,
                 child: Center(
@@ -55,16 +69,18 @@ class CommonTextFieldView extends StatelessWidget {
                       errorText: null,
                       border: InputBorder.none,
                       hintText: hintText,
-                      hintStyle: TextStyle(color: Theme.of(context).disabledColor),
-                      suffixIcon: isPasswordField ? IconButton(
-                        icon: Icon(
-                          isObsecureText
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        onPressed: togglePasswordVisibility,
-                      )
+                      hintStyle:
+                          TextStyle(color: Theme.of(context).disabledColor),
+                      suffixIcon: isPasswordField
+                          ? IconButton(
+                              icon: Icon(
+                                isObsecureText
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              onPressed: togglePasswordVisibility,
+                            )
                           : null,
                     ),
                     keyboardType: keyboardType,
@@ -79,8 +95,8 @@ class CommonTextFieldView extends StatelessWidget {
               child: Text(
                 errorText ?? "",
                 style: TextStyles(context).getDescriptionStyle().copyWith(
-                  color: AppTheme.redErrorColor,
-                ),
+                      color: AppTheme.redErrorColor,
+                    ),
               ),
             ),
         ],

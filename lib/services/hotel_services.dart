@@ -46,6 +46,20 @@ class HotelServices {
       throw Exception('Error fetching data api');
     }
   }
+  Future<Hotel> fetchHotelsByHotelSlug(String hotel_slug) async {
+    try {
+      final response = await _apiService.dio.get('$baseUrl/api/hotels/$hotel_slug/');
+      if (response.statusCode == 200) {
+        dynamic data = response.data;
+        return Hotel.fromJson(data);
+      } else {
+        throw Exception('Failed to load hotels');
+      }
+    } catch (e) {
+      print(e);
+      throw Exception('Error fetching data api');
+    }
+  }
 
   Future<List<Location>> fetchLocations() async {
     try {

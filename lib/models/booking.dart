@@ -1,4 +1,3 @@
-import '../utils/localfiles.dart';
 
 class BookingData {
   String bookingID;

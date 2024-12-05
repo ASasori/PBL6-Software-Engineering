@@ -8,7 +8,6 @@ class HotelGallery {
   });
 
   factory HotelGallery.fromJson(Map<String, dynamic> json) {
-    const String baseUrl = Localfiles.baseUrl ;
 
     return HotelGallery(
       imageUrl: '${json['image']}',

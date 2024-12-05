@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import '../models/user.dart';
 import '../services/auth_services.dart';
 
 class AuthProvider with ChangeNotifier {

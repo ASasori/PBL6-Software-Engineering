@@ -23,7 +23,6 @@ import '../../widgets/common_card.dart';
 import 'hotel_room_list.dart';
 
 class HotelDetailScreen extends StatefulWidget {
-  // final HotelListData hotelData;
   final Hotel hotelData;
   const HotelDetailScreen({super.key, required this.hotelData});
 
@@ -32,6 +31,7 @@ class HotelDetailScreen extends StatefulWidget {
 }
 
 class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProviderStateMixin{
+  List<HotelListData> hotelDataTest = HotelListData.hotelList;
   ScrollController scrollController = ScrollController(initialScrollOffset: 0);
   TextEditingController ratingController = TextEditingController();
   var hoteltext1 =
@@ -157,7 +157,6 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          // text: hoteltext1 ,
                           text: widget.hotelData.description,
                           // them description of hotel
                           style: TextStyles(context).getDescriptionStyle().copyWith(fontSize: 14,),
@@ -177,7 +176,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                   ),
                   // overall rating view
                   // rating of hotel
-                  // child: RatingView(hotelData: widget.hotelData),
+                  child: RatingView(hotelData: hotelDataTest[0]),
                 ),
 
                 // // 7: sum of hotel picture
@@ -185,21 +184,24 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                 //
                 // // Hotel inside photo view
                 //
-                // HotelRoomList(),
+                HotelRoomList(),
                 // // review and comment of people
-                // _getPhotoReviewUi("reviews", HotelListData.reviewsList.length,'view_all', Icons.arrow_forward,
-                //         () {
-                //       NavigationServices(context).gotoReviewsListScreen();
-                //     }),
+                _getPhotoReviewUi("reviews", HotelListData.reviewsList.length,'view_all', Icons.arrow_forward,
+                        () {
+                      NavigationServices(context).gotoReviewsListScreen();
+                    }),
                 //
-                // // feedback&Review data view
-                // for (var i = 0; i < 2; i++)
-                //   ReviewsView(
-                //     reviewsList: HotelListData.reviewsList[i],
-                //     animation: animationController,
-                //     animationController: animationController,
-                //     callback: () {},
-                //   ),
+                // feedback&Review data view
+                // này lấy ra đoạn đầu những review
+                // nếu review ít hơn thì lấy hết còn nếu nhiều thì lấy tầm 5,
+                // lấy những review mới nhất, cho chạy hàm ngược lại
+                for (var i = 0; i < 2; i++)
+                  ReviewsView(
+                    reviewsList: HotelListData.reviewsList[i],
+                    animation: animationController,
+                    animationController: animationController,
+                    callback: () {},
+                  ),
 
                 Padding(
                   padding: EdgeInsets.only(left: 24, right: 24, top: 16),
@@ -411,14 +413,14 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
   }
 
   Widget _getPhotoReviewUi(
-      String title,int PhotoReviewCount,String view, IconData icon, VoidCallback onTap) {
+      String title,int photoReviewCount,String view, IconData icon, VoidCallback onTap) {
     return Padding(
       padding: const EdgeInsets.only(left: 24, right: 24),
       child: Row(
         children: <Widget>[
           Expanded(
             child: Text(
-              AppLocalizations(context).of(title) + "(${PhotoReviewCount})",
+              AppLocalizations(context).of(title) + "(${photoReviewCount})",
               // "Photos",
               style: TextStyles(context).getBoldStyle().copyWith(
                 fontSize: 14,
