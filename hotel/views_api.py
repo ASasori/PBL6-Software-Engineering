@@ -18,6 +18,7 @@ from django.db import models
 from django.db.models import Q
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+import logging
 
 class HotelViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
@@ -187,7 +188,12 @@ class CartViewSet(viewsets.ModelViewSet):
                     'price': item.room.room_type.price,
                     'bed': item.room.room_type.number_of_beds,
                     'room_type': item.room.room_type.type, 
-                    'item_cart_id': item.id
+                    'slug_room_type': item.room.room_type.slug,
+                    'item_cart_id': item.id,
+                    'check_in_date': item.check_in_date,
+                    'check_out_date': item.check_out_date,
+                    'adults_count': item.num_adults,
+                    'childrens_count': item.num_children,
                 }
                 if hotel_name not in hotels_dict:
                     hotels_dict[hotel_name] = {
@@ -209,6 +215,33 @@ class CartViewSet(viewsets.ModelViewSet):
 
         except Cart.DoesNotExist:
             return Response({'error': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=False, methods=['GET'], url_path='view_cart_item/(?P<cart_item_id>[^/.]+)')
+    def view_cart_item(self, request, cart_item_id=None):
+        try:
+            cart_item = CartItem.objects.select_related('room__hotel', 'room__room_type').get(id=cart_item_id)
+
+            room_info = {
+                'hotel_name': cart_item.room.hotel.name,
+                'hotel_slug': cart_item.room.hotel.slug,
+                'hotel_id': cart_item.room.hotel.id,
+                'room_id': cart_item.room.id,
+                'room_number': cart_item.room.room_number,
+                'price': cart_item.room.room_type.price,
+                'bed': cart_item.room.room_type.number_of_beds,
+                'room_type': cart_item.room.room_type.type,
+                'slug_room_type': cart_item.room.room_type.slug,
+                'item_cart_id': cart_item.id,
+                'check_in_date': cart_item.check_in_date,
+                'check_out_date': cart_item.check_out_date,
+                'adults_count': cart_item.num_adults,
+                'childrens_count': cart_item.num_children,
+            }
+
+            return Response(room_info, status=status.HTTP_200_OK)
+
+        except CartItem.DoesNotExist:
+            return Response({'error': 'Cart item not found'}, status=status.HTTP_404_NOT_FOUND)
 
     @swagger_auto_schema(
         operation_description="Add a room item to the user's cart.",
@@ -544,3 +577,65 @@ class ReviewViewSet(viewsets.ViewSet):
             return Response({'error': 'Hotel not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# Hoàng
+# Search Hotel by location
+logger = logging.getLogger(__name__)
+
+@api_view(['GET'])
+def location(request):
+    location_images_map = {}
+
+    hotels = Hotel.objects.filter(status='Live')
+
+    for hotel in hotels:
+        logger.debug(f"Processing hotel: {hotel}")
+        
+        # Nhóm các khách sạn theo địa chỉ
+        if hotel.address not in location_images_map:
+            location_images_map[hotel.address] = []
+
+        # Lấy danh sách hình ảnh của khách sạn từ bảng HotelGallery
+        hotel_gallery_images = HotelGallery.objects.filter(hotel=hotel)
+
+        # Xử lý khi danh sách hình ảnh trống
+        if hotel_gallery_images.exists():
+            if len(hotel_gallery_images) >= 3:
+                image_path = hotel_gallery_images[2].image.url
+            else:
+                image_path = hotel_gallery_images[0].image.url
+        else:
+            logger.debug(f"Hotel {hotel} has no images, returning null.")
+            image_path = None  # Trả về null nếu không có ảnh
+
+        # Thêm ảnh vào danh sách ảnh của địa chỉ
+        location_images_map[hotel.address].append(image_path)
+
+    # Chuẩn bị dữ liệu trả về
+    response_data = []
+    for location, image_paths in location_images_map.items():
+        response_data.append({
+            'location': location,
+            'imageLocationList': [{'imagePath': image_path} for image_path in image_paths]
+        })
+    
+    return Response(response_data)
+
+@api_view(['POST'])
+def search_hotel_by_location_name(request):
+    location = request.data.get('location', '').strip()
+    name = request.data.get('name', '').strip()
+
+    # Tạo bộ lọc dựa trên location và name
+    filters = {}
+    if location:
+        filters['address__icontains'] = location  # Dùng icontains để tìm kiếm không phân biệt hoa thường
+    if name:
+        filters['name__icontains'] = name
+
+    # Lấy các khách sạn khớp với bộ lọc
+    hotels = Hotel.objects.filter(**filters)
+
+    # Serialize kết quả và trả về
+    serializer = HotelSerializer(hotels, many=True, context={'request': request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
