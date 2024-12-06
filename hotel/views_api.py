@@ -310,65 +310,6 @@ class CartViewSet(viewsets.ModelViewSet):
         except Cart.DoesNotExist:
             return Response({'error': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
 
-# @api_view(['POST'])
-# def create_booking(request):
-#     try:
-#         # Retrieve data from the session
-#         if 'selection_data_obj' not in request.session:
-#             return Response({'error': 'No selected rooms found in session'}, status=status.HTTP_400_BAD_REQUEST)
-
-#         selection_data = request.session['selection_data_obj']
-#         # Assuming there's only one hotel selection in session
-#         hotel_data = next(iter(selection_data.values()))
-
-#         # Extract data from session
-#         hotel_id = hotel_data['hotel_id']
-#         room_ids = hotel_data['room_id']  # You may have to adjust this depending on how you store room IDs in the session
-#         check_in_date = hotel_data['checkin']
-#         check_out_date = hotel_data['checkout']
-#         num_adults = hotel_data['adult']
-#         num_children = hotel_data['children']
-#         room_type_slug = hotel_data['room_type']
-
-#         # You can still allow some data to be passed through the request body, like user details
-#         full_name = request.data.get('full_name')
-#         email = request.data.get('email')
-#         phone = request.data.get('phone')
-
-#         # Now use session data to create the booking
-#         hotel = Hotel.objects.get(id=hotel_id, status='Live')
-#         room_type = RoomType.objects.get(slug=room_type_slug, hotel=hotel)
-#         rooms = Room.objects.filter(room_type=room_type, id=room_ids, is_available=True)
-
-#         if not rooms:
-#             return Response({'error': 'No available rooms'}, status=status.HTTP_400_BAD_REQUEST)
-
-#         # Calculate total days
-#         total_days = (datetime.strptime(check_out_date, '%Y-%m-%d') - datetime.strptime(check_in_date, '%Y-%m-%d')).days
-
-#         # Create the booking
-#         booking = Booking.objects.create(
-#             hotel=hotel,
-#             room_type=room_type,
-#             check_in_date=check_in_date,
-#             check_out_date=check_out_date,
-#             total_days=total_days,
-#             num_adults=num_adults,
-#             num_children=num_children,
-#             full_name=full_name,
-#             email=email,
-#             phone=phone
-#         )
-
-#         for room in rooms:
-#             booking.room.add(room)
-
-#         booking.save()
-
-#         return Response({'message': 'Booking created successfully'}, status=status.HTTP_201_CREATED)
-
-#     except (Hotel.DoesNotExist, RoomType.DoesNotExist):
-#         return Response({'error': 'Invalid hotel or room type'}, status=status.HTTP_400_BAD_REQUEST)
 class BookingViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = BookingSerializer
@@ -486,9 +427,13 @@ def checkout_api(request, booking_id):
     
 @api_view(['POST'])
 def create_checkout_session(request, booking_id):
+    cart_item_id = request.data.get('cart_item_id')
+    print(cart_item_id)
     try:
         booking = Booking.objects.get(booking_id=booking_id)
         stripe.api_key = settings.STRIPE_SECRET_KEY
+        success_url = f"http://localhost:3000/success-payment?session_id={{CHECKOUT_SESSION_ID}}&booking_id={booking.booking_id}&cart_item_id={cart_item_id}"
+        cancel_url = "http://localhost:3000/payment-failed"
 
         checkout_session = stripe.checkout.Session.create(
             customer_email=booking.email,
@@ -502,31 +447,33 @@ def create_checkout_session(request, booking_id):
                 'quantity': 1,
             }],
             mode='payment',
-            success_url=request.build_absolute_uri(reverse('api:payment_success', args=[booking.booking_id])) + "?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url=request.build_absolute_uri(reverse('api:payment_failed', args=[booking.booking_id])),
+            success_url=success_url,
+            cancel_url=cancel_url,
         )
 
         booking.payment_status = "processing"
         booking.stripe_payment_intent = checkout_session['id']
         booking.save()
 
-        return Response({'sessionId': checkout_session.id}, status=status.HTTP_200_OK)
+        return Response({
+            'sessionId': checkout_session.id,
+            'bookingId': booking_id
+            }, status=status.HTTP_200_OK)
 
     except Booking.DoesNotExist:
         return Response({'error': 'Booking not found'}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET'])
+@api_view(['POST'])
 def payment_success(request, booking_id):
-    session_id = request.GET.get('session_id')
+    session_id = request.data.get('sessionId')
     booking = get_object_or_404(Booking, booking_id=booking_id)
-
     if booking.stripe_payment_intent == session_id and booking.payment_status == "processing":
         booking.payment_status = "paid"
         booking.save()
         return Response({'message': 'Payment successful'}, status=status.HTTP_200_OK)
     return Response({'error': 'Payment verification failed'}, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET'])
+@api_view(['POST'])
 def payment_failed(request, booking_id):
     booking = get_object_or_404(Booking, booking_id=booking_id)
     booking.payment_status = "failed"

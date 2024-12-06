@@ -9,12 +9,15 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+from corsheaders.defaults import default_headers
 from pathlib import Path
+from datetime import timedelta
 import os
 from environs import Env
 env = Env()
+
 env.read_env()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -80,7 +83,10 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Thay đổi thành miền frontend của bạn
+    "http://localhost:3000",  # Thay đổi thành miền frontend của bạn
+]
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'Server-Domain',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -290,6 +296,13 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',  
         'rest_framework.renderers.BrowsableAPIRenderer', 
     ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),  # Thời gian sống của access token (5 phút)
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     # Thời gian sống của refresh token (1 ngày)
+    'ROTATE_REFRESH_TOKENS': True,                    # Có làm mới refresh token hay không
+    'BLACKLIST_AFTER_ROTATION': True,                  # Có xóa refresh token cũ không
 }
 
 CORS_ALLOW_CREDENTIALS = True

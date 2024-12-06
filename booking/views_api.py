@@ -6,6 +6,7 @@ from hotel.models import Hotel, RoomType, Booking, Room
 from datetime import datetime
 from django.urls import reverse
 from django.db.models import Q
+from django.utils import timezone
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -65,8 +66,11 @@ def check_room_availability(request):
             'room_type_url': url_with_params,
             'available_rooms': [
                 {
+                    "room_id": room.id,
                     'room_number': room.room_number,
                     'capacity': room.room_type.room_capacity,
+                    'bed': room.room_type.number_of_beds,
+                    'price': room.room_type.price
                 } for room in suitable_rooms
             ]
         }, status=status.HTTP_200_OK)
@@ -77,7 +81,7 @@ def check_room_availability(request):
         return Response({'error': 'Room type not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    
+
 @api_view(['POST'])
 def add_to_selection(request):
     try:
