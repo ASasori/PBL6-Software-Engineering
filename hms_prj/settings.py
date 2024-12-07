@@ -299,10 +299,10 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),  # Thời gian sống của access token (5 phút)
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     # Thời gian sống của refresh token (1 ngày)
-    'ROTATE_REFRESH_TOKENS': True,                    # Có làm mới refresh token hay không
-    'BLACKLIST_AFTER_ROTATION': True,                  # Có xóa refresh token cũ không
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),  
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),    
+    'ROTATE_REFRESH_TOKENS': True,                   
+    'BLACKLIST_AFTER_ROTATION': True,                 
 }
 
 CORS_ALLOW_CREDENTIALS = True
