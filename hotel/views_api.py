@@ -377,6 +377,11 @@ class BookingViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @action(detail=False, methods=['GET'], url_path='my-bookings')
+    def get_user_bookings(self, request):
+        user_bookings = Booking.objects.filter(user=request.user, payment_status='paid')
+        serializer = self.get_serializer(user_bookings, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def checkout_api(request, booking_id):
@@ -481,10 +486,11 @@ def payment_failed(request, booking_id):
     return Response({'message': 'Payment failed'}, status=status.HTTP_200_OK)
 
 
-class ReviewViewSet(viewsets.ViewSet):
+class ReviewViewSet(viewsets.ModelViewSet):
     """
     A ViewSet for handling Reviews.
     """
+    permission_classes = [AllowAny]
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
@@ -519,11 +525,29 @@ class ReviewViewSet(viewsets.ViewSet):
             #hotel = get_object_or_404(Hotel, hid=pk)
             reviews = Review.objects.filter(hotel=hotel)
             serializer = ReviewSerializer(reviews, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'hotel_id': hotel.id, 'reviews': serializer.data}, status=status.HTTP_200_OK)
         except Hotel.DoesNotExist:
             return Response({'error': 'Hotel not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], url_path='my-reviews')
+    def get_my_reviews(self, request):
+        my_reviews = Review.objects.filter(user=request.user)
+        serializer = self.get_serializer(my_reviews, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=['delete'], url_path='delete')
+    def delete_review(self, request, pk=None):
+        try:
+            review = Review.objects.get(id=pk, user=request.user)
+            review.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Review.DoesNotExist:
+            return Response({'error': 'Review not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 
 # Hoàng
 # Search Hotel by location
