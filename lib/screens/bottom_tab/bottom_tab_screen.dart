@@ -40,9 +40,7 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (bottomBarType == BottomBarType.Wishlist) {
         _LoadingWishlistScreen();
-      } if (bottomBarType == BottomBarType.Explore) {
-        _LoadingExploreScreen();
-      } else {
+      }  else {
         _startLoadingScreen();
       }
     });
@@ -79,7 +77,6 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
       });
     }
   }
-
 
   @override
   void dispose() {
@@ -160,6 +157,7 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
       ),
     );
   }
+
   void tabClick(BottomBarType tabType){
     if (tabType != bottomBarType){
       bottomBarType = tabType;
