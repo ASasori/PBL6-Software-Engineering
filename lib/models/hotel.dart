@@ -16,6 +16,7 @@ class HotelGallery {
 }
 
 class Hotel {
+  // final int? hotelId;
   final String name;
   final String description;
   final String? mapImage;
@@ -33,6 +34,7 @@ class Hotel {
   final List<HotelGallery> galleryImages;
 
   Hotel({
+    // this.hotelId,
     required this.name,
     required this.description,
     this.mapImage,
@@ -68,6 +70,7 @@ class Hotel {
         [];
 
     return Hotel(
+      // hotelId: json['id'] ?? '',
       name: json['name'] ?? '',
       description: desc,
       mapImage: mapImageUrl,

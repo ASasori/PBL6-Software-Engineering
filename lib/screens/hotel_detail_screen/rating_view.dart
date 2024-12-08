@@ -8,9 +8,8 @@ import '../../utils/themes.dart';
 import '../../widgets/common_card.dart';
 
 class RatingView extends StatelessWidget {
-  final HotelListData hotelData;
-
-  const RatingView({Key? key, required this.hotelData}) : super(key: key);
+  final double hotelRating;
+  const RatingView({Key? key, required this.hotelRating}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +25,7 @@ class RatingView extends StatelessWidget {
                 SizedBox(
                   width: 60,
                   child: Text(
-                    (hotelData.rating * 2).toStringAsFixed(1),
+                    (hotelRating).toStringAsFixed(1),
                     textAlign: TextAlign.left,
                     style: TextStyles(context).getBoldStyle().copyWith(
                       fontSize: 38,
@@ -55,7 +54,7 @@ class RatingView extends StatelessWidget {
                         SmoothStarRating(
                           allowHalfRating: true,
                           starCount: 5,
-                          rating: hotelData.rating,
+                          rating: hotelRating,
                           size: 16,
                           color: Theme.of(context).primaryColor,
                           borderColor: Theme.of(context).primaryColor,

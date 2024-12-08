@@ -40,8 +40,6 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (bottomBarType == BottomBarType.Wishlist) {
         _LoadingWishlistScreen();
-      } if (bottomBarType == BottomBarType.Explore) {
-        _LoadingExploreScreen();
       } else {
         _startLoadingScreen();
       }
