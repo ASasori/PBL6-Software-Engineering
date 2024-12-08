@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:booking_hotel_app/providers/hotel_provider.dart';
 import 'package:booking_hotel_app/providers/review_provider.dart';
 import 'package:booking_hotel_app/screens/hotel_detail_screen/rating_view.dart';
 import 'package:booking_hotel_app/screens/hotel_detail_screen/review_data_view.dart';
@@ -26,13 +27,15 @@ import 'hotel_room_list.dart';
 
 class HotelDetailScreen extends StatefulWidget {
   final Hotel hotelData;
+
   const HotelDetailScreen({super.key, required this.hotelData});
 
   @override
   State<HotelDetailScreen> createState() => _HotelDetailScreenState();
 }
 
-class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProviderStateMixin{
+class _HotelDetailScreenState extends State<HotelDetailScreen>
+    with TickerProviderStateMixin {
   List<HotelListData> hotelDataTest = HotelListData.hotelList;
   ScrollController scrollController = ScrollController(initialScrollOffset: 0);
   TextEditingController ratingController = TextEditingController();
@@ -45,11 +48,11 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
   late AnimationController animationController;
   var imageHieght = 0.0;
   late AnimationController _animationController;
+  double rating = 5.0;
 
   @override
   void initState() {
     super.initState();
-
     animationController = AnimationController(
         duration: Duration(milliseconds: 2000), vsync: this);
     _animationController =
@@ -74,7 +77,8 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
       }
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ReviewProvider>(context, listen: false).fetchReviewList(widget.hotelData.hid);
+      Provider.of<ReviewProvider>(context, listen: false)
+          .fetchReviewList(widget.hotelData.hid);
     });
   }
 
@@ -88,7 +92,6 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
   Widget build(BuildContext context) {
     final reviewProvider = Provider.of<ReviewProvider>(context);
     imageHieght = MediaQuery.of(context).size.height;
-    var rating = 5.0;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -149,9 +152,9 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                         child: Text(
                           AppLocalizations(context).of("summary"),
                           style: TextStyles(context).getBoldStyle().copyWith(
-                            fontSize: 14,
-                            letterSpacing: 0.5,
-                          ),
+                                fontSize: 14,
+                                letterSpacing: 0.5,
+                              ),
                         ),
                       ),
                     ],
@@ -159,7 +162,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                 ),
                 Padding(
                   padding:
-                  EdgeInsets.only(left: 24, right: 24, top: 4, bottom: 8),
+                      EdgeInsets.only(left: 24, right: 24, top: 4, bottom: 8),
                   child: RichText(
                     textAlign: TextAlign.justify,
                     text: TextSpan(
@@ -167,7 +170,11 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                         TextSpan(
                           text: widget.hotelData.description,
                           // them description of hotel
-                          style: TextStyles(context).getDescriptionStyle().copyWith(fontSize: 14,),
+                          style: TextStyles(context)
+                              .getDescriptionStyle()
+                              .copyWith(
+                                fontSize: 14,
+                              ),
                           recognizer: new TapGestureRecognizer()..onTap = () {},
                         ),
                       ],
@@ -184,7 +191,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                   ),
                   // overall rating view
                   // rating of hotel
-                  child: RatingView(hotelData: hotelDataTest[0]),
+                  child: RatingView(hotelRating: reviewProvider.hotelRating),
                 ),
 
                 // // 7: sum of hotel picture
@@ -194,24 +201,27 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                 //
                 // HotelRoomList(),
                 // // review and comment of people
-                _getPhotoReviewUi("reviews", reviewProvider.reviewList.length,'view_all', Icons.arrow_forward,
-                        () {
-                      NavigationServices(context).gotoReviewsListScreen(reviewProvider.reviewList);
-                    }),
-                //
-                // feedback&Review data view
-                // này lấy ra đoạn đầu những review
-                // nếu review ít hơn thì lấy hết còn nếu nhiều thì lấy tầm 5,
-                // lấy những review mới nhất, cho chạy hàm ngược lại
-                for (var i = 0; i < reviewProvider.reviewList.length; i++)
-                  if (i<=5)
-                    ReviewsView(
-                      review: reviewProvider.reviewList[i],
-                      animation: animationController,
-                      animationController: animationController,
-                      callback: () {},
+                _getPhotoReviewUi("reviews", reviewProvider.reviewList.length,
+                    'view_all', Icons.arrow_forward, () {
+                  NavigationServices(context)
+                      .gotoReviewsListScreen(reviewProvider.reviewList);
+                }),
+                if (reviewProvider.reviewList.isEmpty)
+                  Center(
+                    child: Text(
+                      'Hiện không có đánh giá nào.',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
-
+                  )
+                else
+                  for (var i = reviewProvider.reviewList.length - 1; i >= 0; i--)
+                    if (i >= reviewProvider.reviewList.length - 5)
+                      ReviewsView(
+                        review: reviewProvider.reviewList[i],
+                        animation: animationController,
+                        animationController: animationController,
+                        callback: () {},
+                      ),
                 Padding(
                   padding: EdgeInsets.only(left: 24, right: 24, top: 16),
                   child: Column(
@@ -226,7 +236,8 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                                 radius: 8,
                                 color: AppTheme.whiteColor,
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(8)),
                                   child: AspectRatio(
                                     aspectRatio: 1,
                                     child: Image.asset(
@@ -244,14 +255,15 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                             children: [
                               Text(
                                 "Please rating: ",
-                                style: TextStyles(context).getBoldStyle().copyWith(
-                                  fontSize: 16,
-                                ),
+                                style:
+                                    TextStyles(context).getBoldStyle().copyWith(
+                                          fontSize: 16,
+                                        ),
                               ),
                               Row(
                                 children: <Widget>[
                                   // Text(
-                                  //   "(${rating*2})",
+                                  //   "(${rating})",
                                   //   style: new TextStyles(context)
                                   //       .getRegularStyle()
                                   //       .copyWith(
@@ -261,10 +273,10 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: RatingBar(
-                                      minRating: 1,
-                                      maxRating: 5,
-                                      initialRating: rating,
-                                      ratingWidget: RatingWidget(
+                                        minRating: 1,
+                                        maxRating: 5,
+                                        initialRating: rating.toDouble(),
+                                        ratingWidget: RatingWidget(
                                           full: Icon(
                                             Icons.star,
                                             color: AppTheme.primaryColor,
@@ -277,14 +289,13 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                                             Icons.star_border,
                                             color: AppTheme.primaryColor,
                                           ),
-                                      ),
-                                      onRatingUpdate: (value) {
-                                        setState(() {
-                                          rating = value;
-                                        });
-                                        print(rating);
-                                      }
-                                    ),
+                                        ),
+                                        onRatingUpdate: (value) {
+                                          setState(() {
+                                            rating = value;
+                                          });
+                                          print(rating);
+                                        }),
                                   ),
                                 ],
                               ),
@@ -292,27 +303,36 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                shadowColor: Colors.black12.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.6 : 0.2),
+                                shadowColor: Colors.black12.withOpacity(
+                                    Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? 0.6
+                                        : 0.2),
                                 child: Padding(
-                                  padding: EdgeInsets.only(left: 16,right: 16),
+                                  padding: EdgeInsets.only(left: 16, right: 16),
                                   child: SizedBox(
                                     height: 100,
-                                    width: MediaQuery.of(context).size.width/2,
+                                    width:
+                                        MediaQuery.of(context).size.width / 2,
                                     child: Center(
                                       child: TextField(
                                         controller: ratingController,
                                         maxLines: 3,
-                                        style: TextStyles(context).getRegularStyle(),
-                                        cursorColor: Theme.of(context).primaryColor,
+                                        style: TextStyles(context)
+                                            .getRegularStyle(),
+                                        cursorColor:
+                                            Theme.of(context).primaryColor,
                                         onEditingComplete: () {
                                           FocusScope.of(context).nextFocus();
                                         },
                                         decoration: new InputDecoration(
                                             errorText: null,
                                             border: InputBorder.none,
-                                            hintText: "What do you think about the product quality?",
-                                            hintStyle: TextStyle(color: Theme.of(context).disabledColor)
-                                        ),
+                                            hintText:
+                                                "What do you think about the product quality?",
+                                            hintStyle: TextStyle(
+                                                color: Theme.of(context)
+                                                    .disabledColor)),
                                         keyboardType: TextInputType.multiline,
                                       ),
                                     ),
@@ -321,18 +341,46 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                               ),
                               SizedBox(
                                 width: 200,
-                                child:Padding(
+                                child: Padding(
                                   padding: const EdgeInsets.only(
                                       bottom: 16, top: 16),
                                   child: CommonButton(
                                     buttonText: "Submit",
-                                    onTap: () {
-
+                                    onTap: () async {
+                                      try {
+                                        await reviewProvider.postReview(
+                                          reviewProvider.reviewHotel,
+                                          rating.toInt(),
+                                          ratingController.text.trim(),
+                                        );
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                              content: const Text(
+                                                "Review posted successfully!",
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                              backgroundColor:
+                                                  AppTheme.primaryColor),
+                                        );
+                                        ratingController.clear();
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                              content: Text(
+                                                "Failed to post review. Please try again.",
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                              backgroundColor: Colors.red),
+                                        );
+                                      }
                                     },
                                   ),
                                 ),
                               ),
-
                             ],
                           )
                         ],
@@ -347,7 +395,6 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                 SizedBox(
                   height: MediaQuery.of(context).padding.bottom,
                 ),
-
               ],
             ),
           ),
@@ -364,14 +411,14 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                 children: <Widget>[
                   _getAppBarUi(Theme.of(context).disabledColor.withOpacity(0.4),
                       Icons.arrow_back, AppTheme.backgroundColor, () {
-                        if (scrollController.offset != 0.0) {
-                          scrollController.animateTo(0.0,
-                              duration: Duration(milliseconds: 480),
-                              curve: Curves.easeInOutQuad);
-                        } else {
-                          Navigator.pop(context);
-                        }
-                      }),
+                    if (scrollController.offset != 0.0) {
+                      scrollController.animateTo(0.0,
+                          duration: Duration(milliseconds: 480),
+                          curve: Curves.easeInOutQuad);
+                    } else {
+                      Navigator.pop(context);
+                    }
+                  }),
                   Expanded(
                     child: SizedBox(),
                   ),
@@ -421,8 +468,8 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
     );
   }
 
-  Widget _getPhotoReviewUi(
-      String title,int photoReviewCount,String view, IconData icon, VoidCallback onTap) {
+  Widget _getPhotoReviewUi(String title, int photoReviewCount, String view,
+      IconData icon, VoidCallback onTap) {
     return Padding(
       padding: const EdgeInsets.only(left: 24, right: 24),
       child: Row(
@@ -432,8 +479,8 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
               AppLocalizations(context).of(title) + "(${photoReviewCount})",
               // "Photos",
               style: TextStyles(context).getBoldStyle().copyWith(
-                fontSize: 14,
-              ),
+                    fontSize: 14,
+                  ),
             ),
           ),
           Material(
@@ -450,9 +497,9 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                       //  'View all',
                       textAlign: TextAlign.left,
                       style: TextStyles(context).getBoldStyle().copyWith(
-                        fontSize: 14,
-                        color: Theme.of(context).primaryColor,
-                      ),
+                            fontSize: 14,
+                            color: Theme.of(context).primaryColor,
+                          ),
                     ),
                     SizedBox(
                       height: 38,
@@ -504,8 +551,12 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                             width: MediaQuery.of(context).size.width,
                             child: CachedNetworkImage(
                               imageUrl: hotelData.galleryImages[1].imageUrl,
-                              placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Hiển thị khi ảnh đang load
-                              errorWidget: (context, url, error) => Icon(Icons.error),     // Hiển thị khi có lỗi tải ảnh
+                              placeholder: (context, url) =>
+                                  Center(child: CircularProgressIndicator()),
+                              // Hiển thị khi ảnh đang load
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error),
+                              // Hiển thị khi có lỗi tải ảnh
                               fit: BoxFit.cover, // Tùy chỉnh cách hiển thị ảnh
                             ),
                           ),
@@ -538,7 +589,8 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                                       height: 4,
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+                                      padding: const EdgeInsets.only(
+                                          left: 16, right: 16, top: 8),
                                       child: getHotelDetails(),
                                     ),
                                     Padding(
@@ -549,9 +601,12 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                                           top: 16),
                                       // booknow -> page booking
                                       child: CommonButton(
-                                          buttonText: AppLocalizations(context).of("book_now"),
+                                          buttonText: AppLocalizations(context)
+                                              .of("book_now"),
                                           onTap: () {
-                                            NavigationServices(context).gotoRoomBookingScreen(widget.hotelData);
+                                            NavigationServices(context)
+                                                .gotoRoomBookingScreen(
+                                                    widget.hotelData);
                                           }),
                                     ),
                                   ],
@@ -578,17 +633,17 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                                         .primaryColor
                                         .withOpacity(0.2),
                                     borderRadius:
-                                    BorderRadius.all(Radius.circular(38)),
+                                        BorderRadius.all(Radius.circular(38)),
                                     onTap: () {
                                       try {
                                         scrollController.animateTo(
                                             MediaQuery.of(context).size.height -
                                                 MediaQuery.of(context)
-                                                    .size
-                                                    .height /
+                                                        .size
+                                                        .height /
                                                     5,
                                             duration:
-                                            Duration(milliseconds: 500),
+                                                Duration(milliseconds: 500),
                                             curve: Curves.fastOutSlowIn);
                                       } catch (e) {}
                                     },
@@ -601,9 +656,9 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                            CrossAxisAlignment.center,
                                         children: <Widget>[
                                           Text(
                                             AppLocalizations(context)
@@ -611,12 +666,12 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                                             style: TextStyles(context)
                                                 .getBoldStyle()
                                                 .copyWith(
-                                              color: Colors.white,
-                                            ),
+                                                  color: Colors.white,
+                                                ),
                                           ),
                                           Padding(
                                             padding:
-                                            const EdgeInsets.only(top: 2),
+                                                const EdgeInsets.only(top: 2),
                                             child: Icon(
                                               Icons.keyboard_arrow_down,
                                               color: Colors.white,
@@ -643,6 +698,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
       ),
     );
   }
+
   Widget getHotelDetails({bool isInList = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -657,9 +713,9 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                 widget.hotelData.name, //name
                 textAlign: TextAlign.left,
                 style: TextStyles(context).getBoldStyle().copyWith(
-                  fontSize: 22,
-                  color: isInList ? AppTheme.fontcolor : Colors.white,
-                ),
+                      fontSize: 22,
+                      color: isInList ? AppTheme.fontcolor : Colors.white,
+                    ),
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -676,12 +732,13 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
                   Text(
                     widget.hotelData.address, // address
                     style: TextStyles(context).getRegularStyle().copyWith(
-                      fontSize: 14,
-                      color: isInList
-                          ? Theme.of(context).disabledColor.withOpacity(0.5)
-                          : Colors.white,
-                    ),
-                  ),                  // Text(
+                          fontSize: 14,
+                          color: isInList
+                              ? Theme.of(context).disabledColor.withOpacity(0.5)
+                              : Colors.white,
+                        ),
+                  ),
+                  // Text(
                   //   "${widget.hotelData.dist.toStringAsFixed(1)}", // distance
                   //   overflow: TextOverflow.ellipsis,
                   //   style: TextStyles(context).getRegularStyle().copyWith(
@@ -711,35 +768,35 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
               isInList
                   ? SizedBox()
                   : Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Row(
-                  children: <Widget>[
-                    Helper.ratingStar(),
-                    Text(
-                      " ${widget.hotelData.views} ",
-                      style:
-                      TextStyles(context).getRegularStyle().copyWith(
-                        fontSize: 14,
-                        color: isInList
-                            ? Theme.of(context)
-                            .disabledColor
-                            .withOpacity(0.5)
-                            : Colors.white,
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Row(
+                        children: <Widget>[
+                          Helper.ratingStar(),
+                          Text(
+                            " ${widget.hotelData.views} ",
+                            style:
+                                TextStyles(context).getRegularStyle().copyWith(
+                                      fontSize: 14,
+                                      color: isInList
+                                          ? Theme.of(context)
+                                              .disabledColor
+                                              .withOpacity(0.5)
+                                          : Colors.white,
+                                    ),
+                          ),
+                          Text(
+                            AppLocalizations(context).of("views"),
+                            style:
+                                TextStyles(context).getRegularStyle().copyWith(
+                                      fontSize: 14,
+                                      color: isInList
+                                          ? Theme.of(context).disabledColor
+                                          : Colors.white,
+                                    ),
+                          ),
+                        ],
                       ),
                     ),
-                    Text(
-                      AppLocalizations(context).of("views"),
-                      style:
-                      TextStyles(context).getRegularStyle().copyWith(
-                        fontSize: 14,
-                        color: isInList
-                            ? Theme.of(context).disabledColor
-                            : Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
         ),
@@ -753,11 +810,11 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> with TickerProvid
               "${widget.hotelData.status}",
               textAlign: TextAlign.left,
               style: TextStyles(context).getBoldStyle().copyWith(
-                fontSize: 22,
-                color: isInList
-                    ? Theme.of(context).textTheme.bodyLarge!.color
-                    : Colors.white,
-              ),
+                    fontSize: 22,
+                    color: isInList
+                        ? Theme.of(context).textTheme.bodyLarge!.color
+                        : Colors.white,
+                  ),
             ),
             // Text(
             //   AppLocalizations(context).of("per_night"),

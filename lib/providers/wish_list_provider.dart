@@ -1,6 +1,4 @@
-import 'package:booking_hotel_app/providers/hotel_provider.dart';
 import 'package:booking_hotel_app/services/hotel_services.dart';
-import 'package:booking_hotel_app/utils/localfiles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
@@ -107,7 +105,8 @@ class WishlistProvider with ChangeNotifier {
           print("Error detail hotel: $e");
         }
         final hotelAddress = hotelData.address;
-        final hotelImage = '${Localfiles.baseUrl}${hotelData.galleryImages[0].imageUrl}';
+        final hotelImage =
+            '${hotelData.galleryImages[0].imageUrl}';
         for (var room in hotel['rooms']) {
           final totalAmount = room['price'] *
               (DateTime.parse(room['check_out_date'])
@@ -125,10 +124,10 @@ class WishlistProvider with ChangeNotifier {
             typeRoom: room['room_type'],
             pricePernight: room['price'],
             totalAmount: totalAmount,
-            )
-          );
+          ));
         }
       }
+      _counter = loadedWishlist.length;
       _wishlist = loadedWishlist;
       _totalPrice = price;
       notifyListeners();
@@ -151,6 +150,8 @@ class WishlistProvider with ChangeNotifier {
     final status = await _wishlistServices.deleteCartItem(id);
     if (status == null) {
       removeWishlistItemById(id);
+      _counter--;
+      notifyListeners();
     }
     _isLoading = false;
     notifyListeners();

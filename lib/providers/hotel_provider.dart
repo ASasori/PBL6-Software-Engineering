@@ -14,12 +14,14 @@ class HotelProvider with ChangeNotifier {
   List<Location> _locations = [];
   List<Hotel> _hotelsByLocation = [];
   bool _isLoading = false;
+  late Hotel _hotelDetail;
 
   List<Hotel> get hotels => _hotels;
   List<Hotel> get topHotels => _topHotels;
   List<Location> get locations => _locations;
   List<Hotel> get hotelsByLocation => _hotelsByLocation;
   bool get isLoading => _isLoading;
+  Hotel get hotelDetail => _hotelDetail;
 
   Future<void> fetchHotels() async {
     _isLoading = true;
@@ -73,6 +75,19 @@ class HotelProvider with ChangeNotifier {
     } catch (e) {
       print(e);
       return [];
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchHotelsBySlug(String hotelSlug) async {
+    try {
+      _isLoading = true;
+      _hotelDetail = await _hotelServices.fetchHotelsByHotelSlug(hotelSlug);
+      notifyListeners();
+    } catch (e) {
+      print(e);
     } finally {
       _isLoading = false;
       notifyListeners();
