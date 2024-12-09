@@ -11,6 +11,7 @@ import 'package:booking_hotel_app/screens/profile_screen/change_password_screen.
 import 'package:booking_hotel_app/screens/profile_screen/edit_profile_screen.dart';
 import 'package:booking_hotel_app/screens/profile_screen/help_center_screen.dart';
 import 'package:booking_hotel_app/screens/profile_screen/setting_screen.dart';
+import 'package:booking_hotel_app/screens/wishlist_screen/checkout_screen.dart';
 import 'package:flutter/material.dart';
 
 
@@ -79,6 +80,9 @@ class NavigationServices {
     return _pushMasterialPageRoute(ReviewListScreen(reviewList: reviewList,));
   }
 
+  Future<dynamic> gotoCheckoutScreen() {
+    return _pushMasterialPageRoute(CheckoutScreen());
+  }
 
   Future<Future> gotoEditProfileScreen()  async{
     return await _pushMasterialPageRoute(EditProfileScreen());

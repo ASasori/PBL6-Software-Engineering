@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:booking_hotel_app/common/common.dart';
 import 'package:booking_hotel_app/models/wishlist_item.dart';
 import 'package:booking_hotel_app/providers/wish_list_provider.dart';
 import 'package:booking_hotel_app/utils/localfiles.dart';
@@ -12,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 import '../../language/appLocalizations.dart';
+import '../../routes/route_names.dart';
 import '../../utils/helper.dart';
 import '../../utils/text_styles.dart';
 import '../../utils/themes.dart';
@@ -283,7 +285,7 @@ class _WishlistScreenState extends State<WishlistScreen>
                                   bottom: 8,
                                 ),
                                 child: Text(
-                                  "Booking again",
+                                  "Checkout",
                                   style: TextStyles(context)
                                       .getTitleStyle()
                                       .copyWith(
@@ -292,7 +294,10 @@ class _WishlistScreenState extends State<WishlistScreen>
                                 ),
                               ),
                               backgroundColor: Colors.green,
-                              onTap: () {},
+                              onTap: () {
+                                NavigationServices(context)
+                                    .gotoCheckoutScreen();
+                              },
                             ),
                             CommonButton(
                               buttonTextWidget: Padding(
@@ -357,6 +362,9 @@ class _WishlistScreenState extends State<WishlistScreen>
                                     margin: EdgeInsets.all(16),
                                   ),
                                 );
+                                setState(() {
+
+                                });
                               },
                             ),
                           ],
