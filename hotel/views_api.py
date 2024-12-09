@@ -572,7 +572,7 @@ class ReviewViewSet(viewsets.ViewSet):
             #hotel = get_object_or_404(Hotel, hid=pk)
             reviews = Review.objects.filter(hotel=hotel)
             serializer = ReviewSerializer(reviews, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'hotel_id' : hotel.id,'reviews': serializer.data}, status=status.HTTP_200_OK)
         except Hotel.DoesNotExist:
             return Response({'error': 'Hotel not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:

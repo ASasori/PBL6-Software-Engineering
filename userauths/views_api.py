@@ -8,6 +8,12 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth import get_user_model
 from .serializers import UserSerializer, LoginSerializer
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+from django.conf import settings
 
 User = get_user_model()
 
@@ -96,3 +102,73 @@ def logout_view(request):
     logout(request)
     return Response({'message': 'Logged out successfully'}, status=status.HTTP_200_OK)
 
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def send_reset_password_email(request):
+    """
+    API to send a reset password link to the user's email.
+    """
+    email = request.data.get('email')
+    if not email:
+        return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response({'error': 'No account associated with this email.'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Generate reset link
+    token = default_token_generator.make_token(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    reset_url = f"{settings.FRONTEND_URL}/reset-password/{uid}/{token}/"
+
+    # Send email
+    subject = "Reset Your Password"
+    # message = render_to_string('reset_password_email.html', {
+    #     'user': user,
+    #     'reset_url': reset_url
+    # })
+
+    message = f"""
+    Hello {user.first_name},
+
+    You requested to reset your password. Click the link below to reset it:
+
+    {reset_url}
+
+    If you did not request a password reset, please ignore this email.
+
+    Regards,
+    Hotel Management System
+    """
+
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+
+    return Response({'message': 'Reset password email has been sent.'}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def reset_password(request, uidb64, token):
+    """
+    API to reset the password using the token and user ID.
+    """
+    new_password = request.data.get('new_password')
+    if not new_password:
+        return Response({'error': 'New password is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        uid = force_bytes(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        return Response({'error': 'Invalid token or user ID.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not default_token_generator.check_token(user, token):
+        return Response({'error': 'Invalid or expired token.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Set new password
+    user.set_password(new_password)
+    user.save()
+
+    return Response({'message': 'Password has been reset successfully.'}, status=status.HTTP_200_OK)

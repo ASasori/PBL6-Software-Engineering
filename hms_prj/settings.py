@@ -242,7 +242,10 @@ JAZZMIN_SETTINGS = {
     },
 
 
-    "show_ui_builder" : True
+    "show_ui_builder" : False,
+    "custom_links":{},
+    "hide_apps": [],
+    "hide_models": [],
 }
 
 JAZZMIN_UI_TWEAKS = {
@@ -297,3 +300,12 @@ CORS_ORIGIN_ALLOW_ALL = False  # Chỉ cho phép các nguồn cụ thể
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',  # Địa chỉ của ứng dụng React
 ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = 'Hotel Management <minamisasori28@gmail.com>'
+FRONTEND_URL = 'http://localhost:3000'
