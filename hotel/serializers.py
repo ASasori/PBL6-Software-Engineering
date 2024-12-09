@@ -30,6 +30,9 @@ class RoomSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class BookingSerializer(serializers.ModelSerializer):
+    hotel_name = serializers.CharField(source='hotel.name', read_only=True)
+    room_type_name = serializers.CharField(source='room_type.type', read_only=True) 
+
     class Meta:
         model = Booking
         fields = '__all__'
@@ -50,9 +53,12 @@ class ReviewSerializer(serializers.ModelSerializer):
     #     queryset=RoomType.objects.all(),
     #     slug_field='type'  # Trường 'type' của RoomType
     # )
+    profile_image = serializers.CharField(source='user.profile.image.url', read_only=True) 
+    email = serializers.CharField(source='user.email', read_only=True)
+    hotel_name = serializers.CharField(source='hotel.name', read_only=True)
     class Meta:
         model = Review
-        fields = ['id', 'hotel', 'room_type', 'user', 'rating', 'review_text', 'date']
+        fields = ['id', 'hotel', 'profile_image', 'hotel_name', 'email', 'room_type', 'user', 'rating', 'review_text', 'date']
         read_only_fields = ['id', 'user', 'date']
         extra_kwargs = {
             'room_type': {'required': False}  # Không bắt buộc

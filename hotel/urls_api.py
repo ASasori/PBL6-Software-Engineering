@@ -13,10 +13,6 @@ router.register('reviews', ReviewViewSet, basename='review')
 router.register('bookings', BookingViewSet, basename='booking')
 
 urlpatterns = [
-#     path('hotels/', index, name='hotel_list'),  # List all live hotels
-#     path('hotels/<slug>/', hotel_detail, name='hotel_detail'),  # Get hotel details by slug
-#     path('hotels/<slug:slug>/room-types/<slug:rt_slug>/', room_type_detail, name='room_type_detail'),  # Get room type details for a specific hotel
-#    path('booking/create/', create_booking, name='create_booking'),  # Create a new booking
      path('checkout-api/<str:booking_id>/', checkout_api, name='checkout_api'),  # API to handle checkout and coupon application
      path('checkout/<str:booking_id>/', create_checkout_session, name='create_checkout_session'),  # Checkout for booking
      path('payment-success/<str:booking_id>/', payment_success, name='payment_success'),  # Payment success
@@ -41,12 +37,18 @@ urlpatterns = [
          views_api.CartViewSet.as_view({'get': 'view_cart_item'}), name='view_cart_item'),
      path('bookings/create/', 
           views_api.BookingViewSet.as_view({'post': 'create_booking'}), name='create_booking'),
+     path('bookings/my-bookings/', 
+          views_api.BookingViewSet.as_view({'get': 'get_user_bookings'}), name='get_user_bookings'),
 
 # Custom Review Endpoints
      path('reviews/post/', 
          ReviewViewSet.as_view({'post': 'create_review'}), name='create_review'),
      path('reviews/hotel-reviews/<str:pk>/', 
          ReviewViewSet.as_view({'get': 'get_reviews_by_hotel'}), name='get_hotel_reviews'),   
+     path('reviews/my-reviews/', 
+         ReviewViewSet.as_view({'get': 'get_my_reviews'}), name='get_my_reviews'),   
+     path('reviews/delete/<str:pk>/', 
+         ReviewViewSet.as_view({'delete': 'delete_review'}), name='delete_review'),   
 
 # Location 
      path('locations/', location, name = 'location'),
