@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:booking_hotel_app/common/common.dart';
 import 'package:booking_hotel_app/models/wishlist_item.dart';
 import 'package:booking_hotel_app/providers/wish_list_provider.dart';
 import 'package:booking_hotel_app/utils/localfiles.dart';
@@ -12,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 import '../../language/appLocalizations.dart';
+import '../../routes/route_names.dart';
 import '../../utils/helper.dart';
 import '../../utils/text_styles.dart';
 import '../../utils/themes.dart';
@@ -30,9 +32,9 @@ class _WishlistScreenState extends State<WishlistScreen>
     with TickerProviderStateMixin {
   late AnimationController _animationController;
   String Publishablekey =
-      "pk_test_51QJx9mIwmmeHUVs5keRVjcinLDUMSmvtPqv7BqdlyG97Nht9ogjFirsWrEwwC2rHxoCctETMw6sKQ1JzHTLM4o5M00Ih1oc8y1";
+      "pk_test_51Q7TR2B1Dpb6dXWmD5g6dAuCHf5Co92kXqxZOI2yTOuC4lnZYSa6EGmYaZjAhfYVqMAXlPWft1HaIJT01qW29RVF0009iOraPk";
   String Secretkey =
-      "sk_test_51QJx9mIwmmeHUVs5y8Yp8ZNBqiQkqX9qnJ7lim35Hx9ioy6Hfj7SZ9KNz9N33Dy5HtmCdnKlcoS2mJovMznmS5Pp007B2Q5NTw";
+      "sk_test_51Q7TR2B1Dpb6dXWmXNRStuPl01fVTeLAldCoudxmojsxj2ItvE5ebRctIHHOt0vznsI2KO8LTRuc9Ftcm112Hman00huhYGhWI";
   late List<WishlistItem> wishlist;
 
   @override
@@ -107,12 +109,20 @@ class _WishlistScreenState extends State<WishlistScreen>
                                         BorderRadius.all(Radius.circular(16.0)),
                                     child: AspectRatio(
                                       aspectRatio: 1.0,
-                                      child: provider.wishlist[index].imageUrl.isNotEmpty ? CachedNetworkImage(
-                                        imageUrl:provider.wishlist[index].imageUrl,
-                                        placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                                        errorWidget: (context, url, error) => Icon(Icons.error),
-                                        fit: BoxFit.cover,
-                                      ): Center(child: Icon(Icons.error)),
+                                      child: provider.wishlist[index].imageUrl
+                                              .isNotEmpty
+                                          ? CachedNetworkImage(
+                                              imageUrl: provider
+                                                  .wishlist[index].imageUrl,
+                                              placeholder: (context, url) => Center(
+                                                  child:
+                                                      CircularProgressIndicator()),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      Icon(Icons.error),
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Center(child: Icon(Icons.error)),
                                     ),
                                   ),
                                 ),
@@ -275,7 +285,7 @@ class _WishlistScreenState extends State<WishlistScreen>
                                   bottom: 8,
                                 ),
                                 child: Text(
-                                  "Booking again",
+                                  "Checkout",
                                   style: TextStyles(context)
                                       .getTitleStyle()
                                       .copyWith(
@@ -284,7 +294,10 @@ class _WishlistScreenState extends State<WishlistScreen>
                                 ),
                               ),
                               backgroundColor: Colors.green,
-                              onTap: () {},
+                              onTap: () {
+                                NavigationServices(context)
+                                    .gotoCheckoutScreen();
+                              },
                             ),
                             CommonButton(
                               buttonTextWidget: Padding(
@@ -349,6 +362,9 @@ class _WishlistScreenState extends State<WishlistScreen>
                                     margin: EdgeInsets.all(16),
                                   ),
                                 );
+                                setState(() {
+
+                                });
                               },
                             ),
                           ],
@@ -525,7 +541,8 @@ class _WishlistScreenState extends State<WishlistScreen>
               if (wishlistProvider.totalPrice == 0.0) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Your wishlist is empty. Checkout is Notavailable!'),
+                    content: Text(
+                        'Your wishlist is empty. Checkout is Notavailable!'),
                     duration: Duration(seconds: 2),
                   ),
                 );

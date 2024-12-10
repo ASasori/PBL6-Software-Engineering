@@ -78,7 +78,6 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
     }
   }
 
-
   @override
   void dispose() {
     animationController.dispose();
@@ -158,6 +157,7 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
       ),
     );
   }
+
   void tabClick(BottomBarType tabType){
     if (tabType != bottomBarType){
       bottomBarType = tabType;
