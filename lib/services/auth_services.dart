@@ -6,8 +6,9 @@ import 'package:booking_hotel_app/utils/localfiles.dart';
 
 class AuthService {
   final Dio _dio = Dio();
+
   // final ApiService _apiService = ApiService();
-  static const String baseUrl = Localfiles.baseUrl ;
+  static const String baseUrl = Localfiles.baseUrl;
 
   Future<bool> login(String email, String password) async {
     try {
@@ -32,7 +33,9 @@ class AuthService {
         TokenManager.refreshToken = refreshToken;
         TokenManager.role = role;
 
-        print('Login successful: AccessToken: $accessToken, RefreshToken: $refreshToken, Role: $role');
+        print(
+            'Login successful: AccessToken: $accessToken, '
+                'RefreshToken: $refreshToken, Role: $role');
         return true;
       } else {
         print('Login failed: ${response.data}');
@@ -44,7 +47,8 @@ class AuthService {
     }
   }
 
-  Future<bool> register(String username, String email, String password, String full_name, String phone) async {
+  Future<bool> register(String username, String email, String password,
+      String full_name, String phone) async {
     try {
       final response = await _dio.post(
         '$baseUrl/user/api/userauths/register/',
@@ -64,7 +68,6 @@ class AuthService {
         print('Register successful: ${response.data}');
         return true;
       } else {
-        // Xử lý lỗi
         print('Register failed: ${response.data}');
         return false;
       }

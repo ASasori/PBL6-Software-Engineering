@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'package:booking_hotel_app/common/common.dart';
 import 'package:booking_hotel_app/language/appLocalizations.dart';
@@ -6,7 +5,6 @@ import 'package:booking_hotel_app/screens/splash/introductionScreen.dart';
 import 'package:booking_hotel_app/screens/splash/splashScreen.dart';
 import 'package:booking_hotel_app/providers/theme_provider.dart';
 import 'package:booking_hotel_app/routes/routes.dart';
-import 'package:booking_hotel_app/utils/enum.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
