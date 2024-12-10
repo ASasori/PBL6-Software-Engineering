@@ -10,7 +10,7 @@ urlpatterns = [
     path("detail/<slug:slug>/room-type/<slug:rt_slug>/", views.room_type_detail, name="room_type_detail"),
     path('admin/', admin.site.urls),
     path("selected_rooms/", views.selected_rooms, name="selected_rooms"),
-    path("checkout/<booking_id>",views.checkout, name="checkout"),
+    # path("checkout/<booking_id>",views.checkout, name="checkout"),
     
     #Payment routes
     path('api/checkout-session/<booking_id>/', views.create_checkout_session, name='api_checkout_session'),

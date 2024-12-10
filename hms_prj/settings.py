@@ -9,12 +9,15 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+from corsheaders.defaults import default_headers
 from pathlib import Path
+from datetime import timedelta
 import os
 from environs import Env
 env = Env()
+
 env.read_env()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +32,11 @@ SECRET_KEY = 'django-insecure-&8$zx(^(s0nmnx4k-+4g2&*=nh7ox1e^jxu905v)h#^h@z&z!0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+<<<<<<< HEAD
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '172.16.3.157']
+=======
+ALLOWED_HOSTS = ['103.78.0.191', 'wireguard.nguyentanloc.top', '127.0.0.1', 'localhost']
+>>>>>>> 31ff11e8338b3f14017d20e895aa84a438088467
 SECURE_CROSS_ORIGIN_OPENER_POLICY='same-origin-allow-popups'
 
 # Application definition
@@ -80,7 +87,10 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Thay đổi thành miền frontend của bạn
+    "http://localhost:3000",  # Thay đổi thành miền frontend của bạn
+]
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'Server-Domain',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -125,11 +135,11 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pbl6',
-        'USER': 'root',
-        'PASSWORD': 'Hieu123456@@',
-        'HOST': 'localhost',
-        'PORT': '3306',  # 3306 là cổng mặc định cho MySQL
+        'NAME': env("DATABASE_NAME"),
+        'USER': env("DATABASE_USERNAME"),
+        'PASSWORD': env("DATABASE_PASSWORD"),
+        'HOST': env("DATABASE_HOST"),
+        'PORT': env("DATABASE_PORT"),  # 3306 là cổng mặc định cho MySQL
     }
 }
 
@@ -238,10 +248,14 @@ JAZZMIN_SETTINGS = {
         "hotel.Notification":"fas fa-bell",
         "hotel.Coupon":"fas fa-tag",
         "hotel.Bookmark":"fas fa-heart",
+        "hotel.Review": "fas fa-star", 
     },
 
 
-    "show_ui_builder" : True
+    "show_ui_builder" : False,
+    "custom_links":{},
+    "hide_apps": [],
+    "hide_models": [],
 }
 
 JAZZMIN_UI_TWEAKS = {
@@ -280,7 +294,11 @@ JAZZMIN_UI_TWEAKS = {
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated', 
+<<<<<<< HEAD
         # 'rest_framework.permissions.AllowAny',
+=======
+        #'rest_framework.permissions.AllowAny',
+>>>>>>> 31ff11e8338b3f14017d20e895aa84a438088467
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -291,8 +309,24 @@ REST_FRAMEWORK = {
     ),
 }
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),  
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),    
+    'ROTATE_REFRESH_TOKENS': True,                   
+    'BLACKLIST_AFTER_ROTATION': True,                 
+}
+
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True  # Chỉ cho phép các nguồn cụ thể
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',  # Địa chỉ của ứng dụng React
 ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = 'Hotel Management <minamisasori28@gmail.com>'
+FRONTEND_URL = 'http://localhost:3000'

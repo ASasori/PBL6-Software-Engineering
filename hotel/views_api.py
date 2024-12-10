@@ -2,10 +2,11 @@ from django.http import JsonResponse
 from rest_framework import status, viewsets, permissions, generics
 from rest_framework.decorators import api_view, action
 from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from hotel.models import Hotel, Booking, ActivityLog, StaffOnDuty, Room, RoomType, Coupon, Notification
-from .serializers import HotelSerializer, RoomTypeSerializer, RoomSerializer
+from hotel.models import Hotel, Booking, ActivityLog, StaffOnDuty, Room, RoomType, Coupon, Notification, Cart, CartItem, Review
+from .serializers import HotelSerializer, RoomTypeSerializer, RoomSerializer, CartSerializer, CartItemSerializer, ReviewSerializer, BookingSerializer
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAdminUser
 from datetime import datetime
@@ -13,12 +14,15 @@ from django.conf import settings
 import stripe
 from django.urls import reverse
 from django.middleware.csrf import get_token
-
-def csrf_token(request):
-    token = get_token(request)
-    return JsonResponse({'csrfToken': token})
+from django.db import models
+from django.db.models import Q
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+import logging
 
 class HotelViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
+
     queryset = Hotel.objects.filter(status='Live')
     serializer_class = HotelSerializer
     lookup_field = 'slug'
@@ -27,10 +31,9 @@ class HotelViewSet(viewsets.ModelViewSet):
         queryset = self.queryset
         name = self.request.query_params.get('name', None)
         if name:
-            queryset = queryset.filter(name__icontains=name)  # Tìm kiếm không phân biệt chữ hoa chữ thường
+            queryset = queryset.filter(name__icontains=name)  
         return queryset
 
-#Endpoint : Ẩn/hiện khách sạn ....
     @action(methods=['POST'], detail=True, url_path='hide-hotel', url_name='hide_hotel')
     def hide_hotel(self, request,  slug=None):
         try:
@@ -52,6 +55,7 @@ class HotelViewSet(viewsets.ModelViewSet):
         return Response(data=HotelSerializer(h).data, status=status.HTTP_200_OK)
 
 class RoomViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
     queryset = Room.objects.filter(is_available=True)
     serializer_class = RoomSerializer
 
@@ -70,6 +74,7 @@ class RoomViewSet(viewsets.ModelViewSet):
         }, status=status.HTTP_200_OK)
     
 class RoomTypeViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
     queryset = RoomType.objects.all()
     serializer_class = RoomTypeSerializer
 
@@ -118,66 +123,265 @@ def room_type_detail(request, slug, rt_slug):
         'room_type': room_type_serializer.data,
         'rooms': rooms_serializer.data
     })
-@api_view(['POST'])
-def create_booking(request):
-    try:
-        # Retrieve data from the session
-        if 'selection_data_obj' not in request.session:
-            return Response({'error': 'No selected rooms found in session'}, status=status.HTTP_400_BAD_REQUEST)
 
-        selection_data = request.session['selection_data_obj']
-        # Assuming there's only one hotel selection in session
-        hotel_data = next(iter(selection_data.values()))
 
-        # Extract data from session
-        hotel_id = hotel_data['hotel_id']
-        room_ids = hotel_data['room_id']  # You may have to adjust this depending on how you store room IDs in the session
-        check_in_date = hotel_data['checkin']
-        check_out_date = hotel_data['checkout']
-        num_adults = hotel_data['adult']
-        num_children = hotel_data['children']
-        room_type_slug = hotel_data['room_type']
+class CartViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
 
-        # You can still allow some data to be passed through the request body, like user details
-        full_name = request.data.get('full_name')
-        email = request.data.get('email')
-        phone = request.data.get('phone')
+    @swagger_auto_schema(
+        operation_description="Get or create a cart for the authenticated user.",
+        responses={200: CartSerializer, 404: 'Cart not found'},
+        tags=["Cart"],
+    )
 
-        # Now use session data to create the booking
-        hotel = Hotel.objects.get(id=hotel_id, status='Live')
-        room_type = RoomType.objects.get(slug=room_type_slug, hotel=hotel)
-        rooms = Room.objects.filter(room_type=room_type, id=room_ids, is_available=True)
+    @action(detail=False, methods=['GET'], url_path='get-or-create')
+    def get_or_create_cart(self, request):
+        cart, created = Cart.objects.get_or_create(user=request.user, is_active=True)
+        serializer = CartSerializer(cart)
+        return Response(serializer.data, status=200)
+    
+    @swagger_auto_schema(
+        operation_description="View the current user's cart with all cart items.",
+        responses={
+            200: openapi.Response(
+                description="Cart details with items grouped by hotels.",
+                examples={
+                    "application/json": {
+                        "total_items_in_cart": 2,
+                        "hotels": [
+                            {
+                                "hotel_id": 1,
+                                "hotel_name": "Hotel A",
+                                "hotel_slug": "hotel-a",
+                                "rooms": [
+                                    {
+                                        "room_id": 101,
+                                        "room_number": "A101",
+                                        "price": 100.0,
+                                        "bed": 2,
+                                        "room_type": "Deluxe",
+                                        "item_cart_id": 1,
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ),
+            404: 'Cart not found'
+        },
+        tags=["Cart"],
+    )
 
-        if not rooms:
-            return Response({'error': 'No available rooms'}, status=status.HTTP_400_BAD_REQUEST)
+    @action(detail=False, methods=['GET'], url_path='view_cart')
+    def view_cart(self, request):
+        try:
+            cart = Cart.objects.get(user=request.user, is_active=True)
+            cart_items = cart.cart_items.select_related('room__hotel', 'room__room_type').all()  # Tối ưu truy vấn
+            hotels_dict = {}
+            for item in cart_items:
+                hotel_name = item.room.hotel.name  
+                hotel_slug = item.room.hotel.slug,
+                room_info = {
+                    'room_id': item.room.id,
+                    'room_number': item.room.room_number,
+                    'price': item.room.room_type.price,
+                    'bed': item.room.room_type.number_of_beds,
+                    'room_type': item.room.room_type.type, 
+                    'slug_room_type': item.room.room_type.slug,
+                    'item_cart_id': item.id,
+                    'check_in_date': item.check_in_date,
+                    'check_out_date': item.check_out_date,
+                    'adults_count': item.num_adults,
+                    'childrens_count': item.num_children,
+                }
+                if hotel_name not in hotels_dict:
+                    hotels_dict[hotel_name] = {
+                        'hotel_id': item.room.hotel.id,
+                        'hotel_name': hotel_name,
+                        'hotel_slug': hotel_slug,
+                        'rooms': [room_info]  
+                    }
+                else:
+                    hotels_dict[hotel_name]['rooms'].append(room_info) 
 
-        # Calculate total days
-        total_days = (datetime.strptime(check_out_date, '%Y-%m-%d') - datetime.strptime(check_in_date, '%Y-%m-%d')).days
+            items_list = list(hotels_dict.values())
+            total_items = cart_items.count()
 
-        # Create the booking
-        booking = Booking.objects.create(
-            hotel=hotel,
-            room_type=room_type,
-            check_in_date=check_in_date,
-            check_out_date=check_out_date,
-            total_days=total_days,
-            num_adults=num_adults,
-            num_children=num_children,
-            full_name=full_name,
-            email=email,
-            phone=phone
-        )
+            return Response({
+                'total_items_in_cart': total_items,
+                'hotels': items_list
+            }, status=status.HTTP_200_OK)
 
-        for room in rooms:
-            booking.room.add(room)
+        except Cart.DoesNotExist:
+            return Response({'error': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        booking.save()
+    @action(detail=False, methods=['GET'], url_path='view_cart_item/(?P<cart_item_id>[^/.]+)')
+    def view_cart_item(self, request, cart_item_id=None):
+        try:
+            cart_item = CartItem.objects.select_related('room__hotel', 'room__room_type').get(id=cart_item_id)
 
-        return Response({'message': 'Booking created successfully'}, status=status.HTTP_201_CREATED)
+            room_info = {
+                'hotel_name': cart_item.room.hotel.name,
+                'hotel_slug': cart_item.room.hotel.slug,
+                'hotel_id': cart_item.room.hotel.id,
+                'room_id': cart_item.room.id,
+                'room_number': cart_item.room.room_number,
+                'price': cart_item.room.room_type.price,
+                'bed': cart_item.room.room_type.number_of_beds,
+                'room_type': cart_item.room.room_type.type,
+                'slug_room_type': cart_item.room.room_type.slug,
+                'item_cart_id': cart_item.id,
+                'check_in_date': cart_item.check_in_date,
+                'check_out_date': cart_item.check_out_date,
+                'adults_count': cart_item.num_adults,
+                'childrens_count': cart_item.num_children,
+            }
 
-    except (Hotel.DoesNotExist, RoomType.DoesNotExist):
-        return Response({'error': 'Invalid hotel or room type'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(room_info, status=status.HTTP_200_OK)
 
+        except CartItem.DoesNotExist:
+            return Response({'error': 'Cart item not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    @swagger_auto_schema(
+        operation_description="Add a room item to the user's cart.",
+        request_body=CartItemSerializer,  # Specify the request body schema
+        responses={
+            201: 'Cart item successfully created', 
+            400: 'Bad request, room may already be booked for the selected dates',
+            404: 'Cart not found'
+        },
+        tags=["Cart"]
+    )
+
+    @action(detail=False, methods=['POST'], url_path='add_cart_item')
+    def add_cart_item(self, request):
+        cart, created = Cart.objects.get_or_create(user=request.user, is_active=True)
+        room_id = request.data.get('room')
+        checkin_date = request.data.get('check_in_date')
+        checkout_date = request.data.get('check_out_date')
+
+        
+        # if CartItem.objects.filter(cart=cart, room_id=room_id).exists():
+        #     return Response({'error': 'Room already in cart'}, status=status.HTTP_400_BAD_REQUEST)
+
+        overlapping_items = CartItem.objects.filter(cart=cart, room_id=room_id).filter(
+        (models.Q(check_in_date__lte=checkout_date) & models.Q(check_out_date__gte=checkin_date))
+    )
+
+        if overlapping_items.exists():
+            return Response({'error': 'Room is already booked for these dates'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        serializer  = CartItemSerializer(data=request.data)
+
+        if serializer.is_valid():
+            cart_item = serializer.save(cart=cart)
+            total_items = cart.cart_items.count()
+
+            return Response({
+                'cart_item_id': cart_item.id,
+                'total_items_in_cart': total_items,
+                'cart_item': serializer.data
+            }, status = status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['GET'], url_path='cart-item-count')
+    def get_cart_item_count(self, request):
+        cart = Cart.objects.filter(user=request.user, is_active=True).first()
+        total_items = cart.cart_items.count() if cart else 0
+        return Response({'total_items_in_cart': total_items}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['POST'], url_path='delete_cart_item')
+    def delete_cart_item(self, request):
+        item_cart_id = request.data.get('item_cart_id')
+        try:
+            cart = Cart.objects.get(user=request.user, is_active=True)      
+            cart_item = CartItem.objects.get(cart=cart, id=item_cart_id)
+            cart_item.delete()
+            total_items = cart.cart_items.count()
+            return Response({
+                'message': 'Cart item deleted successfully', 
+                'total_items': total_items
+            }, status=status.HTTP_204_NO_CONTENT)
+        
+        except CartItem.DoesNotExist:
+            return Response({'error': 'Cart item not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Cart.DoesNotExist:
+            return Response({'error': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class BookingViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = BookingSerializer
+    queryset = Booking.objects.all()
+
+    @action(detail=False, methods=['POST'], url_path='create')
+    def create_booking(self, request):
+        try:
+            hotel_id = request.data.get('hotel_id')
+            room_id = request.data.get('room_id')
+            check_in_date = request.data.get('checkin')
+            check_out_date = request.data.get('checkout')
+            num_adults = request.data.get('adult')
+            num_children = request.data.get('children')
+            room_type_slug = request.data.get('room_type')
+            before_discount = request.data.get('before_discount')
+            total = before_discount
+            full_name = request.data.get('full_name')
+            email = request.data.get('email')
+            phone = request.data.get('phone')
+
+            hotel = Hotel.objects.get(id=hotel_id, status='Live')
+            room_type = RoomType.objects.get(slug=room_type_slug, hotel=hotel)
+
+            room = Room.objects.filter(room_type=room_type, id=room_id, is_available=True).first()
+            if not room:
+                return Response({'error': 'Room not available'}, status=status.HTTP_400_BAD_REQUEST)
+
+            check_in_date_obj = datetime.strptime(check_in_date, '%Y-%m-%d')
+            check_out_date_obj = datetime.strptime(check_out_date, '%Y-%m-%d')
+            total_days = (check_out_date_obj - check_in_date_obj).days
+
+            if total_days <= 0:
+                return Response({'error': 'Check-out date must be after check-in date'}, status=status.HTTP_400_BAD_REQUEST)
+
+            booking = Booking.objects.create(
+                user=request.user,
+                hotel=hotel,
+                room_type=room_type,
+                check_in_date=check_in_date,
+                check_out_date=check_out_date,
+                total_days=total_days,
+                num_adults=num_adults,
+                num_children=num_children,
+                full_name=full_name,
+                email=email,
+                phone=phone,
+                before_discount=before_discount,
+                total=total
+            )
+
+            booking.room.add(room) 
+            booking.save()
+
+            return Response({
+                'message': 'Booking created successfully',
+                'booking_id': booking.booking_id
+            }, status=status.HTTP_201_CREATED)
+
+
+        except Hotel.DoesNotExist:
+            return Response({'error': 'Invalid hotel'}, status=status.HTTP_400_BAD_REQUEST)
+        except RoomType.DoesNotExist:
+            return Response({'error': 'Invalid room type'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], url_path='my-bookings')
+    def get_user_bookings(self, request):
+        user_bookings = Booking.objects.filter(user=request.user, payment_status='paid')
+        serializer = self.get_serializer(user_bookings, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def checkout_api(request, booking_id):
@@ -228,9 +432,13 @@ def checkout_api(request, booking_id):
     
 @api_view(['POST'])
 def create_checkout_session(request, booking_id):
+    cart_item_id = request.data.get('cart_item_id')
+    print(cart_item_id)
     try:
         booking = Booking.objects.get(booking_id=booking_id)
         stripe.api_key = settings.STRIPE_SECRET_KEY
+        success_url = f"http://localhost:3000/success-payment?session_id={{CHECKOUT_SESSION_ID}}&booking_id={booking.booking_id}&cart_item_id={cart_item_id}"
+        cancel_url = "http://localhost:3000/payment-failed"
 
         checkout_session = stripe.checkout.Session.create(
             customer_email=booking.email,
@@ -244,33 +452,161 @@ def create_checkout_session(request, booking_id):
                 'quantity': 1,
             }],
             mode='payment',
-            success_url=request.build_absolute_uri(reverse('api:payment_success', args=[booking.booking_id])) + "?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url=request.build_absolute_uri(reverse('api:payment_failed', args=[booking.booking_id])),
+            success_url=success_url,
+            cancel_url=cancel_url,
         )
 
         booking.payment_status = "processing"
         booking.stripe_payment_intent = checkout_session['id']
         booking.save()
 
-        return Response({'sessionId': checkout_session.id}, status=status.HTTP_200_OK)
+        return Response({
+            'sessionId': checkout_session.id,
+            'bookingId': booking_id
+            }, status=status.HTTP_200_OK)
 
     except Booking.DoesNotExist:
         return Response({'error': 'Booking not found'}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET'])
+@api_view(['POST'])
 def payment_success(request, booking_id):
-    session_id = request.GET.get('session_id')
+    session_id = request.data.get('sessionId')
     booking = get_object_or_404(Booking, booking_id=booking_id)
-
     if booking.stripe_payment_intent == session_id and booking.payment_status == "processing":
         booking.payment_status = "paid"
         booking.save()
         return Response({'message': 'Payment successful'}, status=status.HTTP_200_OK)
     return Response({'error': 'Payment verification failed'}, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET'])
+@api_view(['POST'])
 def payment_failed(request, booking_id):
     booking = get_object_or_404(Booking, booking_id=booking_id)
     booking.payment_status = "failed"
     booking.save()
     return Response({'message': 'Payment failed'}, status=status.HTTP_200_OK)
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    """
+    A ViewSet for handling Reviews.
+    """
+    permission_classes = [AllowAny]
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+    @swagger_auto_schema(
+        operation_description="Create a new review",
+        request_body=ReviewSerializer,  # Specify the serializer here
+        responses={201: ReviewSerializer},  # Define the response schema
+        tags=["Review"]
+    )
+    @action(detail=False, methods=['post'], url_path='post')
+    def create_review(self, request):
+        """Create a review."""
+        try:
+            serializer = ReviewSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save(user=request.user)  # Ensure user is set to the logged-in user
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @swagger_auto_schema(
+        operation_description="Get reviews by hotel",
+        responses={200: ReviewSerializer(many=True)},  # Define the response schema for a list of reviews
+        tags=["Review"]
+    )
+    @action(detail=True, methods=['get'], url_path='hotel-reviews')
+    def get_reviews_by_hotel(self, request, pk=None):
+        """Fetch all reviews for a specific hotel."""
+        try:
+            hotel = Hotel.objects.get(hid=pk)
+            #hotel = get_object_or_404(Hotel, hid=pk)
+            reviews = Review.objects.filter(hotel=hotel)
+            serializer = ReviewSerializer(reviews, many=True)
+            return Response({'hotel_id': hotel.id, 'reviews': serializer.data}, status=status.HTTP_200_OK)
+        except Hotel.DoesNotExist:
+            return Response({'error': 'Hotel not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], url_path='my-reviews')
+    def get_my_reviews(self, request):
+        my_reviews = Review.objects.filter(user=request.user)
+        serializer = self.get_serializer(my_reviews, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=['delete'], url_path='delete')
+    def delete_review(self, request, pk=None):
+        try:
+            review = Review.objects.get(id=pk, user=request.user)
+            review.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Review.DoesNotExist:
+            return Response({'error': 'Review not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+# Hoàng
+# Search Hotel by location
+logger = logging.getLogger(__name__)
+
+@api_view(['GET'])
+def location(request):
+    location_images_map = {}
+
+    hotels = Hotel.objects.filter(status='Live')
+
+    for hotel in hotels:
+        logger.debug(f"Processing hotel: {hotel}")
+        
+        # Nhóm các khách sạn theo địa chỉ
+        if hotel.address not in location_images_map:
+            location_images_map[hotel.address] = []
+
+        # Lấy danh sách hình ảnh của khách sạn từ bảng HotelGallery
+        hotel_gallery_images = HotelGallery.objects.filter(hotel=hotel)
+
+        # Xử lý khi danh sách hình ảnh trống
+        if hotel_gallery_images.exists():
+            if len(hotel_gallery_images) >= 3:
+                image_path = hotel_gallery_images[2].image.url
+            else:
+                image_path = hotel_gallery_images[0].image.url
+        else:
+            logger.debug(f"Hotel {hotel} has no images, returning null.")
+            image_path = None  # Trả về null nếu không có ảnh
+
+        # Thêm ảnh vào danh sách ảnh của địa chỉ
+        location_images_map[hotel.address].append(image_path)
+
+    # Chuẩn bị dữ liệu trả về
+    response_data = []
+    for location, image_paths in location_images_map.items():
+        response_data.append({
+            'location': location,
+            'imageLocationList': [{'imagePath': image_path} for image_path in image_paths]
+        })
+    
+    return Response(response_data)
+
+@api_view(['POST'])
+def search_hotel_by_location_name(request):
+    location = request.data.get('location', '').strip()
+    name = request.data.get('name', '').strip()
+
+    # Tạo bộ lọc dựa trên location và name
+    filters = {}
+    if location:
+        filters['address__icontains'] = location  # Dùng icontains để tìm kiếm không phân biệt hoa thường
+    if name:
+        filters['name__icontains'] = name
+
+    # Lấy các khách sạn khớp với bộ lọc
+    hotels = Hotel.objects.filter(**filters)
+
+    # Serialize kết quả và trả về
+    serializer = HotelSerializer(hotels, many=True, context={'request': request})
+    return Response(serializer.data, status=status.HTTP_200_OK)

@@ -1,17 +1,20 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
-from hotel.models import Hotel, RoomType
+from hotel.models import Hotel, RoomType, Booking, Room
 from datetime import datetime
 from django.urls import reverse
-
+from django.db.models import Q
+from django.utils import timezone
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def check_room_availability(request):
     try:
         # Extract data from the request
         data = request.data
-        hotel = Hotel.objects.get(status="Live", id=data['hotel_id'])
+        hotel = Hotel.objects.get(status="Live", slug=data['hotel_slug'])
         room_type = RoomType.objects.get(hotel=hotel, slug=data['room_type'])
 
         # Parse checkin and checkout dates
@@ -19,14 +22,39 @@ def check_room_availability(request):
         checkout = datetime.strptime(data['checkout'], '%Y-%m-%d')
         adult = data['adult']
         children = data['children']
+        total_guests = adult + children
 
-        # Logic to handle room availability checks can be added here
-        # For example, checking if rooms are available for the given dates
+        # Step 1: Get rooms of the selected type
+        rooms = Room.objects.filter(room_type=room_type, is_available=True)
 
-        # Generate the room detail URL as in the original view function
+        # Step 2: Exclude rooms already booked for the given dates
+        booked_rooms = Booking.objects.filter(
+            room__in=rooms
+        ).exclude(
+            Q(check_out_date__lte=checkin) 
+            | Q(check_in_date__gte=checkout)
+            | Q(payment_status='paid')
+        ).values_list('room', flat=True)
+        available_rooms = rooms.exclude(id__in=booked_rooms)
+
+        # Step 3: Check room capacity
+        suitable_rooms = available_rooms.filter(room_type__room_capacity__gte=total_guests)
+
+        # If no rooms are available after filtering
+        if not suitable_rooms.exists():
+            return Response({
+                'message': 'No rooms available for the selected criteria.',
+                'checkin': checkin.date(),
+                'checkout': checkout.date(),
+                'adults': adult,
+                'children': children
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Generate the room detail URL
         room_type_url = reverse("hotel:room_type_detail", args=[hotel.slug, room_type.slug])
-        url_with_params = f"{room_type_url}?hotel-id={data['hotel_id']}&checkin={data['checkin']}&checkout={data['checkout']}&adult={adult}&children={children}&room_type={room_type.slug}" 
-        # Return the URL and booking details in response
+        url_with_params = f"{room_type_url}?hotel_slug={data['hotel_slug']}&checkin={data['checkin']}&checkout={data['checkout']}&adult={adult}&children={children}&room_type={room_type.slug}" 
+
+        # Return the room details
         return Response({
             'slug': hotel.slug,
             'hotel': hotel.name,
@@ -34,8 +62,17 @@ def check_room_availability(request):
             'checkin': checkin.date(),
             'checkout': checkout.date(),
             'adults': adult,
-            'childrens': children,
-            'room_type_url': url_with_params  # URL with parameters for further action
+            'children': children,
+            'room_type_url': url_with_params,
+            'available_rooms': [
+                {
+                    "room_id": room.id,
+                    'room_number': room.room_number,
+                    'capacity': room.room_type.room_capacity,
+                    'bed': room.room_type.number_of_beds,
+                    'price': room.room_type.price
+                } for room in suitable_rooms
+            ]
         }, status=status.HTTP_200_OK)
 
     except Hotel.DoesNotExist:
@@ -44,7 +81,7 @@ def check_room_availability(request):
         return Response({'error': 'Room type not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    
+
 @api_view(['POST'])
 def add_to_selection(request):
     try:
