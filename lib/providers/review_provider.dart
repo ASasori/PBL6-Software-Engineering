@@ -25,12 +25,11 @@ class ReviewProvider with ChangeNotifier {
         _reviewList = [];
         throw ("Invalid data: reviews is not a list");
       }
-      // _reviewList = _mapResponse['reviews'].map((json) => Review.fromJson(json)).toList();
       _reviewHotel = _mapResponse['hotel_id'];
       if (_reviewList.isNotEmpty) {
         double rating = 0.0;
         for (var review in _reviewList) {
-          rating += review.rating.toDouble();
+          rating += review.rating!.toDouble();
         }
         _hotelRating = rating / _reviewList.length;
       } else {

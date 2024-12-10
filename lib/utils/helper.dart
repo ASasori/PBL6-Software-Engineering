@@ -12,9 +12,9 @@ import 'package:provider/provider.dart';
 import '../widgets/custom_diablog.dart';
 
 class Helper {
-  static Widget ratingStar({double rating = 4.5}){
+  static Widget ratingStar({double hotelRating = 4.5}){
     return RatingBarIndicator(
-      rating: rating,
+      rating: hotelRating,
       itemBuilder: (context, index) => Icon(
         Icons.star,
         color: AppTheme.primaryColor

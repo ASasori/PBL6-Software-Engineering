@@ -1,6 +1,3 @@
-import 'package:booking_hotel_app/main.dart';
-import 'package:booking_hotel_app/models/room_data.dart';
-import 'package:booking_hotel_app/screens/explore_screen/components/room_popup_view.dart';
 import 'package:booking_hotel_app/motel_app.dart';
 import 'package:booking_hotel_app/providers/theme_provider.dart';
 import 'package:booking_hotel_app/utils/enum.dart';
@@ -11,12 +8,10 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../../language/appLocalizations.dart';
-import '../../../utils/helper.dart';
 import '../../../utils/text_styles.dart';
-import 'calendar_popup_view.dart';
 
 class TimeDateView extends StatefulWidget {
-  final Function(DateTime startDate, DateTime endDate)? onDateChanged; // Add callback
+  final Function(DateTime startDate, DateTime endDate)? onDateChanged;
   const TimeDateView({super.key, this.onDateChanged});
 
   @override
@@ -24,7 +19,6 @@ class TimeDateView extends StatefulWidget {
 }
 
 class _TimeDateViewState extends State<TimeDateView> {
-  RoomData _roomData = RoomData(1, 2, 2);
   late DateTime startDate ;
   late DateTime endDate ;
   LanguageType _languageType = applicationcontext == null ? LanguageType.en : applicationcontext!.read<ThemeProvider>().languageType;
@@ -44,7 +38,7 @@ class _TimeDateViewState extends State<TimeDateView> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           _getDateRoomUi(AppLocalizations(context).of("choose_date"),
-              "${DateFormat("dd, MMM", _languageType.toString().split(".")[1]).format(startDate ?? DateTime.now())} - ${DateFormat("dd, MMM", _languageType.toString().split(".")[1]).format(endDate ?? DateTime.now())}",
+              "${DateFormat("dd, MMM", _languageType.toString().split(".")[1]).format(startDate)} - ${DateFormat("dd, MMM", _languageType.toString().split(".")[1]).format(endDate)}",
                   () {
                 _showDemoDialog(context);
               }),
@@ -54,10 +48,6 @@ class _TimeDateViewState extends State<TimeDateView> {
             height: 100,
             color: Colors.grey.withOpacity(0.8),
           ),
-          // _getDateRoomUi(AppLocalizations(context).of("number_room"),
-          // Helper.getRoomText(_roomData), () {
-          //   _showPopUp();
-          // }),
         ],
       ),
     );
@@ -157,21 +147,4 @@ class _TimeDateViewState extends State<TimeDateView> {
       ),
     );
   }
-
-
-
-  // void _showPopUp() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) => RoomPopupView(
-  //       roomData: _roomData,
-  //       barrierDismissible: true,
-  //       onChnage: (data) {
-  //         setState(() {
-  //           _roomData = data;
-  //         });
-  //       },
-  //     ),
-  //   );
-  // }
 }

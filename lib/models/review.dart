@@ -1,32 +1,43 @@
-
+import 'package:booking_hotel_app/utils/localfiles.dart';
 import 'package:intl/intl.dart';
 
 class Review {
-  final int reviewId;
-  final int hotelId;
-  final int userId;
-  final String? roomType;
-  final int rating;
-  final String? reviewText;
-  final String date;
+  int? reviewId;
+  int? hotelId;
+  String? profileImage;
+  String? hotelName;
+  String? email;
+  int? userId;
+  String? roomType;
+  int? rating;
+  String? reviewText;
+  String? date;
 
   Review({
-    required this.reviewId,
-    required this.hotelId,
-    required this.userId,
+    this.reviewId,
+    this.hotelId,
+    this.profileImage,
+    this.hotelName,
+    this.email,
+    this.userId,
     this.roomType,
-    required this.rating,
+    this.rating,
     this.reviewText,
-    required this.date,});
+    this.date,
+  });
 
   factory Review.fromJson(Map<String, dynamic> json) {
     String _parseDate(String dateString) {
       DateTime dateTime = DateTime.parse(dateString);
       return DateFormat('yyyy-MM-dd').format(dateTime);
     }
+
     return Review(
       reviewId: json['id'] ?? 0,
       hotelId: json['hotel'] ?? 0,
+      profileImage: '${Localfiles.baseUrl}${json['profile_image']}',
+      hotelName: json['hotel_name'] ?? '',
+      email: json['email'] ?? '',
       userId: json['user'] ?? 0,
       roomType: json['room_type'],
       rating: json['rating'] ?? 0,

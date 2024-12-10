@@ -1,4 +1,3 @@
-import 'package:booking_hotel_app/models/hotel_list_data.dart';
 import 'package:booking_hotel_app/screens/mytrip_screen/hotel_list_view.dart';
 import 'package:booking_hotel_app/utils/themes.dart';
 import 'package:booking_hotel_app/widgets/remove_focuse.dart';
@@ -6,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../language/appLocalizations.dart';
-import '../../models/hotel.dart';
 import '../../providers/hotel_provider.dart';
 import '../../routes/route_names.dart';
 import '../../utils/text_styles.dart';

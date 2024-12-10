@@ -45,7 +45,6 @@ class _ReviewListScreenState extends State<ReviewListScreen>
             },
             titleText: "Review(${widget.reviewList.length})",
           ),
-          // animation of Review and feedback data
           Expanded(
             child: ListView.builder(
               physics: BouncingScrollPhysics(),
@@ -60,7 +59,6 @@ class _ReviewListScreenState extends State<ReviewListScreen>
                         curve: Interval((1 / count) * index, 1.0,
                             curve: Curves.fastOutSlowIn)));
                 animationController.forward();
-                // page to redirect the feedback and review data
                 return ReviewsView(
                   callback: () {},
                   review: widget.reviewList[index],

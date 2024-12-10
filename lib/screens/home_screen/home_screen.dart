@@ -17,7 +17,6 @@ import '../../providers/hotel_provider.dart';
 import '../../utils/text_styles.dart';
 import '../../utils/themes.dart';
 import '../../widgets/common_search_bar.dart';
-import '../bottom_tab/bottom_tab_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final AnimationController animationController;

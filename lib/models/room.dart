@@ -31,7 +31,7 @@ class RoomType {
       roomtypeId: json['id'] ?? '',
       hotelId: json['hotel'] ?? '',
       type: json['type'] ?? '',
-      price:double.parse(json['price']) ?? 0.0,
+      price:double.parse(json['price']),
       numberOfBeds: json['number_of_beds'] ?? 0,
       imageUrl: json['image'] = '$baseUrl${json['image']}',
       roomCapacity: json['room_capacity'] ?? 0,

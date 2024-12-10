@@ -1,17 +1,15 @@
 import 'dart:ui';
 
-import 'package:booking_hotel_app/providers/hotel_provider.dart';
+import 'package:booking_hotel_app/providers/auth_provider.dart';
 import 'package:booking_hotel_app/providers/review_provider.dart';
 import 'package:booking_hotel_app/screens/hotel_detail_screen/rating_view.dart';
 import 'package:booking_hotel_app/screens/hotel_detail_screen/review_data_view.dart';
-import 'package:booking_hotel_app/widgets/common_textfield_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:smooth_star_rating_null_safety/smooth_star_rating_null_safety.dart';
 
 import '../../language/appLocalizations.dart';
 import '../../models/hotel.dart';
@@ -23,7 +21,6 @@ import '../../utils/text_styles.dart';
 import '../../utils/themes.dart';
 import '../../widgets/common_button.dart';
 import '../../widgets/common_card.dart';
-import 'hotel_room_list.dart';
 
 class HotelDetailScreen extends StatefulWidget {
   final Hotel hotelData;
@@ -54,9 +51,9 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
   void initState() {
     super.initState();
     animationController = AnimationController(
-        duration: Duration(milliseconds: 2000), vsync: this);
+        duration: const Duration(milliseconds: 2000), vsync: this);
     _animationController =
-        AnimationController(duration: Duration(milliseconds: 0), vsync: this);
+        AnimationController(duration: const Duration(milliseconds: 0), vsync: this);
     animationController.forward();
     scrollController.addListener(() {
       if (mounted) {
@@ -79,6 +76,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ReviewProvider>(context, listen: false)
           .fetchReviewList(widget.hotelData.hid);
+      Provider.of<AuthProvider>(context, listen: false).fetchProfile();
     });
   }
 
@@ -91,6 +89,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
   @override
   Widget build(BuildContext context) {
     final reviewProvider = Provider.of<ReviewProvider>(context);
+    final authProvider = Provider.of<AuthProvider>(context);
     imageHieght = MediaQuery.of(context).size.height;
     return Scaffold(
       body: Stack(
@@ -189,18 +188,9 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                     top: 8,
                     bottom: 16,
                   ),
-                  // overall rating view
-                  // rating of hotel
                   child: RatingView(hotelRating: reviewProvider.hotelRating),
                 ),
-
-                // // 7: sum of hotel picture
-                // _getPhotoReviewUi("room_photo", 7,'view_all', Icons.arrow_forward, () {}),
-                //
-                // // Hotel inside photo view
-                //
                 // HotelRoomList(),
-                // // review and comment of people
                 _getPhotoReviewUi("reviews", reviewProvider.reviewList.length,
                     'view_all', Icons.arrow_forward, () {
                   NavigationServices(context)
@@ -240,10 +230,25 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                                       BorderRadius.all(Radius.circular(8)),
                                   child: AspectRatio(
                                     aspectRatio: 1,
-                                    child: Image.asset(
-                                      Localfiles.avatar7,
-                                      fit: BoxFit.cover,
-                                    ),
+                                    child: authProvider.profile.image != null &&
+                                            authProvider
+                                                .profile.image!.isNotEmpty
+                                        ? CachedNetworkImage(
+                                            placeholder: (context, url) => Center(
+                                                child:
+                                                    CircularProgressIndicator()),
+                                            imageUrl:
+                                                authProvider.profile.image!,
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    Icon(Icons.error),
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Icon(
+                                            Icons.person,
+                                            size: 50,
+                                            color: Colors.grey,
+                                          ),
                                   ),
                                 ),
                               ),
@@ -365,6 +370,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                                                   AppTheme.primaryColor),
                                         );
                                         ratingController.clear();
+                                        await reviewProvider.fetchReviewList(widget.hotelData.hid);
                                       } catch (e) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
@@ -400,7 +406,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
           ),
 
           // backgrouund image and Hotel name and thier details and more details animation view
-          _backgroundImageUI(widget.hotelData),
+          _backgroundImageUI(widget.hotelData, reviewProvider),
 
           // Arrow back Ui
           Padding(
@@ -521,7 +527,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
     );
   }
 
-  Widget _backgroundImageUI(Hotel hotelData) {
+  Widget _backgroundImageUI(Hotel hotelData, ReviewProvider reviewProvider) {
     return Positioned(
       top: 0,
       left: 0,
@@ -553,10 +559,8 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                               imageUrl: hotelData.galleryImages[1].imageUrl,
                               placeholder: (context, url) =>
                                   Center(child: CircularProgressIndicator()),
-                              // Hiển thị khi ảnh đang load
                               errorWidget: (context, url, error) =>
                                   Icon(Icons.error),
-                              // Hiển thị khi có lỗi tải ảnh
                               fit: BoxFit.cover, // Tùy chỉnh cách hiển thị ảnh
                             ),
                           ),
@@ -599,7 +603,6 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                                           right: 16,
                                           bottom: 16,
                                           top: 16),
-                                      // booknow -> page booking
                                       child: CommonButton(
                                           buttonText: AppLocalizations(context)
                                               .of("book_now"),
@@ -700,6 +703,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
   }
 
   Widget getHotelDetails({bool isInList = false}) {
+    final reviewProvider = Provider.of<ReviewProvider>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -738,31 +742,6 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                               : Colors.white,
                         ),
                   ),
-                  // Text(
-                  //   "${widget.hotelData.dist.toStringAsFixed(1)}", // distance
-                  //   overflow: TextOverflow.ellipsis,
-                  //   style: TextStyles(context).getRegularStyle().copyWith(
-                  //     fontSize: 14,
-                  //     color: isInList
-                  //         ? Theme.of(context).disabledColor.withOpacity(0.5)
-                  //         : Colors.white,
-                  //   ),
-                  // ),
-                  // // cos the bo di
-                  // Expanded(
-                  //   child: Text(
-                  //     AppLocalizations(context).of("km_to_city"),
-                  //     overflow: TextOverflow.ellipsis,
-                  //     style: TextStyles(context).getRegularStyle().copyWith(
-                  //       fontSize: 14,
-                  //       color: isInList
-                  //           ? Theme.of(context)
-                  //           .disabledColor
-                  //           .withOpacity(0.5)
-                  //           : Colors.white,
-                  //     ),
-                  //   ),
-                  // ),
                 ],
               ),
               isInList
@@ -771,9 +750,9 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                       padding: const EdgeInsets.only(top: 4),
                       child: Row(
                         children: <Widget>[
-                          Helper.ratingStar(),
+                          Helper.ratingStar(hotelRating: reviewProvider.hotelRating),
                           Text(
-                            " ${widget.hotelData.views} ",
+                            " ${reviewProvider.reviewList.length} ",
                             style:
                                 TextStyles(context).getRegularStyle().copyWith(
                                       fontSize: 14,
@@ -785,7 +764,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                                     ),
                           ),
                           Text(
-                            AppLocalizations(context).of("views"),
+                            AppLocalizations(context).of("reviews"),
                             style:
                                 TextStyles(context).getRegularStyle().copyWith(
                                       fontSize: 14,

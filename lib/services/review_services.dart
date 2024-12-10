@@ -12,21 +12,6 @@ class ReviewServices {
     baseUrl = _apiService.baseUrl;
   }
 
-  // Future<Map<String, dynamic>> fetchReviewsByHotel (String hid) async{
-  //   try {
-  //     final response = await _apiService.dio.get('$baseUrl/api/reviews/hotel-reviews/$hid/');
-  //     if (response.statusCode == 200) {
-  //       List<dynamic> data = response.data;
-  //       return data.map((json) => Review.fromJson(json)).toList();
-  //     } else {
-  //       return [];
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //     return [];
-  //   }
-  // }
-
   Future<Map<String, dynamic>> fetchReviewsByHotel (String hid) async{
     try {
       final response = await _apiService.dio.get('$baseUrl/api/reviews/hotel-reviews/$hid/');

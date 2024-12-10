@@ -1,4 +1,5 @@
 import 'package:booking_hotel_app/utils/localfiles.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_star_rating_null_safety/smooth_star_rating_null_safety.dart';
 
@@ -48,9 +49,10 @@ class ReviewsView extends StatelessWidget {
                         borderRadius: BorderRadius.all(Radius.circular(8.0)),
                         child: AspectRatio(
                           aspectRatio: 1,
-                          child: Image.asset(
-                            // review.imagePath,
-                            Localfiles.avatar1,
+                          child: CachedNetworkImage(
+                            placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                            imageUrl: review.profileImage!,
+                            errorWidget: (context, url, error) => Icon(Icons.error),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -64,7 +66,7 @@ class ReviewsView extends StatelessWidget {
                   children: <Widget>[
                     Text(
                       // reviewsList.titleTxt,
-                      "User name",
+                      review.email!,
                       style: TextStyles(context).getBoldStyle().copyWith(
                         fontSize: 14,
                       ),
@@ -84,7 +86,7 @@ class ReviewsView extends StatelessWidget {
                           width: 5,
                         ),
                         Text(
-                          review.date,
+                          review.date!,
                           style: new TextStyles(context)
                               .getDescriptionStyle()
                               .copyWith(
@@ -107,7 +109,7 @@ class ReviewsView extends StatelessWidget {
                           SmoothStarRating(
                             allowHalfRating: true,
                             starCount: 5,
-                            rating: review.rating.toDouble(),
+                            rating: review.rating!.toDouble(),
                             size: 16,
                             color: Theme.of(context).primaryColor,
                             borderColor: Theme.of(context).primaryColor,

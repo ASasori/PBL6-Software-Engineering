@@ -1,4 +1,3 @@
-import 'package:booking_hotel_app/models/hotel_list_data.dart';
 import 'package:booking_hotel_app/models/review.dart';
 import 'package:booking_hotel_app/screens/bottom_tab/bottom_tab_screen.dart';
 import 'package:booking_hotel_app/screens/hotel_detail_screen/review_list_screen.dart';

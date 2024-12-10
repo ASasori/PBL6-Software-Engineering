@@ -44,7 +44,7 @@ class _HomeSliderViewState extends State<HomeSliderView> {
   void _startSliderTimer() {
     sliderTimer = Timer.periodic(Duration(seconds: 4), (timer) {
       if (mounted && pageController.hasClients) {
-        int nextPage = ((pageController.page!.toInt()??0) + 1) % Provider.of<HotelProvider>(context, listen: false).topHotels.length;
+        int nextPage = ((pageController.page!.toInt()) + 1) % Provider.of<HotelProvider>(context, listen: false).topHotels.length;
         pageController.animateToPage(
           nextPage,
           duration: Duration(seconds: 1),

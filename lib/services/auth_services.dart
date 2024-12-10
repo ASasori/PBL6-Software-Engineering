@@ -7,7 +7,7 @@ import 'package:booking_hotel_app/utils/localfiles.dart';
 class AuthService {
   final Dio _dio = Dio();
 
-  // final ApiService _apiService = ApiService();
+  final ApiService _apiService = ApiService();
   static const String baseUrl = Localfiles.baseUrl;
 
   Future<bool> login(String email, String password) async {
@@ -74,6 +74,16 @@ class AuthService {
     } catch (e) {
       print('Error during register: $e');
       return false;
+    }
+  }
+  Future<Map<String, dynamic>> fetchProfile () async {
+    try {
+      final response = await _apiService.dio.get("${baseUrl}/user/api/userauths/profile/");
+      if (response.statusCode == 200) {
+        return response.data;
+      } else throw ('Failed to load profile');
+    } catch (e) {
+      rethrow;
     }
   }
 }
