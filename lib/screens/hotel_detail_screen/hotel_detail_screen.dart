@@ -103,12 +103,9 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.only(left: 24, right: 24),
-                  // Hotel title and animation view
                   child: getHotelDetails(isInList: true),
                 ),
-                SizedBox(
-                  height: 30,
-                ),
+                const SizedBox(height: 30,),
                 Stack(
                   alignment: Alignment.center,
                   children: <Widget>[
@@ -267,14 +264,6 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                               ),
                               Row(
                                 children: <Widget>[
-                                  // Text(
-                                  //   "(${rating})",
-                                  //   style: new TextStyles(context)
-                                  //       .getRegularStyle()
-                                  //       .copyWith(
-                                  //     fontWeight: FontWeight.w100,
-                                  //   ),
-                                  // ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: RatingBar(
@@ -406,7 +395,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
           ),
 
           // backgrouund image and Hotel name and thier details and more details animation view
-          _backgroundImageUI(widget.hotelData, reviewProvider),
+          _backgroundImageUI(widget.hotelData),
 
           // Arrow back Ui
           Padding(
@@ -527,7 +516,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
     );
   }
 
-  Widget _backgroundImageUI(Hotel hotelData, ReviewProvider reviewProvider) {
+  Widget _backgroundImageUI(Hotel hotelData) {
     return Positioned(
       top: 0,
       left: 0,
@@ -555,13 +544,17 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                           top: 0,
                           child: Container(
                             width: MediaQuery.of(context).size.width,
-                            child: CachedNetworkImage(
+                            child: (hotelData.galleryImages.isNotEmpty)
+                                ? CachedNetworkImage(
                               imageUrl: hotelData.galleryImages[1].imageUrl,
-                              placeholder: (context, url) =>
-                                  Center(child: CircularProgressIndicator()),
-                              errorWidget: (context, url, error) =>
-                                  Icon(Icons.error),
-                              fit: BoxFit.cover, // Tùy chỉnh cách hiển thị ảnh
+                              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                              errorWidget: (context, url, error) => Icon(Icons.error),
+                              fit: BoxFit.cover,
+                            )
+                                : Container(
+                              color: Colors.grey.shade200,
+                              child: Icon(Icons.image_not_supported,
+                                  color: Colors.grey, size: 40),
                             ),
                           ),
                         ),
@@ -589,9 +582,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                                 padding: const EdgeInsets.all(4.0),
                                 child: Column(
                                   children: <Widget>[
-                                    SizedBox(
-                                      height: 4,
-                                    ),
+                                    const SizedBox(height: 4,),
                                     Padding(
                                       padding: const EdgeInsets.only(
                                           left: 16, right: 16, top: 8),
@@ -784,26 +775,15 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
             Text(
-              // status
-              // "\$${widget.hotelData.perNight}",
               "${widget.hotelData.status}",
               textAlign: TextAlign.left,
               style: TextStyles(context).getBoldStyle().copyWith(
-                    fontSize: 22,
-                    color: isInList
-                        ? Theme.of(context).textTheme.bodyLarge!.color
-                        : Colors.white,
-                  ),
+                fontSize: 22,
+                color: isInList
+                    ? Theme.of(context).textTheme.bodyLarge!.color
+                    : Colors.white,
+              ),
             ),
-            // Text(
-            //   AppLocalizations(context).of("per_night"),
-            //   style: TextStyles(context).getRegularStyle().copyWith(
-            //     fontSize: 14,
-            //     color: isInList
-            //         ? Theme.of(context).disabledColor
-            //         : Colors.white,
-            //   ),
-            // ),
           ],
         ),
       ],

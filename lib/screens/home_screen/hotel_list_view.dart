@@ -45,8 +45,7 @@ class HotelListView extends StatelessWidget {
                       children: [
                         AspectRatio(
                           aspectRatio: 0.9,
-                          child: (hotelListData.galleryImages != null &&
-                                  hotelListData.galleryImages.isNotEmpty)
+                          child: (hotelListData.galleryImages.isNotEmpty)
                               ? CachedNetworkImage(
                                   imageUrl:
                                       hotelListData.galleryImages[0].imageUrl,
@@ -81,6 +80,7 @@ class HotelListView extends StatelessWidget {
                               Text(
                                 hotelListData.description,
                                 maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: TextStyles(context)
                                     .getDescriptionStyle()
@@ -88,54 +88,56 @@ class HotelListView extends StatelessWidget {
                               ),
                               Expanded(
                                 child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Expanded(
-                                        child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Icon(FontAwesomeIcons.mapMarkedAlt,
-                                                size: 12,
-                                                color: Theme.of(context)
-                                                    .primaryColor),
-                                            SizedBox(
-                                              width: 5,
-                                            ),
-                                            Expanded(
-                                              child: Text(
-                                                // "${hotelListData.dist.toStringAsFixed(1)}",
-                                                hotelListData.address,
-                                                overflow: TextOverflow.ellipsis,
-                                                textAlign: TextAlign.left,
-                                                style: TextStyles(context)
-                                                    .getDescriptionStyle()
-                                                    .copyWith(fontSize: 16),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                  FontAwesomeIcons.mapMarkedAlt,
+                                                  size: 12,
+                                                  color: Theme.of(context).primaryColor),
+                                              const SizedBox(width: 5,),
+                                              Expanded(
+                                                child: Text(
+                                                  hotelListData.address,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  textAlign: TextAlign.left,
+                                                  style: TextStyles(context)
+                                                      .getDescriptionStyle()
+                                                      .copyWith(fontSize: 16),
+                                                ),
                                               ),
-                                            ),
-                                            // Expanded(
-                                            //   child: Text(
-                                            //     AppLocalizations(context).of("km_to_city"),
-                                            //     overflow: TextOverflow.ellipsis,
-                                            //     textAlign: TextAlign.left,
-                                            //     style: TextStyles(context).getDescriptionStyle().copyWith(
-                                            //         fontSize: 16
-                                            //     ),
-                                            //   ),
-                                            // ),
-                                            SizedBox(
-                                              width: 10.0,
-                                            )
-                                          ],
-                                        ),
-                                        Helper.ratingStar(),
-                                      ],
-                                    )),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 5,),
+                                          Row(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                  Icons.visibility,
+                                                  size: 12,
+                                                  color: Theme.of(context).primaryColor),
+                                              const SizedBox(width: 5,),
+                                              Expanded(
+                                                child: Text(
+                                                  "${hotelListData.views}",
+                                                  overflow: TextOverflow.ellipsis,
+                                                  textAlign: TextAlign.left,
+                                                  style: TextStyles(context)
+                                                      .getDescriptionStyle()
+                                                      .copyWith(fontSize: 16),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                     FittedBox(
                                       child: Padding(
                                         padding: EdgeInsets.only(right: 8),
@@ -146,20 +148,12 @@ class HotelListView extends StatelessWidget {
                                               CrossAxisAlignment.end,
                                           children: [
                                             Text(
-                                              // "${hotelListData.perNight}",
                                               hotelListData.status,
                                               textAlign: TextAlign.left,
                                               style: TextStyles(context)
                                                   .getBoldStyle()
                                                   .copyWith(fontSize: 22),
                                             ),
-                                            // Text(
-                                            //   AppLocalizations(context).of("per_night"),
-                                            //   textAlign: TextAlign.left,
-                                            //   style: TextStyles(context).getDescriptionStyle().copyWith(
-                                            //       fontSize: 14
-                                            //   ),
-                                            // )
                                           ],
                                         ),
                                       ),

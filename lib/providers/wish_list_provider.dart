@@ -105,13 +105,16 @@ class WishlistProvider with ChangeNotifier {
           print("Error detail hotel: $e");
         }
         final hotelAddress = hotelData.address;
-        final hotelImage =
-            '${hotelData.galleryImages[0].imageUrl}';
+        final hotelImage = '${hotelData.galleryImages[0].imageUrl}';
         for (var room in hotel['rooms']) {
+          final checkInDate = DateTime.parse(room['check_in_date']);
+          final checkOutDate = DateTime.parse(room['check_out_date']);
+
+          final startDate = DateTime(checkInDate.year, checkInDate.month, checkInDate.day);
+          final endDate = DateTime(checkOutDate.year, checkOutDate.month, checkOutDate.day);
+
           final totalAmount = room['price'] *
-              (DateTime.parse(room['check_out_date'])
-                  .difference(DateTime.parse(room['check_in_date']))
-                  .inDays);
+              ((endDate).difference(startDate).inDays);
           price += totalAmount;
           loadedWishlist.add(WishlistItem(
             hotelId: hotelId,
@@ -119,11 +122,13 @@ class WishlistProvider with ChangeNotifier {
             address: hotelAddress,
             imageUrl: hotelImage,
             itemCartId: room['item_cart_id'],
-            startDate: DateTime.parse(room['check_in_date']),
-            endDate: DateTime.parse(room['check_out_date']),
+            startDate: startDate,
+            endDate: endDate,
             typeRoom: room['room_type'],
             pricePernight: room['price'],
             totalAmount: totalAmount,
+            adult: room['adults_count'],
+            children: room['childrens_count'],
           ));
         }
       }

@@ -38,31 +38,6 @@ class HotelListView extends StatelessWidget {
         padding: const EdgeInsets.only(left: 24, right: 24, top: 8, bottom: 16),
         child: Column(
           children: <Widget>[
-            // isShowDate
-            //     ? Padding(
-            //   padding: const EdgeInsets.only(top: 12, bottom: 12),
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.center,
-            //     children: [
-            //       Text(
-            //         Helper.getDateText(hotelData.date!) + ', ',
-            //         style: TextStyles(context)
-            //             .getRegularStyle()
-            //             .copyWith(fontSize: 14),
-            //       ),
-            //       Padding(
-            //         padding: const EdgeInsets.only(top: 2.0),
-            //         child: Text(
-            //           Helper.getRoomText(hotelData.roomData!),
-            //           style: TextStyles(context)
-            //               .getRegularStyle()
-            //               .copyWith(fontSize: 14),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // )
-            //     : SizedBox(),
             CommonCard(
               color: AppTheme.backgroundColor,
               radius: 16,
@@ -74,8 +49,7 @@ class HotelListView extends StatelessWidget {
                       children: <Widget>[
                         AspectRatio(
                           aspectRatio: 2,
-                          child: (hotelByLocation.galleryImages != null &&
-                              hotelByLocation.galleryImages.isNotEmpty)
+                          child: (hotelByLocation.galleryImages.isNotEmpty)
                               ? CachedNetworkImage(
                             imageUrl: hotelByLocation.galleryImages[1].imageUrl,
                             placeholder: (context, url) =>
@@ -127,27 +101,10 @@ class HotelListView extends StatelessWidget {
                                             // "${hotelData.dist.toStringAsFixed(1)}",
                                             "${hotelByLocation.address}",
                                             overflow: TextOverflow.ellipsis,
-                                            style: TextStyles(context)
-                                                .getDescriptionStyle(),
+                                            softWrap: true,
+                                            style: TextStyles(context).getDescriptionStyle(),
                                           ),
-                                          // Text(
-                                          //   hotelByLocation.description,
-                                          //   overflow: TextOverflow.ellipsis,
-                                          //   style: TextStyles(context).getDescriptionStyle(),
-                                          // ),
-                                          SizedBox(
-                                            width: 4,
-                                          ),
-
-                                          // Expanded(
-                                          //   child: Text(
-                                          //     AppLocalizations(context)
-                                          //         .of("km_to_city"),
-                                          //     overflow: TextOverflow.ellipsis,
-                                          //     style: TextStyles(context)
-                                          //         .getDescriptionStyle(),
-                                          //   ),
-                                          // ),
+                                          const SizedBox(width: 4,),
                                         ],
                                       ),
                                       Padding(
@@ -161,9 +118,7 @@ class HotelListView extends StatelessWidget {
                                                   .getDescriptionStyle(),
                                             ),
                                             Text(
-                                              // AppLocalizations(context)
-                                              //     .of("views"),
-                                              " Views",
+                                              AppLocalizations(context).of("views"),
                                               style: TextStyles(context)
                                                   .getDescriptionStyle(),
                                             ),
@@ -175,37 +130,6 @@ class HotelListView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            // Padding(
-                            //   padding: const EdgeInsets.only(
-                            //       right: 16, top: 8, left: 16),
-                            //   child: Column(
-                            //     mainAxisAlignment: MainAxisAlignment.center,
-                            //     crossAxisAlignment: CrossAxisAlignment.end,
-                            //     children: <Widget>[
-                            //       Text(
-                            //         "\$${hotelData.perNight}",
-                            //         textAlign: TextAlign.left,
-                            //         style: TextStyles(context)
-                            //             .getBoldStyle()
-                            //             .copyWith(fontSize: 22),
-                            //       ),
-                            //       Padding(
-                            //         padding: EdgeInsets.only(
-                            //             top: context
-                            //                 .read<ThemeProvider>()
-                            //                 .languageType ==
-                            //                 LanguageType.ar
-                            //                 ? 2.0
-                            //                 : 0.0),
-                            //         child: Text(
-                            //           AppLocalizations(context).of("per_night"),
-                            //           style: TextStyles(context)
-                            //               .getDescriptionStyle(),
-                            //         ),
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
                           ],
                         ),
                       ],

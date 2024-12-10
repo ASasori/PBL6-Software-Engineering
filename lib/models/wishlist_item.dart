@@ -9,6 +9,8 @@ class WishlistItem {
   final String typeRoom;
   final double pricePernight;
   final double totalAmount;
+  final int? adult;
+  final int? children;
 
   WishlistItem({
     required this.hotelId,
@@ -21,5 +23,7 @@ class WishlistItem {
     required this.typeRoom,
     required this.pricePernight,
     required this.totalAmount,
+    this.adult,
+    this.children,
   });
 }

@@ -1,15 +1,13 @@
+import 'package:booking_hotel_app/utils/helper.dart';
 import 'package:flutter/material.dart';
-import 'package:smooth_star_rating_null_safety/smooth_star_rating_null_safety.dart';
-
 import '../../language/appLocalizations.dart';
-import '../../models/hotel_list_data.dart';
 import '../../utils/text_styles.dart';
 import '../../utils/themes.dart';
 import '../../widgets/common_card.dart';
 
 class RatingView extends StatelessWidget {
   final double hotelRating;
-  const RatingView({Key? key, required this.hotelRating}) : super(key: key);
+  const RatingView({super.key, required this.hotelRating}) ;
 
   @override
   Widget build(BuildContext context) {
@@ -51,36 +49,21 @@ class RatingView extends StatelessWidget {
                                 .withOpacity(0.8),
                           ),
                         ),
-                        SmoothStarRating(
-                          allowHalfRating: true,
-                          starCount: 5,
-                          rating: hotelRating,
-                          size: 16,
-                          color: Theme.of(context).primaryColor,
-                          borderColor: Theme.of(context).primaryColor,
-                        ),
+                        Helper.ratingStar(hotelRating: hotelRating),
                       ],
                     ),
                   ),
                 )
               ],
             ),
-            SizedBox(
-              height: 4,
-            ),
-            getBarUI('room', 95.0, context),
-            SizedBox(
-              height: 4,
-            ),
-            getBarUI('service', 80.0, context),
-            SizedBox(
-              height: 4,
-            ),
-            getBarUI('location', 65.0, context),
-            SizedBox(
-              height: 4,
-            ),
-            getBarUI('price', 85, context),
+            // const SizedBox(height: 4,),
+            // getBarUI('room', 95.0, context),
+            // const SizedBox(height: 4,),
+            // getBarUI('service', 80.0, context),
+            // const SizedBox(height: 4,),
+            // getBarUI('location', 65.0, context),
+            // const SizedBox(height: 4,),
+            // getBarUI('price', 85, context),
           ],
         ),
       ),

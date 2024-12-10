@@ -2,10 +2,7 @@ import 'package:booking_hotel_app/models/room.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/booking.dart';
-import '../../models/hotel_list_data.dart';
 import '../../models/room_data.dart';
-import '../../providers/booking_provider.dart';
 import '../../providers/room_provider.dart';
 import '../../providers/wish_list_provider.dart';
 
@@ -33,8 +30,7 @@ class _SelectRoomDialogState extends State<SelectRoomDialog> {
               .map((room) => {
             'roomId': room.roomId,
             'roomNumber': room.roomNumber,
-          })
-              .toList();
+          }).toList();
         });
       });
     });
@@ -106,8 +102,7 @@ class _SelectRoomDialogState extends State<SelectRoomDialog> {
                   final roomtypeData = widget.roomTypeData;
 
                   if (roomtypeData != null) {
-                    final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
-                    final errorMessage = await wishlistProvider.addCartItem(selectedRoom!['roomId'], widget.startDate, widget.endDate,
+                    final errorMessage = await wishlist.addCartItem(selectedRoom!['roomId'], widget.startDate, widget.endDate,
                         widget.roomData.adult, widget.roomData.children);
                     if (errorMessage == null) wishlist.addCounter();
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -142,5 +137,6 @@ class _SelectRoomDialogState extends State<SelectRoomDialog> {
           ],
         )
       ],
-    );}
+    );
+  }
 }

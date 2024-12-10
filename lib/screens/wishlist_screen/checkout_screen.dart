@@ -1,16 +1,23 @@
+import 'package:booking_hotel_app/models/wishlist_item.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../utils/text_styles.dart';
 import '../../widgets/common_button.dart';
 import '../../widgets/remove_focuse.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({super.key});
+  final WishlistItem cartItem;
+  const CheckoutScreen({super.key, required this.cartItem});
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();}
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
+  TextEditingController _couponCodeController = TextEditingController();
+  TextEditingController _fullNameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _phoneNumberController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,25 +33,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 Expanded(
                   child: SingleChildScrollView( // Wrap with SingleChildScrollView
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _bookingSummaryCard(),
-                        SizedBox(height: 20),
-                        _billingInformationCard(),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        CommonButton(
-                          padding: EdgeInsets.only(
-                              left: 24, right: 24, bottom: 16
-                          ),
-                          buttonText: "Pay",
-                          onTap: () async {
-                          },
-                        )
-                      ],
-                    ),
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _bookingSummaryCard(),
+                          const SizedBox(height: 20),
+                          _billingInformationCard(),
+                          const SizedBox(height: 20,),
+                          CommonButton(
+                            padding: EdgeInsets.only(
+                                left: 24, right: 24, bottom: 16
+                            ),
+                            buttonText: "Pay",
+                            onTap: () async {
+                            },
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -116,8 +122,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-
-
   Widget _bookingSummaryCard() {
     return Card(
       elevation: 3, // Add elevation for a shadow effect
@@ -137,17 +141,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
             ),
             SizedBox(height: 10), // Add spacingDivider(color: Colors.grey[300]), // Subtle divider
-            _summaryItem("Check-in", "2023-12-20"),
-            _summaryItem("Check-out", "2023-12-25"),
-            _summaryItem("Total Days", "5"),
-            _summaryItem("Adults", "2"),
-            _summaryItem("Children", "1"),_summaryItem("Original Price", "\$500"),
-            _summaryItem("Discount", "\$50"),
-            // Coupon field with apply button
+            _summaryItem("Check-in", DateFormat('yyyy-MM-dd').format(widget.cartItem.startDate)),
+            _summaryItem("Check-out", DateFormat('yyyy-MM-dd').format(widget.cartItem.endDate)),
+            _summaryItem("Total Days", "${widget.cartItem.endDate.difference(widget.cartItem.startDate).inDays}"),
+            _summaryItem("Adults", "${widget.cartItem.adult}"),
+            _summaryItem("Children", "${widget.cartItem.children}"),
+            _summaryItem("Original Price", "\$${widget.cartItem.totalAmount}"),
+            _summaryItem("Discount", "\$0"),
             Row(
               children: [
                 Expanded(
                   child: TextField(
+                    controller: _couponCodeController,
                     decoration: InputDecoration(
                       hintText: "Enter Coupon Code",
                       border: OutlineInputBorder(
@@ -156,7 +161,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                   ),
                 ),
-                SizedBox(width: 10), // Add spacing
+                const SizedBox(width: 10), // Add spacing
                 ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
@@ -193,18 +198,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Divider(color: Colors.grey[300]),
             // Improved input fields with labels
             TextFormField(
+              controller: _fullNameController,
               decoration: InputDecoration(
-                labelText: "Full Name",border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
+                labelText: "Full Name",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
             SizedBox(height: 10), // Add spacing between fields
             TextFormField(
+              controller: _emailController,
               decoration: InputDecoration(
                 labelText: "Email",
                 border: OutlineInputBorder(
@@ -214,6 +222,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ),
             SizedBox(height: 10),
             TextFormField(
+              controller: _phoneNumberController,
               decoration: InputDecoration(
                 labelText: "Phone",
                 border: OutlineInputBorder(
@@ -226,7 +235,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ),
     );
   }
-
 
   Widget _summaryItem(String label, String value) {
     return Padding(

@@ -1,4 +1,5 @@
 import 'package:booking_hotel_app/models/review.dart';
+import 'package:booking_hotel_app/models/wishlist_item.dart';
 import 'package:booking_hotel_app/screens/bottom_tab/bottom_tab_screen.dart';
 import 'package:booking_hotel_app/screens/hotel_detail_screen/review_list_screen.dart';
 import 'package:booking_hotel_app/screens/hotel_detail_screen/room_booking_screen.dart';
@@ -79,8 +80,8 @@ class NavigationServices {
     return _pushMasterialPageRoute(ReviewListScreen(reviewList: reviewList,));
   }
 
-  Future<dynamic> gotoCheckoutScreen() {
-    return _pushMasterialPageRoute(CheckoutScreen());
+  Future<dynamic> gotoCheckoutScreen(WishlistItem cartItem) {
+    return _pushMasterialPageRoute(CheckoutScreen(cartItem: cartItem,));
   }
 
   Future<Future> gotoEditProfileScreen()  async{

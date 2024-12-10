@@ -296,7 +296,7 @@ class _WishlistScreenState extends State<WishlistScreen>
                               backgroundColor: Colors.green,
                               onTap: () {
                                 NavigationServices(context)
-                                    .gotoCheckoutScreen();
+                                    .gotoCheckoutScreen(provider.wishlist[index]);
                               },
                             ),
                             CommonButton(
