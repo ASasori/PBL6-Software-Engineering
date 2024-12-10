@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-&8$zx(^(s0nmnx4k-+4g2&*=nh7ox1e^jxu905v)h#^h@z&z!0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '172.16.3.157']
 SECURE_CROSS_ORIGIN_OPENER_POLICY='same-origin-allow-popups'
 
 # Application definition
@@ -279,8 +279,8 @@ JAZZMIN_UI_TWEAKS = {
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        #'rest_framework.permissions.IsAuthenticated', 
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated', 
+        # 'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -292,7 +292,7 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_ALLOW_ALL = False  # Chỉ cho phép các nguồn cụ thể
+CORS_ORIGIN_ALLOW_ALL = True  # Chỉ cho phép các nguồn cụ thể
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',  # Địa chỉ của ứng dụng React
 ]

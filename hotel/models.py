@@ -140,7 +140,7 @@ class RoomType(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.type} - {self.hotel.name} - {self.price}"
+        return f"{self.id} - {self.type} - {self.hotel.name} - {self.price}"
 
     def rooms_count(self):
         return Room.objects.filter(room_type=self).count()
