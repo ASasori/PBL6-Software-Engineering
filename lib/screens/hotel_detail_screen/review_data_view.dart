@@ -34,7 +34,6 @@ class ReviewsView extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(left: 24, right: 24, top: 16),
         child: Column(
-          // crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
             Row(
               children: <Widget>[
@@ -49,11 +48,16 @@ class ReviewsView extends StatelessWidget {
                         borderRadius: BorderRadius.all(Radius.circular(8.0)),
                         child: AspectRatio(
                           aspectRatio: 1,
-                          child: CachedNetworkImage(
-                            placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                            imageUrl: review.profileImage!,
-                            errorWidget: (context, url, error) => Icon(Icons.error),
-                            fit: BoxFit.cover,
+                          child: review.profileImage!.isNotEmpty
+                            ? CachedNetworkImage(
+                              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                              imageUrl: review.profileImage!,
+                              errorWidget: (context, url, error) => Icon(Icons.error),
+                              fit: BoxFit.cover,
+                          ) : const Icon(
+                            Icons.person,
+                            size: 50,
+                            color: Colors.grey,
                           ),
                         ),
                       ),
@@ -65,7 +69,6 @@ class ReviewsView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      // reviewsList.titleTxt,
                       review.email!,
                       style: TextStyles(context).getBoldStyle().copyWith(
                         fontSize: 14,
@@ -82,9 +85,7 @@ class ReviewsView extends StatelessWidget {
                             color: Theme.of(context).disabledColor,
                           ),
                         ),
-                        SizedBox(
-                          width: 5,
-                        ),
+                        const SizedBox(width: 5,),
                         Text(
                           review.date!,
                           style: new TextStyles(context)

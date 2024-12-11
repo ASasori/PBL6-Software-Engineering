@@ -228,8 +228,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                                   child: AspectRatio(
                                     aspectRatio: 1,
                                     child: authProvider.profile.image != null &&
-                                            authProvider
-                                                .profile.image!.isNotEmpty
+                                            authProvider.profile.image!.isNotEmpty
                                         ? CachedNetworkImage(
                                             placeholder: (context, url) => Center(
                                                 child:

@@ -1,7 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../language/appLocalizations.dart';
+import '../../models/profile.dart';
 import '../../models/setting_list_data.dart';
+import '../../models/user.dart';
 import '../../utils/localfiles.dart';
 import '../../utils/text_styles.dart';
 import '../../utils/themes.dart';
@@ -10,6 +13,9 @@ import '../../widgets/common_card.dart';
 import '../../widgets/remove_focuse.dart';
 
 class EditProfileScreen extends StatefulWidget {
+  final User user;
+  final Profile profile;
+  const EditProfileScreen ({super.key, required this.user, required this.profile});
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
 }
@@ -90,9 +96,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 16, right: 16),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
                             child: Divider(
                               height: 1,
                             ),
@@ -177,7 +182,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(60.0)),
-                    child: Image.asset(Localfiles.userImage),
+                    child: widget.profile.image!.isNotEmpty
+                        ? CachedNetworkImage(
+                      placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                      imageUrl:  widget.profile.image!,
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      fit: BoxFit.cover,
+                    ) : const Icon (
+                      Icons.person,
+                      color: Colors.grey,
+                      size: 50,
+                    ),
                   ),
                 ),
                 Positioned(

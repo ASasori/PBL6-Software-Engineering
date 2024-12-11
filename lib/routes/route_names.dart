@@ -16,6 +16,8 @@ import 'package:flutter/material.dart';
 
 
 import '../models/hotel.dart';
+import '../models/profile.dart';
+import '../models/user.dart';
 import '../screens/explore_screen/filter_screen/filter_screen.dart';
 import '../screens/explore_screen/explore_screen.dart';
 import '../screens/hotel_detail_screen/hotel_detail_screen.dart';
@@ -65,7 +67,6 @@ class NavigationServices {
     return _pushMasterialPageRoute(FiltersScreen());
   }
 
-  // truyền vào đây là hotel hoteldata
   Future<dynamic> gotoRoomBookingScreen(Hotel hotelBooking) async {
     return _pushMasterialPageRoute(RoomBookingScreen(hotelBooking: hotelBooking));
   }
@@ -84,19 +85,19 @@ class NavigationServices {
     return _pushMasterialPageRoute(CheckoutScreen(cartItem: cartItem,));
   }
 
-  Future<Future> gotoEditProfileScreen()  async{
-    return await _pushMasterialPageRoute(EditProfileScreen());
+  Future<void> gotoEditProfileScreen(User user, Profile profile)  async{
+    return await _pushMasterialPageRoute(EditProfileScreen(user: user, profile: profile,));
   }
 
-  Future<Future> gotoChangePasswordScreen()  async{
+  Future<void> gotoChangePasswordScreen()  async{
     return await _pushMasterialPageRoute(ChangePasswordScreen());
   }
 
-  Future<Future> gotoHelpCenterScreen()  async{
+  Future<void> gotoHelpCenterScreen()  async{
     return await _pushMasterialPageRoute(HelpCenterScreen());
   }
 
-  Future<Future> gotoSettingsScreen()  async{
+  Future<void> gotoSettingsScreen()  async{
     return await _pushMasterialPageRoute(SettingsScreen());
   }
 }

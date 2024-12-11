@@ -1,3 +1,5 @@
+import 'package:booking_hotel_app/providers/auth_provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,11 +27,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     widget.animationController.forward();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AuthProvider>(context, listen: false).fetchProfile();
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
     return BottomTopMoveAnimationView(
         animationController: widget.animationController,
         child: Consumer<ThemeProvider>(
@@ -52,20 +58,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onTap: () async {
                         //setting screen view
                         if (index == 4) {
-                          NavigationServices(context).gotoSettingsScreen();
+                          await NavigationServices(context).gotoSettingsScreen();
 
                           //   setState(() {});
                         }
                         //help center screen view
 
                         if (index == 2) {
-                          NavigationServices(context).gotoHelpCenterScreen();
+                          await NavigationServices(context).gotoHelpCenterScreen();
                         }
                         //Chage password  screen view
 
                         if (index == 0) {
-                          NavigationServices(context)
-                              .gotoChangePasswordScreen();
+                          await NavigationServices(context).gotoChangePasswordScreen();
                         }
                         //Invite friend  screen view
 
@@ -124,9 +129,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget appBar() {
+    final authProvider = Provider.of<AuthProvider>(context);
     return InkWell(
-      onTap: () {
-        NavigationServices(context).gotoEditProfileScreen();
+      onTap: () async {
+        await NavigationServices(context).gotoEditProfileScreen(authProvider.user, authProvider.profile);
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -140,7 +146,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               height: 70,
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(40.0)),
-                child: Image.asset(Localfiles.userImage),
+                child: authProvider.profile.image!.isNotEmpty
+                  ? CachedNetworkImage(
+                    placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                    imageUrl: authProvider.profile.image!,
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                    fit: BoxFit.cover,
+                ) : const Icon (
+                    Icons.person,
+                    color: Colors.grey,
+                    size: 50,
+                ),
               ),
             ),
           ),
@@ -152,7 +168,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    "Bui Nhan",
+                    authProvider.user.username!,
                     style: new TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,

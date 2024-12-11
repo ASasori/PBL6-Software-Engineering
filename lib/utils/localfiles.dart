@@ -66,5 +66,5 @@ class Localfiles {
   static const String birghtness = BaseImageUrl + 'birghtness.png';
   static const String parth = BaseImageUrl + 'parth.png';
   // static const String baseUrl = "http://wireguard.nguyentanloc.top:8000";
-  static const String baseUrl = "http://10.10.34.12:8000";
+  static const String baseUrl = "http://192.168.1.85:8000";
 }
