@@ -211,9 +211,9 @@ STRIPE_PUBLIC_KEY=env("STRIPE_PUBLIC_KEY")
 JAZZMIN_SETTINGS = {
     'site_header': "Nguyen",
     'site_brand': "Manage Hotel",
-    'site_logo': "/images/logo.png",
+    'site_logo': "/images/logo_hotel.png",
     'copyright':  "All Right Reserved 2024",
-    "welcome_sign": "Welcome to Nguyen, Login Now.",
+    "welcome_sign": "Welcome to Hotel Admin Site, Login Now.",
     "topmenu_links": [
 
         {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
@@ -261,6 +261,7 @@ JAZZMIN_SETTINGS = {
     "custom_links":{},
     "hide_apps": [],
     "hide_models": [],
+    'custom_css': 'css/custom_admin.css',
 }
 
 JAZZMIN_UI_TWEAKS = {
