@@ -61,7 +61,7 @@ class RoomType {
 class Room {
   final int roomId;
   final int hotelId;
-  final RoomType roomType; // Liên kết trực tiếp với RoomType thay vì chỉ lưu roomTypeId
+  final RoomType roomType;
   final String roomNumber;
   final bool isAvailable;
   final String rid;

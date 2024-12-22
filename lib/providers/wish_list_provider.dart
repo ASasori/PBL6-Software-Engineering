@@ -60,13 +60,13 @@ class WishlistProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> addCartItem(int roomId, DateTime checkinDate,
-      DateTime checkoutDate, int adult, int children) async {
+  Future<String?> addCartItem(int roomId, DateTime checkInDate,
+      DateTime checkOutDate, int adult, int children) async {
     _isLoading = true;
     notifyListeners();
 
-    String checkInDateString = DateFormat('yyyy-MM-dd').format(checkinDate);
-    String checkOutDateString = DateFormat('yyyy-MM-dd').format(checkoutDate);
+    String checkInDateString = DateFormat('yyyy-MM-dd').format(checkInDate);
+    String checkOutDateString = DateFormat('yyyy-MM-dd').format(checkOutDate);
 
     final status = await _wishlistServices.addCartItem(
       roomId,
@@ -125,6 +125,10 @@ class WishlistProvider with ChangeNotifier {
             startDate: startDate,
             endDate: endDate,
             typeRoom: room['room_type'],
+            rt_slug: room['slug_room_type'],
+            roomId: room['room_id'],
+            roomNumber: room['room_number'],
+            bed: room['bed'],
             pricePernight: room['price'],
             totalAmount: totalAmount,
             adult: room['adults_count'],

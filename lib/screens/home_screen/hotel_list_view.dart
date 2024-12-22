@@ -1,6 +1,3 @@
-import 'package:booking_hotel_app/language/appLocalizations.dart';
-import 'package:booking_hotel_app/models/hotel_list_data.dart';
-import 'package:booking_hotel_app/providers/theme_provider.dart';
 import 'package:booking_hotel_app/utils/text_styles.dart';
 import 'package:booking_hotel_app/utils/themes.dart';
 import 'package:booking_hotel_app/widgets/common_card.dart';
@@ -8,7 +5,6 @@ import 'package:booking_hotel_app/widgets/list_cell_animation_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:booking_hotel_app/models/hotel.dart';
-import '../../utils/helper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class HotelListView extends StatelessWidget {
@@ -29,40 +25,40 @@ class HotelListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListCellAnimationView(
-        animation: animation,
-        animationController: animationController,
-        child: Padding(
-          padding: EdgeInsets.only(left: 24, right: 24, top: 8, bottom: 16),
-          child: CommonCard(
-            color: AppTheme.backgroundColor,
-            radius: 10,
-            child: ClipRect(
-              child: AspectRatio(
-                aspectRatio: 2.7,
-                child: Stack(
-                  children: [
-                    Row(
-                      children: [
-                        AspectRatio(
-                          aspectRatio: 0.9,
-                          child: (hotelListData.galleryImages.isNotEmpty)
-                              ? CachedNetworkImage(
-                                  imageUrl:
-                                      hotelListData.galleryImages[0].imageUrl,
-                                  placeholder: (context, url) => Center(
-                                      child: CircularProgressIndicator()),
-                                  errorWidget: (context, url, error) =>
-                                      Icon(Icons.error),
-                                  fit: BoxFit.cover,
-                                )
-                              : Container(
-                                  color: Colors.grey.shade200,
-                                  child: Icon(Icons.image_not_supported,
-                                      color: Colors.grey, size: 40),
-                                ),
-                        ),
-                        Expanded(
-                            child: Container(
+      animation: animation,
+      animationController: animationController,
+      child: Padding(
+        padding: EdgeInsets.only(left: 24, right: 24, top: 8, bottom: 16),
+        child: CommonCard(
+          color: AppTheme.backgroundColor,
+          radius: 10,
+          child: ClipRect(
+            child: AspectRatio(
+              aspectRatio: 2.7,
+              child: Stack(
+                children: [
+                  Row(
+                    children: [
+                      AspectRatio(
+                        aspectRatio: 0.9,
+                        child: (hotelListData.galleryImages.isNotEmpty)
+                            ? CachedNetworkImage(
+                                imageUrl:
+                                    hotelListData.galleryImages[0].imageUrl,
+                                placeholder: (context, url) =>
+                                    Center(child: CircularProgressIndicator()),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
+                                fit: BoxFit.cover,
+                              )
+                            : Container(
+                                color: Colors.grey.shade200,
+                                child: Icon(Icons.image_not_supported,
+                                    color: Colors.grey, size: 40),
+                              ),
+                      ),
+                      Expanded(
+                        child: Container(
                           padding: EdgeInsets.all(
                               MediaQuery.of(context).size.width > 360 ? 12 : 8),
                           child: Column(
@@ -84,7 +80,7 @@ class HotelListView extends StatelessWidget {
                                 textAlign: TextAlign.left,
                                 style: TextStyles(context)
                                     .getDescriptionStyle()
-                                    .copyWith(fontSize: 14),
+                                    .copyWith(fontSize: 13),
                               ),
                               Expanded(
                                 child: Row(
@@ -92,48 +88,57 @@ class HotelListView extends StatelessWidget {
                                   children: [
                                     Expanded(
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Row(
                                             children: [
                                               Icon(
                                                   FontAwesomeIcons.mapMarkedAlt,
                                                   size: 12,
-                                                  color: Theme.of(context).primaryColor),
-                                              const SizedBox(width: 5,),
+                                                  color: Theme.of(context)
+                                                      .primaryColor),
+                                              const SizedBox(width: 5),
                                               Expanded(
                                                 child: Text(
                                                   hotelListData.address,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   textAlign: TextAlign.left,
                                                   style: TextStyles(context)
                                                       .getDescriptionStyle()
-                                                      .copyWith(fontSize: 16),
+                                                      .copyWith(fontSize: 13),
+                                                  maxLines: 1,
                                                 ),
                                               ),
                                             ],
                                           ),
-                                          const SizedBox(height: 5,),
-                                          Row(
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                  Icons.visibility,
-                                                  size: 12,
-                                                  color: Theme.of(context).primaryColor),
-                                              const SizedBox(width: 5,),
-                                              Expanded(
-                                                child: Text(
-                                                  "${hotelListData.views}",
-                                                  overflow: TextOverflow.ellipsis,
-                                                  textAlign: TextAlign.left,
-                                                  style: TextStyles(context)
-                                                      .getDescriptionStyle()
-                                                      .copyWith(fontSize: 16),
+                                          const SizedBox(height: 5),
+                                          Expanded(
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Icon(Icons.visibility,
+                                                    size: 12,
+                                                    color: Theme.of(context)
+                                                        .primaryColor),
+                                                const SizedBox(width: 5),
+                                                Expanded(
+                                                  child: Text(
+                                                    "${hotelListData.views}",
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    textAlign: TextAlign.left,
+                                                    style: TextStyles(context)
+                                                        .getDescriptionStyle()
+                                                        .copyWith(fontSize: 13),
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -152,38 +157,40 @@ class HotelListView extends StatelessWidget {
                                               textAlign: TextAlign.left,
                                               style: TextStyles(context)
                                                   .getBoldStyle()
-                                                  .copyWith(fontSize: 22),
+                                                  .copyWith(fontSize: 20),
                                             ),
                                           ],
                                         ),
                                       ),
-                                    )
+                                    ),
                                   ],
                                 ),
                               ),
                             ],
                           ),
-                        ))
-                      ],
-                    ),
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        highlightColor: Colors.transparent,
-                        splashColor:
-                            Theme.of(context).primaryColor.withOpacity(0.1),
-                        onTap: () {
-                          try {
-                            callback();
-                          } catch (e) {}
-                        },
+                        ),
                       ),
-                    )
-                  ],
-                ),
+                    ],
+                  ),
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      highlightColor: Colors.transparent,
+                      splashColor:
+                          Theme.of(context).primaryColor.withOpacity(0.1),
+                      onTap: () {
+                        try {
+                          callback();
+                        } catch (e) {}
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

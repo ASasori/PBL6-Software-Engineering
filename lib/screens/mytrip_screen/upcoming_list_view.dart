@@ -1,8 +1,12 @@
+import 'package:booking_hotel_app/providers/auth_provider.dart';
+import 'package:booking_hotel_app/providers/booking_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/hotel_list_data.dart';
 import '../../routes/route_names.dart';
 import 'hotel_list_view.dart';
+import 'hotel_list_view_data.dart';
 
 class UpcomingListView extends StatefulWidget {
   final AnimationController animationController;
@@ -14,40 +18,46 @@ class UpcomingListView extends StatefulWidget {
 }
 
 class _UpcomingListViewState extends State<UpcomingListView> {
-  var hotelList = HotelListData.hotelList;
+  // var hotelList = HotelListData.hotelList;
 
   @override
   void initState() {
     widget.animationController.forward();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<BookingProvider>(context, listen: false).getMyBookings();
+      Provider.of<AuthProvider>(context, listen: false).fetchProfile();
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final bookingProvider = Provider.of<BookingProvider>(context);
+    final authProvider = Provider.of<AuthProvider>(context);
     return Container(
       child: ListView.builder(
-        itemCount: hotelList.length,
+        itemCount: bookingProvider.myBookings.length,
         padding: EdgeInsets.only(top: 8, bottom: 16),
         scrollDirection: Axis.vertical,
         itemBuilder: (context, index) {
-          var count = hotelList.length > 10 ? 10 : hotelList.length;
+          var count = bookingProvider.myBookings.length > 10 ? 10 : bookingProvider.myBookings.length;
           var animation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
               parent: widget.animationController,
               curve: Interval((1 / count) * index, 1.0,
                   curve: Curves.fastOutSlowIn)));
           widget.animationController.forward();
-          //Upcoming UI view and hotel list
-          // return HotelListView(
-          //   callback: () {
-          //     NavigationServices(context)
-          //         .gotoRoomBookingScreen(hotelList[index].titleTxt);
-          //   },
-          //   hotelData: hotelList[index],
-          //   animation: animation,
-          //   animationController: widget.animationController,
-          //   isShowDate: true,
-          // );
-          return Text('Fixing services, update later');
+
+          return HotelListViewData(
+            callback: () {
+              // NavigationServices(context)
+              //     .gotoRoomBookingScreen(hotelList[index].titleTxt);
+            },
+            myBooking: bookingProvider.myBookings[index],
+            myProfile: authProvider.profile,
+            animation: animation,
+            animationController: widget.animationController,
+            isShowDate: (index % 2) != 0,
+          );
         },
       ),
     );

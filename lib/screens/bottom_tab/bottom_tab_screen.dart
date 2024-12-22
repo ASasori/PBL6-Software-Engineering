@@ -40,7 +40,10 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (bottomBarType == BottomBarType.Wishlist) {
         _LoadingWishlistScreen();
-      } else {
+      } else if (bottomBarType == BottomBarType.Trips) {
+        _loadingTripsScreen();
+      }
+      else {
         _startLoadingScreen();
       }
     });
@@ -57,11 +60,11 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
     });
   }
 
-  Future _LoadingExploreScreen() async  {
+  Future _loadingTripsScreen() async  {
     await Future.delayed(const Duration(milliseconds: 480));
     setState(() {
       _isFirstTime = false;
-      _indexView = ExploreScreen();
+      _indexView = MyTripsScreen(animationController: animationController);
       animationController.forward();
     });
   }
@@ -70,7 +73,6 @@ class _BottomTabScreenState extends State<BottomTabScreen> with TickerProviderSt
     await Future.delayed(const Duration(milliseconds: 480));
     if (mounted) {
       setState(() {
-        print("WishList okee");
         _isFirstTime = false;
         _indexView = WishlistScreen(animationController: animationController);
         animationController.forward();

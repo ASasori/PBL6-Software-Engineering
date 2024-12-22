@@ -1,39 +1,35 @@
-import 'package:booking_hotel_app/models/booking.dart';
+import 'package:booking_hotel_app/models/available_room.dart';
 import 'package:booking_hotel_app/providers/wish_list_provider.dart';
 import 'package:booking_hotel_app/screens/hotel_detail_screen/select_room_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../language/appLocalizations.dart';
-import '../../models/hotel_list_data.dart';
 import '../../models/room.dart';
 import '../../models/room_data.dart';
-import '../../utils/helper.dart';
-import '../../utils/localfiles.dart';
 import '../../utils/text_styles.dart';
 import '../../widgets/common_button.dart';
+import '../../widgets/common_snack_bar.dart';
 
 class RoomBookView extends StatefulWidget {
-  final RoomType roomTypeData;
+  final AvailableRoom roomData;
   final String hotelSlug;
   final AnimationController animationController;
   final Animation<double> animation;
-  final DateTime startDate,endDate;
-  final RoomData roomData;
+  final DateTime startDate, endDate;
+  final RoomData roomDataPeople;
 
-  const RoomBookView(
-      {Key? key,
-        required this.roomTypeData,
-        required this.hotelSlug,
-        required this.animationController,
-        required this.animation,
-        required this.startDate,
-        required this.endDate,
-        required this.roomData,
-      })
-      : super(key: key);
+  const RoomBookView({
+    Key? key,
+    required this.roomData,
+    required this.hotelSlug,
+    required this.animationController,
+    required this.animation,
+    required this.startDate,
+    required this.endDate,
+    required this.roomDataPeople,
+  }) : super(key: key);
 
   @override
   _RoomBookViewState createState() => _RoomBookViewState();
@@ -46,7 +42,6 @@ class _RoomBookViewState extends State<RoomBookView> {
   Widget build(BuildContext context) {
     var wishlist = Provider.of<WishlistProvider>(context);
 
-    // List<String>? images = widget.roomData.imageUrl?.split(" ");
     return AnimatedBuilder(
       animation: widget.animationController,
       builder: (BuildContext context, Widget? child) {
@@ -57,48 +52,49 @@ class _RoomBookViewState extends State<RoomBookView> {
                 0.0, 40 * (1.0 - widget.animation.value), 0.0),
             child: Column(
               children: <Widget>[
-                Stack(
-                  alignment: Alignment.bottomCenter,
-                  children: <Widget>[
-                    AspectRatio(
-                      aspectRatio: 1.5,
-                      child: CachedNetworkImage(
-                        placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                        imageUrl: widget.roomTypeData.imageUrl, // Hiển thị khi ảnh đang load
-                        errorWidget: (context, url, error) => Icon(Icons.error),     // Hiển thị khi có lỗi tải ảnh
-                        fit: BoxFit.cover,
-                      ),
-                      // child: PageView(
-                      //   controller: pageController,
-                      //   pageSnapping: true,
-                      //   scrollDirection: Axis.horizontal,
-                      //   children: <Widget>[
-                      //     for (var image in images!)
-                      //       CachedNetworkImage(
-                      //         imageUrl: image,
-                      //         placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Hiển thị khi ảnh đang load
-                      //         errorWidget: (context, url, error) => Icon(Icons.error),     // Hiển thị khi có lỗi tải ảnh
-                      //         fit: BoxFit.cover,
-                      //       )
-                      //   ],
-                      // ),
-                    ),
-                    // Padding(
-                    //   padding: const EdgeInsets.all(8.0),
-                    //   child: SmoothPageIndicator(
-                    //     controller: pageController, // PageController
-                    //     count: 3,
-                    //     effect: WormEffect(
-                    //         activeDotColor: Theme.of(context).primaryColor,
-                    //         dotColor: Theme.of(context).scaffoldBackgroundColor,
-                    //         dotHeight: 10.0,
-                    //         dotWidth: 10.0,
-                    //         spacing: 5.0), // your preferred effect
-                    //     onDotClicked: (index) {},
-                    //   ),
-                    // ),
-                  ],
-                ),
+                // Stack(
+                //   alignment: Alignment.bottomCenter,
+                //   children: <Widget>[
+                //     AspectRatio(
+                //       aspectRatio: 1.5,
+                //       child: CachedNetworkImage(
+                //         placeholder: (context, url) =>
+                //             Center(child: CircularProgressIndicator()),
+                //         imageUrl: widget.roomData.roomType.imageUrl,
+                //         errorWidget: (context, url, error) => Icon(Icons.error),
+                //         fit: BoxFit.cover,
+                //       ),
+                //       // child: PageView(
+                //       //   controller: pageController,
+                //       //   pageSnapping: true,
+                //       //   scrollDirection: Axis.horizontal,
+                //       //   children: <Widget>[
+                //       //     for (var image in images!)
+                //       //       CachedNetworkImage(
+                //       //         imageUrl: image,
+                //       //         placeholder: (context, url) => Center(child: CircularProgressIndicator()), // Hiển thị khi ảnh đang load
+                //       //         errorWidget: (context, url, error) => Icon(Icons.error),     // Hiển thị khi có lỗi tải ảnh
+                //       //         fit: BoxFit.cover,
+                //       //       )
+                //       //   ],
+                //       // ),
+                //     ),
+                //     // Padding(
+                //     //   padding: const EdgeInsets.all(8.0),
+                //     //   child: SmoothPageIndicator(
+                //     //     controller: pageController, // PageController
+                //     //     count: 3,
+                //     //     effect: WormEffect(
+                //     //         activeDotColor: Theme.of(context).primaryColor,
+                //     //         dotColor: Theme.of(context).scaffoldBackgroundColor,
+                //     //         dotHeight: 10.0,
+                //     //         dotWidth: 10.0,
+                //     //         spacing: 5.0), // your preferred effect
+                //     //     onDotClicked: (index) {},
+                //     //   ),
+                //     // ),
+                //   ],
+                // ),
                 Padding(
                   padding: const EdgeInsets.only(
                       left: 16, right: 16, bottom: 16, top: 16),
@@ -108,7 +104,7 @@ class _RoomBookViewState extends State<RoomBookView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            widget.roomTypeData.type,
+                            widget.roomData.roomType ?? ' ',
                             maxLines: 2,
                             textAlign: TextAlign.left,
                             style: TextStyles(context)
@@ -117,22 +113,12 @@ class _RoomBookViewState extends State<RoomBookView> {
                             overflow: TextOverflow.ellipsis,
                           ),
                           Expanded(child: SizedBox()),
-                          SizedBox(
-                            height: 38,
-                            child: CommonButton(
-                              buttonTextWidget: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 16.0, right: 16.0, top: 4, bottom: 4),
-                                child: Text(
-                                  "Select room",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyles(context).getRegularStyle(),
-                                ),
-                              ),
-                              onTap: () {
-                                _showSelectRoomDialog(context,  widget.roomTypeData.type);
-                              },
-                            ),
+                          Text(
+                            '${AppLocalizations(context).of("room_data")} ${widget.roomData.roomNumber}',
+                            style: TextStyles(context)
+                                .getBoldStyle()
+                                .copyWith(fontSize: 24),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -140,7 +126,7 @@ class _RoomBookViewState extends State<RoomBookView> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            "\$${widget.roomTypeData.price}",
+                            "\$${widget.roomData.price}",
                             textAlign: TextAlign.left,
                             style: TextStyles(context)
                                 .getBoldStyle()
@@ -162,51 +148,38 @@ class _RoomBookViewState extends State<RoomBookView> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            // 'Room data is fixing',
-                            // Helper.getPeopleandChildren(
-                            //     widget.roomData),
-                            // "${widget.roomData}",
-                            "${widget.roomTypeData.roomCapacity} people",
+                            "${widget.roomData.capacity ?? ' '} people",
                             textAlign: TextAlign.left,
                             style: TextStyles(context).getDescriptionStyle(),
                           ),
-                          InkWell(
-                            borderRadius:
-                            BorderRadius.all(Radius.circular(4.0)),
-                            onTap: () {},
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 0, right: 4),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  Text(
-                                    AppLocalizations(context)
-                                        .of("more_details"),
-                                    style: TextStyles(context).getBoldStyle(),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 2),
-                                    child: Icon(
-                                      Icons.keyboard_arrow_down,
-                                      // color: Theme.of(context).backgroundColor,
-                                      size: 24,
-                                    ),
-                                  )
-                                ],
+                          SizedBox(
+                            height: 38,
+                            child: CommonButton(
+                              buttonTextWidget: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 16.0, right: 16.0, top: 4, bottom: 4),
+                                child: Text(
+                                  "Add to wishlist",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyles(context).getRegularStyle(),
+                                ),
                               ),
+                              onTap: () async {
+                                _addToWishList(
+                                    widget.roomData.roomId!,
+                                    widget.startDate,
+                                    widget.endDate,
+                                    widget.roomDataPeople.adult,
+                                    widget.roomDataPeople.children);
+                              },
                             ),
                           ),
-
                         ],
                       ),
                     ],
                   ),
                 ),
-                Divider(
-                  height: 1,
-                )
+                const Divider(height: 1, color: Colors.grey),
               ],
             ),
           ),
@@ -215,19 +188,36 @@ class _RoomBookViewState extends State<RoomBookView> {
     );
   }
 
-  void _showSelectRoomDialog(BuildContext context, String TypeRoom) {
-    showDialog(
+  // void _showSelectRoomDialog(BuildContext context, String TypeRoom) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return SelectRoomDialog(
+  //         roomTypeData: widget.roomData.roomType,
+  //         hotelSlug: widget.hotelSlug,
+  //         startDate: widget.startDate,
+  //         endDate: widget.endDate,
+  //         roomData: widget.roomDataPeople,
+  //       ); // Use the new StatefulWidget
+  //     },
+  //   );
+  // }
+
+  void _addToWishList(int roomId, DateTime checkInDate, DateTime checkOutDate,
+      int adult, int children) async {
+    final wishlist = Provider.of<WishlistProvider>(context, listen: false);
+    final errorMessage = await wishlist.addCartItem(
+        roomId, checkInDate, checkOutDate, adult, children);
+
+    if (errorMessage == null) wishlist.addCounter();
+    CommonSnackBar.show(
       context: context,
-      builder: (BuildContext context) {
-        return SelectRoomDialog(
-            roomTypeData: widget.roomTypeData,
-            hotelSlug: widget.hotelSlug,
-            startDate: widget.startDate,
-            endDate: widget.endDate,
-            roomData: widget.roomData,
-        ) ;// Use the new StatefulWidget
-      },
+      iconData: errorMessage == null
+          ? Icons.check_circle
+          : Icons.error_outline,
+      iconColor:  errorMessage == null ? Colors.white : Colors.red,
+      message: errorMessage ?? 'Room successfully added to wishlist!',
+      backgroundColor: errorMessage == null ? Theme.of(context).primaryColor : Colors.black87,
     );
   }
-
 }

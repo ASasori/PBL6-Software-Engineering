@@ -17,6 +17,7 @@ class ProfileScreen extends StatefulWidget {
 
   const ProfileScreen({Key? key, required this.animationController})
       : super(key: key);
+
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
@@ -45,7 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: <Widget>[
               Padding(
                 padding:
-                EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+                    EdgeInsets.only(top: MediaQuery.of(context).padding.top),
                 child: Container(child: appBar()),
               ),
               Expanded(
@@ -58,19 +59,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onTap: () async {
                         //setting screen view
                         if (index == 4) {
-                          await NavigationServices(context).gotoSettingsScreen();
+                          await NavigationServices(context)
+                              .gotoSettingsScreen();
 
                           //   setState(() {});
                         }
                         //help center screen view
 
                         if (index == 2) {
-                          await NavigationServices(context).gotoHelpCenterScreen();
+                          await NavigationServices(context)
+                              .gotoHelpCenterScreen();
                         }
                         //Chage password  screen view
 
                         if (index == 0) {
-                          await NavigationServices(context).gotoChangePasswordScreen();
+                          await NavigationServices(context)
+                              .gotoChangePasswordScreen();
                         }
                         //Invite friend  screen view
 
@@ -94,8 +98,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       style: TextStyles(context)
                                           .getRegularStyle()
                                           .copyWith(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 16),
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 16),
                                     ),
                                   ),
                                 ),
@@ -132,7 +136,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
     return InkWell(
       onTap: () async {
-        await NavigationServices(context).gotoEditProfileScreen(authProvider.user, authProvider.profile);
+        await NavigationServices(context)
+            .gotoEditProfileScreen(authProvider.user, authProvider.profile);
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -140,22 +145,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: <Widget>[
           Padding(
             padding:
-            const EdgeInsets.only(right: 0, top: 16, bottom: 16, left: 24),
+                const EdgeInsets.only(right: 0, top: 16, bottom: 16, left: 24),
             child: Container(
               width: 70,
               height: 70,
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(40.0)),
-                child: authProvider.profile.image!.isNotEmpty
-                  ? CachedNetworkImage(
-                    placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                    imageUrl: authProvider.profile.image!,
-                    errorWidget: (context, url, error) => Icon(Icons.error),
-                    fit: BoxFit.cover,
-                ) : const Icon (
+                child: CachedNetworkImage(
+                  placeholder: (context, url) =>
+                      const Center(child: CircularProgressIndicator()),
+                  imageUrl: authProvider.profile.image ?? " ",
+                  errorWidget: (context, url, error) => const Icon(
                     Icons.person,
                     color: Colors.grey,
                     size: 50,
+                  ),
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -185,7 +190,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ),
-
         ],
       ),
     );

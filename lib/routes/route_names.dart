@@ -21,6 +21,7 @@ import '../models/user.dart';
 import '../screens/explore_screen/filter_screen/filter_screen.dart';
 import '../screens/explore_screen/explore_screen.dart';
 import '../screens/hotel_detail_screen/hotel_detail_screen.dart';
+import '../screens/mytrip_screen/upcoming_list_view.dart';
 import '../utils/enum.dart';
 
 class NavigationServices {

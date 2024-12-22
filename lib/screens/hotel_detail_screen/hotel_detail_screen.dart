@@ -16,11 +16,11 @@ import '../../models/hotel.dart';
 import '../../models/hotel_list_data.dart';
 import '../../routes/route_names.dart';
 import '../../utils/helper.dart';
-import '../../utils/localfiles.dart';
 import '../../utils/text_styles.dart';
 import '../../utils/themes.dart';
 import '../../widgets/common_button.dart';
 import '../../widgets/common_card.dart';
+import '../../widgets/common_snack_bar.dart';
 
 class HotelDetailScreen extends StatefulWidget {
   final Hotel hotelData;
@@ -52,8 +52,8 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
     super.initState();
     animationController = AnimationController(
         duration: const Duration(milliseconds: 2000), vsync: this);
-    _animationController =
-        AnimationController(duration: const Duration(milliseconds: 0), vsync: this);
+    _animationController = AnimationController(
+        duration: const Duration(milliseconds: 0), vsync: this);
     animationController.forward();
     scrollController.addListener(() {
       if (mounted) {
@@ -105,40 +105,48 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                   padding: const EdgeInsets.only(left: 24, right: 24),
                   child: getHotelDetails(isInList: true),
                 ),
-                const SizedBox(height: 30,),
+                const SizedBox(height: 30),
                 Stack(
                   alignment: Alignment.center,
                   children: <Widget>[
-                    // map hotel
                     AspectRatio(
                       aspectRatio: 1.5,
-                      child: Image.asset(
-                        Localfiles.mapImage,
+                      child: CachedNetworkImage(
+                        imageUrl: widget.hotelData.mapImage ?? " ",
+                        placeholder: (context, url) => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: Colors.grey.shade200,
+                          child: const Icon(
+                            Icons.image_not_supported,
+                            color: Colors.grey,
+                            size: 40,
+                          ),
+                        ),
                         fit: BoxFit.cover,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 34, right: 10),
-                      child: CommonCard(
-                        color: AppTheme.primaryColor,
-                        radius: 36,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Icon(
-                            FontAwesomeIcons.mapPin,
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                            size: 28,
-                          ),
-                        ),
-                      ),
-                    )
+                    // Padding(
+                    //   padding: const EdgeInsets.only(top: 34, right: 10),
+                    //   child: CommonCard(
+                    //     color: AppTheme.primaryColor,
+                    //     radius: 36,
+                    //     child: Padding(
+                    //       padding: const EdgeInsets.all(12.0),
+                    //       child: Icon(
+                    //         FontAwesomeIcons.mapPin,
+                    //         color: Theme.of(context).scaffoldBackgroundColor,
+                    //         size: 28,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // )
                   ],
                 ),
-                Padding(
+                const Padding(
                   padding: const EdgeInsets.all(30.0),
-                  child: Divider(
-                    height: 1,
-                  ),
+                  child: Divider(height: 1),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 24, right: 24),
@@ -194,14 +202,16 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                       .gotoReviewsListScreen(reviewProvider.reviewList);
                 }),
                 if (reviewProvider.reviewList.isEmpty)
-                  Center(
+                  const Center(
                     child: Text(
                       'Hiện không có đánh giá nào.',
                       style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                   )
                 else
-                  for (var i = reviewProvider.reviewList.length - 1; i >= 0; i--)
+                  for (var i = reviewProvider.reviewList.length - 1;
+                      i >= 0;
+                      i--)
                     if (i >= reviewProvider.reviewList.length - 5)
                       ReviewsView(
                         review: reviewProvider.reviewList[i],
@@ -228,11 +238,13 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                                   child: AspectRatio(
                                     aspectRatio: 1,
                                     child: authProvider.profile.image != null &&
-                                            authProvider.profile.image!.isNotEmpty
+                                            authProvider
+                                                .profile.image!.isNotEmpty
                                         ? CachedNetworkImage(
-                                            placeholder: (context, url) => Center(
-                                                child:
-                                                    CircularProgressIndicator()),
+                                            placeholder: (context, url) =>
+                                                const Center(
+                                                    child:
+                                                        CircularProgressIndicator()),
                                             imageUrl:
                                                 authProvider.profile.image!,
                                             errorWidget:
@@ -240,7 +252,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                                                     Icon(Icons.error),
                                             fit: BoxFit.cover,
                                           )
-                                        : Icon(
+                                        : const Icon(
                                             Icons.person,
                                             size: 50,
                                             color: Colors.grey,
@@ -266,29 +278,30 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: RatingBar(
-                                        minRating: 1,
-                                        maxRating: 5,
-                                        initialRating: rating.toDouble(),
-                                        ratingWidget: RatingWidget(
-                                          full: Icon(
-                                            Icons.star,
-                                            color: AppTheme.primaryColor,
-                                          ),
-                                          half: Icon(
-                                            Icons.star_half,
-                                            color: AppTheme.primaryColor,
-                                          ),
-                                          empty: Icon(
-                                            Icons.star_border,
-                                            color: AppTheme.primaryColor,
-                                          ),
+                                      minRating: 1,
+                                      maxRating: 5,
+                                      initialRating: rating.toDouble(),
+                                      ratingWidget: RatingWidget(
+                                        full: Icon(
+                                          Icons.star,
+                                          color: AppTheme.primaryColor,
                                         ),
-                                        onRatingUpdate: (value) {
-                                          setState(() {
-                                            rating = value;
-                                          });
-                                          print(rating);
-                                        }),
+                                        half: Icon(
+                                          Icons.star_half,
+                                          color: AppTheme.primaryColor,
+                                        ),
+                                        empty: Icon(
+                                          Icons.star_border,
+                                          color: AppTheme.primaryColor,
+                                        ),
+                                      ),
+                                      onRatingUpdate: (value) {
+                                        setState(() {
+                                          rating = value;
+                                        });
+                                        print(rating);
+                                      },
+                                    ),
                                   ),
                                 ],
                               ),
@@ -346,29 +359,26 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                                           rating.toInt(),
                                           ratingController.text.trim(),
                                         );
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                              content: const Text(
-                                                "Review posted successfully!",
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                              backgroundColor:
-                                                  AppTheme.primaryColor),
+                                        CommonSnackBar.show(
+                                          context: context,
+                                          iconData: Icons.check_circle,
+                                          iconColor: Colors.white,
+                                          message:
+                                              'Review posted successfully!',
+                                          backgroundColor:
+                                              Theme.of(context).primaryColor,
                                         );
                                         ratingController.clear();
-                                        await reviewProvider.fetchReviewList(widget.hotelData.hid);
+                                        await reviewProvider.fetchReviewList(
+                                            widget.hotelData.hid);
                                       } catch (e) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                              content: Text(
-                                                "Failed to post review. Please try again.",
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                              backgroundColor: Colors.red),
+                                        CommonSnackBar.show(
+                                          context: context,
+                                          iconData: Icons.check_circle,
+                                          iconColor: Colors.white,
+                                          message:
+                                              "Failed to post review. Please review again!",
+                                          backgroundColor: Colors.black87,
                                         );
                                       }
                                     },
@@ -383,9 +393,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                   ),
                 ),
 
-                SizedBox(
-                  height: 16,
-                ),
+                SizedBox(height: 16),
                 SizedBox(
                   height: MediaQuery.of(context).padding.bottom,
                 ),
@@ -545,16 +553,24 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                             width: MediaQuery.of(context).size.width,
                             child: (hotelData.galleryImages.isNotEmpty)
                                 ? CachedNetworkImage(
-                              imageUrl: hotelData.galleryImages[1].imageUrl,
-                              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                              errorWidget: (context, url, error) => Icon(Icons.error),
-                              fit: BoxFit.cover,
-                            )
+                                    imageUrl: hotelData.galleryImages.length > 1
+                                        ? hotelData.galleryImages[1].imageUrl
+                                        : hotelData.galleryImages[0].imageUrl,
+                                    placeholder: (context, url) => Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        Icon(Icons.error),
+                                    fit: BoxFit.cover,
+                                  )
                                 : Container(
-                              color: Colors.grey.shade200,
-                              child: Icon(Icons.image_not_supported,
-                                  color: Colors.grey, size: 40),
-                            ),
+                                    color: Colors.grey.shade200,
+                                    child: Icon(
+                                      Icons.image_not_supported,
+                                      color: Colors.grey,
+                                      size: 40,
+                                    ),
+                                  ),
                           ),
                         ),
                       ],
@@ -581,7 +597,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                                 padding: const EdgeInsets.all(4.0),
                                 child: Column(
                                   children: <Widget>[
-                                    const SizedBox(height: 4,),
+                                    const SizedBox(height: 4),
                                     Padding(
                                       padding: const EdgeInsets.only(
                                           left: 16, right: 16, top: 8),
@@ -608,9 +624,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 16,
-                        ),
+                        const SizedBox(height: 16),
                         Center(
                           child: ClipRRect(
                             borderRadius: BorderRadius.all(Radius.circular(24)),
@@ -704,7 +718,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                widget.hotelData.name, //name
+                widget.hotelData.name,
                 textAlign: TextAlign.left,
                 style: TextStyles(context).getBoldStyle().copyWith(
                       fontSize: 22,
@@ -712,7 +726,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                     ),
               ),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Icon(
@@ -720,17 +734,23 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                     size: 12,
                     color: Theme.of(context).primaryColor,
                   ),
-                  SizedBox(
-                    width: 4,
-                  ),
-                  Text(
-                    widget.hotelData.address, // address
-                    style: TextStyles(context).getRegularStyle().copyWith(
-                          fontSize: 14,
-                          color: isInList
-                              ? Theme.of(context).disabledColor.withOpacity(0.5)
-                              : Colors.white,
-                        ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    // Đảm bảo Text có thể mở rộng
+                    child: Text(
+                      widget.hotelData.address, // address
+                      style: TextStyles(context).getRegularStyle().copyWith(
+                            fontSize: 14,
+                            color: isInList
+                                ? Theme.of(context)
+                                    .disabledColor
+                                    .withOpacity(0.5)
+                                : Colors.white,
+                          ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: true,
+                    ),
                   ),
                 ],
               ),
@@ -740,7 +760,8 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                       padding: const EdgeInsets.only(top: 4),
                       child: Row(
                         children: <Widget>[
-                          Helper.ratingStar(hotelRating: reviewProvider.hotelRating),
+                          Helper.ratingStar(
+                              hotelRating: reviewProvider.hotelRating),
                           Text(
                             " ${reviewProvider.reviewList.length} ",
                             style:
@@ -777,11 +798,11 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
               "${widget.hotelData.status}",
               textAlign: TextAlign.left,
               style: TextStyles(context).getBoldStyle().copyWith(
-                fontSize: 22,
-                color: isInList
-                    ? Theme.of(context).textTheme.bodyLarge!.color
-                    : Colors.white,
-              ),
+                    fontSize: 22,
+                    color: isInList
+                        ? Theme.of(context).textTheme.bodyLarge!.color
+                        : Colors.white,
+                  ),
             ),
           ],
         ),

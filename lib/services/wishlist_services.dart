@@ -35,8 +35,7 @@ class WishlistServices {
         return "Unexpected error occurred while adding the cart item.";
       }
     } catch (e) {
-      print("Error in BookingServices: $e");
-      return "Failed to add cart item. Room may already be booked for the selected dates.";
+      return "Room may already be added for the selected dates.";
     }
   }
 

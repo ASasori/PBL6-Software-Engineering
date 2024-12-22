@@ -1,4 +1,3 @@
-import "../utils/localfiles.dart";
 
 class HotelGallery {
   final String imageUrl;
@@ -53,12 +52,9 @@ class Hotel {
   });
 
   factory Hotel.fromJson(Map<String, dynamic> json) {
-    const String baseUrl = Localfiles.baseUrl ;
 
-    String? mapImageUrl = json['map_image'] != null ? '$baseUrl${json['map_image']}' : null;
     String desc = (json['description'] ?? '').replaceAll(RegExp(r'<[^>]*>'), '');
 
-    // Parse danh sách các tag nếu có
     List<String> tagList = (json['tags'] as List<dynamic>?)
         ?.map((tag) => tag.toString())
         .toList() ??
@@ -73,7 +69,7 @@ class Hotel {
       // hotelId: json['id'] ?? '',
       name: json['name'] ?? '',
       description: desc,
-      mapImage: mapImageUrl,
+      mapImage: json['map_image'],
       address: json['address'] ?? '',
       mobile: json['mobile'] ?? '',
       email: json['email'] ?? '',

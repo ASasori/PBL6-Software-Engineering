@@ -6,14 +6,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 class CategoryView extends StatefulWidget {
   final VoidCallback callback;
-  final Location porpularLocation;
+  final Location popularLocation;
   final AnimationController animationController;
   final Animation<double> animation;
 
   const CategoryView({
     super.key,
     required this.callback,
-    required this.porpularLocation,
+    required this.popularLocation,
     required this.animationController,
     required this.animation
   });
@@ -36,7 +36,7 @@ class _CategoryViewState extends State<CategoryView> {
     Future.delayed(Duration(seconds: 4)).then((_){
       if(_pageController.hasClients){
         setState((){
-          _currentPage = (_currentPage + 1) % widget.porpularLocation.imageLocationList.length;
+          _currentPage = (_currentPage + 1) % widget.popularLocation.imageLocationList.length;
         });
         _pageController.animateToPage(
             _currentPage,
@@ -80,9 +80,9 @@ class _CategoryViewState extends State<CategoryView> {
                     aspectRatio: 2,
                     child: PageView.builder(
                       controller: _pageController,
-                      itemCount: widget.porpularLocation.imageLocationList.length,
+                      itemCount: widget.popularLocation.imageLocationList.length,
                       itemBuilder: (context, index){
-                        String imagePath =  widget.porpularLocation.imageLocationList[index].imagePath;
+                        String imagePath =  widget.popularLocation.imageLocationList[index].imagePath;
                         return CachedNetworkImage(
                           imageUrl: imagePath,
                           placeholder: (context, url) => Center(child: CircularProgressIndicator()),
@@ -115,7 +115,7 @@ class _CategoryViewState extends State<CategoryView> {
                             child: Padding(
                               padding: EdgeInsets.only(left: 8, bottom: 32, top: 8, right: 8),
                               child: Text(
-                                widget.porpularLocation.location,
+                                widget.popularLocation.location,
                                 style: TextStyles(context).getBoldStyle().copyWith(
                                   fontSize: 21,
                                   color: AppTheme.whiteColor

@@ -1,10 +1,8 @@
-import 'package:booking_hotel_app/utils/localfiles.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_star_rating_null_safety/smooth_star_rating_null_safety.dart';
 
 import '../../language/appLocalizations.dart';
-import '../../models/hotel_list_data.dart';
 import '../../models/review.dart';
 import '../../utils/text_styles.dart';
 import '../../utils/themes.dart';

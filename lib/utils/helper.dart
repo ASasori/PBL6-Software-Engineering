@@ -57,7 +57,10 @@ class Helper {
     return "${roomData.adult} ${AppLocalizations(applicationcontext!).of("adult_data")} "
         "+ ${roomData.children} ${AppLocalizations(applicationcontext!).of("children_data")} ";
   }
-
+  static String getAdultsAndChildren(int adult, int children) {
+    return "${adult} ${AppLocalizations(applicationcontext!).of("adult_data")} "
+        "+ ${children} ${AppLocalizations(applicationcontext!).of("children_data")} ";
+  }
   static Future<bool> showCommonPopup(
       String title, String descriptionText, BuildContext context,
       {bool isYesOrNoPopup = false, bool barrierDismissible = true}) async {

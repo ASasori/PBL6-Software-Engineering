@@ -16,7 +16,7 @@ class CommonButton extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: padding ?? EdgeInsets.only(),
+        padding: padding ?? EdgeInsets.symmetric(),
         child: TapEffect(
           isClickable: isClickable!,
           onclick: onTap ?? () {},

@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
-
 import '../../language/appLocalizations.dart';
 import '../../models/hotel.dart';
-import '../../models/hotel_list_data.dart';
-import '../../providers/theme_provider.dart';
-import '../../utils/enum.dart';
-import '../../utils/helper.dart';
 import '../../utils/text_styles.dart';
 import '../../utils/themes.dart';
 import '../../widgets/common_card.dart';
 import '../../widgets/list_cell_animation_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
 class HotelListView extends StatelessWidget {
   final bool isShowDate;
   final VoidCallback callback;
@@ -22,11 +17,11 @@ class HotelListView extends StatelessWidget {
 
   const HotelListView(
       {Key? key,
-        required this.hotelByLocation,
-        required this.animationController,
-        required this.animation,
-        required this.callback,
-        this.isShowDate = false})
+      required this.hotelByLocation,
+      required this.animationController,
+      required this.animation,
+      required this.callback,
+      this.isShowDate = false})
       : super(key: key);
 
   @override
@@ -51,18 +46,27 @@ class HotelListView extends StatelessWidget {
                           aspectRatio: 2,
                           child: (hotelByLocation.galleryImages.isNotEmpty)
                               ? CachedNetworkImage(
-                            imageUrl: hotelByLocation.galleryImages[1].imageUrl,
-                            placeholder: (context, url) =>
-                                Center(child: CircularProgressIndicator()),
-                            errorWidget: (context, url, error) =>
-                                Icon(Icons.error),
-                            fit: BoxFit.cover,
-                          )
+                                  imageUrl:
+                                      hotelByLocation.galleryImages.length > 1
+                                          ? hotelByLocation
+                                              .galleryImages[1].imageUrl
+                                          : hotelByLocation
+                                              .galleryImages[0].imageUrl,
+                                  placeholder: (context, url) => Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      Icon(Icons.error),
+                                  fit: BoxFit.cover,
+                                )
                               : Container(
-                            color: Colors.grey.shade200,
-                            child: Icon(Icons.image_not_supported,
-                                color: Colors.grey, size: 40),
-                          ),
+                                  color: Colors.grey.shade200,
+                                  child: Icon(
+                                    Icons.image_not_supported,
+                                    color: Colors.grey,
+                                    size: 40,
+                                  ),
+                                ),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -76,7 +80,7 @@ class HotelListView extends StatelessWidget {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: <Widget>[
                                       Text(
                                         hotelByLocation.name,
@@ -87,38 +91,48 @@ class HotelListView extends StatelessWidget {
                                       ),
                                       Row(
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                            CrossAxisAlignment.start,
                                         mainAxisAlignment:
-                                        MainAxisAlignment.start,
+                                            MainAxisAlignment.start,
                                         children: <Widget>[
                                           Icon(
                                             FontAwesomeIcons.mapMarkerAlt,
                                             size: 12,
                                             color:
-                                            Theme.of(context).primaryColor,
+                                                Theme.of(context).primaryColor,
                                           ),
-                                          Text(
-                                            // "${hotelData.dist.toStringAsFixed(1)}",
-                                            "${hotelByLocation.address}",
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: true,
-                                            style: TextStyles(context).getDescriptionStyle(),
+                                          const SizedBox(width: 5),
+                                          Expanded(
+                                            child: Text(
+                                              "${hotelByLocation.address}",
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 2,
+                                              softWrap: true,
+                                              style: TextStyles(context)
+                                                  .getDescriptionStyle(),
+                                            ),
                                           ),
-                                          const SizedBox(width: 4,),
+                                          const SizedBox(width: 4),
                                         ],
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(top: 4),
                                         child: Row(
                                           children: <Widget>[
-                                            Helper.ratingStar(),
+                                            // Helper.ratingStar(),
+                                            Icon(Icons.visibility,
+                                                size: 12,
+                                                color: Theme.of(context)
+                                                    .primaryColor),
+                                            const SizedBox(width: 5),
                                             Text(
-                                              " ${hotelByLocation.views}",
+                                              "${hotelByLocation.views} ",
                                               style: TextStyles(context)
                                                   .getDescriptionStyle(),
                                             ),
                                             Text(
-                                              AppLocalizations(context).of("views"),
+                                              AppLocalizations(context)
+                                                  .of("views"),
                                               style: TextStyles(context)
                                                   .getDescriptionStyle(),
                                             ),
@@ -144,7 +158,7 @@ class HotelListView extends StatelessWidget {
                         child: InkWell(
                           highlightColor: Colors.transparent,
                           splashColor:
-                          Theme.of(context).primaryColor.withOpacity(0.1),
+                              Theme.of(context).primaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.all(
                             Radius.circular(16.0),
                           ),

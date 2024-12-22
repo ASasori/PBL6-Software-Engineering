@@ -94,7 +94,6 @@ class _RoomPopupViewState extends State<RoomPopupView>
                             _roomData!.adult, PopupTextType.ad),
                         getRowView(AppLocalizations(context).of("children_data"),
                             _roomData!.children, PopupTextType.ch),
-                        // getRowView("Children", " (0-17)", ch, PopupTextType.ch),
                         Padding(
                           padding: const EdgeInsets.only(
                               left: 16, right: 16, bottom: 16, top: 24),
@@ -139,9 +138,7 @@ class _RoomPopupViewState extends State<RoomPopupView>
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
                         children: <Widget>[
-                          Divider(
-                            height: 1,
-                          ),
+                          const Divider(height: 1),
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),

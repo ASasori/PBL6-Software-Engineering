@@ -1,4 +1,5 @@
 import 'package:booking_hotel_app/models/hotel_list_data.dart';
+import 'package:booking_hotel_app/models/room.dart';
 import 'package:booking_hotel_app/providers/wish_list_provider.dart';
 import 'package:booking_hotel_app/routes/route_names.dart';
 import 'package:booking_hotel_app/screens/bottom_tab/bottom_tab_screen.dart';
@@ -27,20 +28,27 @@ class RoomBookingScreen extends StatefulWidget {
   State<RoomBookingScreen> createState() => _RoomBookingScreenState();
 }
 
-class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProviderStateMixin{
+class _RoomBookingScreenState extends State<RoomBookingScreen>
+    with TickerProviderStateMixin {
   late AnimationController animationController;
 
   DateTime? startDate = DateTime.now(); // Store selected start date
-  DateTime? endDate =  DateTime.now().add(Duration(days: 5));
-  RoomData roomData = RoomData(1,2,2);// Store selected end date
+  DateTime? endDate = DateTime.now().add(Duration(days: 5));
+  RoomData roomData = RoomData(1, 2, 2); // Store selected end date
+
+  RoomType? selectedRoomType;
+  bool isAvailableChecked = false;
+
   @override
   void initState() {
     super.initState();
     animationController = AnimationController(
         duration: Duration(milliseconds: 2000), vsync: this);
-    WidgetsBinding.instance.addPostFrameCallback((_){
-      Provider.of<RoomProvider>(context, listen: false).getAllRoomtypeList(widget.hotelBooking.slug);
-      Provider.of<WishlistProvider>(context, listen: false).getCartItemCount();
+    WidgetsBinding.instance.addPostFrameCallback((_) async{
+      Provider.of<RoomProvider>(context, listen: false).resetAvailableRooms();
+      await Provider.of<RoomProvider>(context, listen: false)
+          .getAllRoomTypeList(widget.hotelBooking.slug);
+      await Provider.of<WishlistProvider>(context, listen: false).getCartItemCount();
     });
   }
 
@@ -55,8 +63,8 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
     return Scaffold(
       body: Column(
         children: <Widget>[
-          getAppBarUI(context,animationController),
-          SizedBox (
+          getAppBarUI(context, animationController),
+          SizedBox(
             height: 100,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -72,62 +80,110 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
                     },
                   ),
                 ),
-                SizedBox(width: 15,),
+                const SizedBox(width: 15),
                 Expanded(
-                  child:_getRoomUi(
-                    AppLocalizations(context).of("number_room"),
-                    Helper.getRoomText(roomData), () {
-                      _showPopUp();
-                    }),
-                )
+                  child: _getRoomUi(AppLocalizations(context).of("number_room"),
+                      Helper.getRoomText(roomData), () {
+                    _showPopUp();
+                  }),
+                ),
               ],
             ),
           ),
-          CommonButton(
-            padding: EdgeInsets.only(top: 8, bottom: 24),
-            buttonText: "Check Availability",
-            onTap: () {
-              
-            },
-          ),
-          Divider(
-            height: 1,
-          ),
-          Expanded(
-            child: Consumer <RoomProvider> (
-                builder: (context,roomProvider, child) {
-                return ListView.builder(
-                  padding: EdgeInsets.all(0.0),
-                  itemCount: roomProvider.allRoomtypes.length,
-                  itemBuilder: (context, index) {
-                    var count = roomProvider.allRoomtypes.length > 10 ? 10 : roomProvider.allRoomtypes.length;
-                    var animation = Tween(begin: 0.0, end: 1.0).animate(
-                        CurvedAnimation(
-                            parent: animationController,
-                            curve: Interval((1 / count) * index, 1.0,
-                                curve: Curves.fastOutSlowIn)));
-                    animationController.forward();
-                    //room book view and room data
-                    return RoomBookView(
-                      roomTypeData: roomProvider.allRoomtypes[index],
-                      hotelSlug: widget.hotelBooking.slug,
-                      animation: animation,
-                      animationController: animationController,
-                      startDate: startDate!,
-                      endDate:  endDate!,
-                      roomData: roomData,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Consumer<RoomProvider>(
+              builder: (context, roomProvider, child) {
+                if (selectedRoomType != null &&
+                    !roomProvider.allRoomtypes.contains(selectedRoomType)) {
+                  selectedRoomType = null;
+                }
+                return DropdownButton<RoomType>(
+                  isExpanded: true,
+                  value: selectedRoomType,
+                  hint: const Text('Select Room Type'),
+                  items: roomProvider.allRoomtypes
+                      .map<DropdownMenuItem<RoomType>>((roomType) {
+                    return DropdownMenuItem<RoomType>(
+                      value: roomType,
+                      child: Text(roomType.type),
                     );
+                  }).toList(),
+                  onChanged: (RoomType? newValue) {
+                    setState(() {
+                      selectedRoomType = newValue;
+                      isAvailableChecked = false;
+                    });
                   },
                 );
-              }
-            )
+              },
+            ),
+          ),
+          CommonButton(
+            padding: EdgeInsets.only(top: 8, bottom: 24, left: 16, right: 16),
+            buttonText: "Check Availability",
+            onTap: () {
+              setState(() {
+                isAvailableChecked = true;
+              });
+              Provider.of<RoomProvider>(context, listen: false)
+                  .getAvailableRooms(
+                      widget.hotelBooking.slug,
+                      selectedRoomType!,
+                      startDate!,
+                      endDate!,
+                      roomData.adult,
+                      roomData.children);
+            },
+          ),
+          const Divider(height: 1, color: Colors.grey),
+          Expanded(
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+                Expanded(
+                  child: Consumer<RoomProvider>(
+                      builder: (context, roomProvider, child) {
+                    if (roomProvider.allAvailableRooms.isEmpty) {
+                      return Center(child: Text("No rooms available"));
+                    }
+                    return ListView.builder(
+                      padding: EdgeInsets.all(0.0),
+                      itemCount: roomProvider.allAvailableRooms.length,
+                      itemBuilder: (context, index) {
+                        var count = roomProvider.allAvailableRooms.length > 10
+                            ? 10
+                            : roomProvider.allAvailableRooms.length;
+                        var animation = Tween(begin: 0.0, end: 1.0).animate(
+                            CurvedAnimation(
+                                parent: animationController,
+                                curve: Interval((1 / count) * index, 1.0,
+                                    curve: Curves.fastOutSlowIn)));
+                        animationController.forward();
+
+                        return RoomBookView(
+                          roomData: roomProvider.allAvailableRooms[index],
+                          hotelSlug: widget.hotelBooking.slug,
+                          animation: animation,
+                          animationController: animationController,
+                          startDate: startDate!,
+                          endDate: endDate!,
+                          roomDataPeople: roomData,
+                        );
+                      },
+                    );
+                  }),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget getAppBarUI(BuildContext context, AnimationController animationController) {
+  Widget getAppBarUI(
+      BuildContext context, AnimationController animationController) {
     return Padding(
       padding: EdgeInsets.only(
           top: MediaQuery.of(context).padding.top,
@@ -140,14 +196,14 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
           Material(
             color: Colors.transparent,
             child: InkWell(
-              borderRadius: BorderRadius.all(
+              borderRadius: const BorderRadius.all(
                 Radius.circular(32.0),
               ),
               onTap: () {
                 Navigator.pop(context);
               },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
                 child: Icon(Icons.arrow_back),
               ),
             ),
@@ -165,7 +221,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
           badges.Badge(
             badgeContent: Consumer<WishlistProvider>(
               builder: (context, wishlistProvider, child) {
-                return Text (
+                return Text(
                   wishlistProvider.counter.toString(),
                   style: const TextStyle(
                     color: Colors.white,
@@ -174,24 +230,21 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
                 );
               },
             ),
-            //position: badges.BadgePosition(start: 30, bottom: 30),
+            // position: badges.BadgePosition(start: 30, bottom: 30),
             child: IconButton(
               onPressed: () {
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => BottomTabScreen(initialBottomBarType: BottomBarType.Wishlist)));
-                NavigationServices(context).gotoBottomTabScreen(bottomBarType: BottomBarType.Wishlist);
+                NavigationServices(context)
+                    .gotoBottomTabScreen(bottomBarType: BottomBarType.Wishlist);
               },
               icon: const Icon(Icons.shopping_cart),
             ),
           ),
-          //   )
         ],
       ),
     );
     // );
   }
+
   Widget _getRoomUi(String title, String subtitle, VoidCallback onTap) {
     return Expanded(
       child: Row(
@@ -199,13 +252,13 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
           Material(
             color: Colors.transparent,
             child: InkWell(
-              borderRadius: BorderRadius.all(
+              borderRadius: const BorderRadius.all(
                 Radius.circular(4.0),
               ),
               onTap: onTap,
               child: Padding(
                 padding:
-                const EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+                    const EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,9 +269,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
                           .getDescriptionStyle()
                           .copyWith(fontSize: 16),
                     ),
-                    SizedBox(
-                      height: 8,
-                    ),
+                    const SizedBox(height: 8),
                     Text(
                       subtitle,
                       // "${DateFormat("dd, MMM").format(startDate)} - ${DateFormat("dd, MMM").format(endDate)}",
@@ -233,6 +284,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
       ),
     );
   }
+
   void _showPopUp() {
     showDialog(
       context: context,
@@ -242,7 +294,6 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> with TickerProvid
         onChange: (data) {
           setState(() {
             roomData = data;
-            print("${Helper.getRoomText(roomData)}");
           });
         },
       ),

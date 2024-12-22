@@ -1,4 +1,3 @@
-import 'package:booking_hotel_app/models/hotel_list_data.dart';
 import 'package:booking_hotel_app/screens/home_screen/category_view.dart';
 import 'package:booking_hotel_app/routes/route_names.dart';
 import 'package:booking_hotel_app/widgets/bottom_top_move_animation_view.dart';
@@ -25,7 +24,7 @@ class _PopularListViewState extends State<PopularListView> with TickerProviderSt
         vsync: this, duration: Duration(milliseconds: 1000)
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final hotelProvider = Provider.of<HotelProvider>(context, listen: false).fetchLocations();
+      Provider.of<HotelProvider>(context, listen: false).fetchLocations();
     });
     super.initState();
   }
@@ -77,7 +76,7 @@ class _PopularListViewState extends State<PopularListView> with TickerProviderSt
                           animationController?.forward();
                           // Population animation photo and text view
                           return CategoryView(
-                            porpularLocation: locations[index],
+                            popularLocation: locations[index],
                             animationController: animationController!,
                             animation: animation,
                             callback: () {

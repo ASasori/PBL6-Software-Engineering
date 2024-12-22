@@ -853,6 +853,21 @@
     "text_id": "wishlist",
     "en": "Wishlist",
     "vn": "Giỏ hàng"
+  },
+  {
+    "text_id": "fill_info_booking",
+    "en": "Please enter complete personal information!",
+    "vn": "Vui lòng nhập đầy đủ thông tin cá nhân!"
+  },
+  {
+    "text_id": "confirm_book_room",
+    "en": "Confirm booking!",
+    "vn": "Xác nhận đặt phòng!"
+  },
+  {
+    "text_id": "check_info",
+    "en": "Check that the information you entered is correct!",
+    "vn": "Kiểm tra thông tin đã điền chính xác!"
   }
 
 ]

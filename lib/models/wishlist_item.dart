@@ -7,6 +7,10 @@ class WishlistItem {
   final DateTime startDate;
   final DateTime endDate;
   final String typeRoom;
+  final String rt_slug;
+  final int roomId;
+  final String roomNumber;
+  final int? bed;
   final double pricePernight;
   final double totalAmount;
   final int? adult;
@@ -21,6 +25,10 @@ class WishlistItem {
     required this.startDate,
     required this.endDate,
     required this.typeRoom,
+    required this.rt_slug,
+    required this.roomId,
+    required this.roomNumber,
+    required this.bed,
     required this.pricePernight,
     required this.totalAmount,
     this.adult,

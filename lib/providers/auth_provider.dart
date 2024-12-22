@@ -32,7 +32,8 @@ class AuthProvider with ChangeNotifier {
       bool isSuccess = await _authService.register(username, email, password, full_name, phone);
       if (isSuccess) {
         return true;
-      } else return false;
+      }
+      return false;
     } catch (e) {
       print('Error: $e');
       return false;
