@@ -89,7 +89,7 @@ class CommonTextFieldView extends StatelessWidget {
               ),
             ),
           ),
-          if (!errorText!.isEmpty)
+          if (errorText != null && errorText!.isNotEmpty)
             Padding(
               padding: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
               child: Text(

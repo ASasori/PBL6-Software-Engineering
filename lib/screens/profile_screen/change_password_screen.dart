@@ -1,4 +1,7 @@
+import 'package:booking_hotel_app/providers/auth_provider.dart';
+import 'package:booking_hotel_app/widgets/common_snack_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../language/appLocalizations.dart';
 import '../../widgets/common_appbar_view.dart';
@@ -21,6 +24,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       body: RemoveFocuse(
         onclick: () {
@@ -63,10 +67,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     ),
                     CommonTextFieldView(
                       controller: _currentController,
-                      titleText: AppLocalizations(context).of("current_password"),
+                      titleText:
+                          AppLocalizations(context).of("current_password"),
                       padding: EdgeInsets.only(left: 24, right: 24, bottom: 16),
-                      hintText:
-                      AppLocalizations(context).of('enter_current_password'),
+                      hintText: AppLocalizations(context)
+                          .of('enter_current_password'),
                       keyboardType: TextInputType.visiblePassword,
                       isObsecureText: true,
                       onChanged: (String txt) {},
@@ -77,7 +82,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       titleText: AppLocalizations(context).of("new_password"),
                       padding: EdgeInsets.only(left: 24, right: 24, bottom: 16),
                       hintText:
-                      AppLocalizations(context).of('enter_new_password'),
+                          AppLocalizations(context).of('enter_new_password'),
                       keyboardType: TextInputType.visiblePassword,
                       isObsecureText: true,
                       onChanged: (String txt) {},
@@ -86,7 +91,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     CommonTextFieldView(
                       controller: _confirmController,
                       titleText:
-                      AppLocalizations(context).of("confirm_password"),
+                          AppLocalizations(context).of("confirm_password"),
                       padding: EdgeInsets.only(left: 24, right: 24, bottom: 24),
                       hintText: AppLocalizations(context)
                           .of("enter_confirm_password"),
@@ -98,9 +103,25 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     CommonButton(
                       padding: EdgeInsets.only(left: 24, right: 24, bottom: 16),
                       buttonText: AppLocalizations(context).of("Apply_text"),
-                      onTap: () {
+                      onTap: () async {
                         if (_allValidation()) {
-                          Navigator.pop(context);
+                          bool status = await authProvider.changePassword(
+                              _currentController.text.trim(),
+                              _newController.text.trim());
+                          CommonSnackBar.show(
+                            context: context,
+                            iconData: status
+                                ? Icons.check_circle
+                                : Icons.error_outline,
+                            iconColor: status ? Colors.white : Colors.red,
+                            message: status
+                                ? "Change password successfully"
+                                : "Failed to change password!",
+                            backgroundColor: status
+                                ? Theme.of(context).primaryColor
+                                : Colors.black87,
+                          );
+                          // Navigator.pop(context);
                         }
                       },
                     )
@@ -118,10 +139,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     bool isValid = true;
 
     if (_currentController.text.trim().isEmpty) {
-      _errorCurrentPassword = AppLocalizations(context).of('password_cannot_empty');
+      _errorCurrentPassword =
+          AppLocalizations(context).of('password_cannot_empty');
       isValid = false;
     } else if (_newController.text.trim().length < 6) {
-      _errorCurrentPassword = AppLocalizations(context).of('valid_new_password');
+      _errorCurrentPassword =
+          AppLocalizations(context).of('valid_new_password');
       isValid = false;
     } else {
       _errorCurrentPassword = '';

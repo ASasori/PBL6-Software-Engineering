@@ -220,7 +220,7 @@ class _HotelHomeScreenState extends State<ExploreScreen> with TickerProviderStat
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Container(
+          SizedBox(
             width: AppBar().preferredSize.height ,
             height: AppBar().preferredSize.height,
             child: Material(
@@ -230,7 +230,7 @@ class _HotelHomeScreenState extends State<ExploreScreen> with TickerProviderStat
                 onTap: () {
                   Navigator.pop(context);
                 },
-                child: Padding(
+                child: const Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Icon(Icons.arrow_back),
                 ),
@@ -245,7 +245,7 @@ class _HotelHomeScreenState extends State<ExploreScreen> with TickerProviderStat
               ),
             ),
           ),
-          Container(
+          SizedBox(
             width: AppBar().preferredSize.height + 40,
             height: AppBar().preferredSize.height,
             child: Row(

@@ -109,9 +109,11 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                                             bool statusPayment =
                                                 await bookingProvider
                                                     .initialCheckout(
-                                                        bookingProvider
-                                                            .bookingData
-                                                            .totalAmount!
+                                                        (bookingProvider
+                                                                    .bookingData
+                                                                    .totalAmount ??
+                                                                widget.cartItem
+                                                                    .totalAmount)
                                                             .toInt(),
                                                         "USD",
                                                         bookingProvider
@@ -131,8 +133,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                                                   ? 'Payment success!'
                                                   : 'Payment failed!',
                                               backgroundColor: statusPayment
-                                                  ? Theme.of(context)
-                                                      .primaryColor
+                                                  ? Theme.of(context).primaryColor
                                                   : Colors.black87,
                                             );
                                             if (statusPayment) {
@@ -385,9 +386,14 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                                   iconData: errorMessage == null
                                       ? Icons.check_circle
                                       : Icons.error_outline,
-                                  iconColor:  errorMessage == null ? Colors.white : Colors.red,
-                                  message: errorMessage ?? 'Coupon applied successfully!',
-                                  backgroundColor: errorMessage == null ? Theme.of(context).primaryColor : Colors.black87,
+                                  iconColor: errorMessage == null
+                                      ? Colors.white
+                                      : Colors.red,
+                                  message: errorMessage ??
+                                      'Coupon applied successfully!',
+                                  backgroundColor: errorMessage == null
+                                      ? Theme.of(context).primaryColor
+                                      : Colors.black87,
                                 );
                               }
                             }
@@ -533,7 +539,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                         context: context,
                         iconData: Icons.check_circle,
                         iconColor: Colors.white,
-                        message:  "Create booking successfully!",
+                        message: "Create booking successfully!",
                         backgroundColor: Theme.of(context).primaryColor,
                       );
                     } else {

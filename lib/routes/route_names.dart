@@ -22,6 +22,7 @@ import '../screens/explore_screen/filter_screen/filter_screen.dart';
 import '../screens/explore_screen/explore_screen.dart';
 import '../screens/hotel_detail_screen/hotel_detail_screen.dart';
 import '../screens/mytrip_screen/upcoming_list_view.dart';
+import '../screens/profile_screen/update_profile_screen.dart';
 import '../utils/enum.dart';
 
 class NavigationServices {
@@ -86,8 +87,12 @@ class NavigationServices {
     return _pushMasterialPageRoute(CheckoutScreen(cartItem: cartItem,));
   }
 
-  Future<void> gotoEditProfileScreen(User user, Profile profile)  async{
-    return await _pushMasterialPageRoute(EditProfileScreen(user: user, profile: profile,));
+  Future<void> gotoEditProfileScreen() async{
+    return await _pushMasterialPageRoute(EditProfileScreen());
+  }
+
+  Future<void> gotoUpdateProfileScreen() async{
+    return await _pushMasterialPageRoute(UpdateProfileScreen());
   }
 
   Future<void> gotoChangePasswordScreen()  async{

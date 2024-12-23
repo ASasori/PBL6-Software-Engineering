@@ -3,7 +3,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../language/appLocalizations.dart';
 import '../../models/setting_list_data.dart';
-import '../../routes/route_names.dart';
 import '../../utils/text_styles.dart';
 import '../../utils/themes.dart';
 import '../../widgets/common_appbar_view.dart';
@@ -45,8 +44,8 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                   return InkWell(
                     onTap: helpSearchList[index].subTxt != ""
                         ? () {
-                      // NavigationServices(context).gotoHowDoScreen();
-                    }
+                            // NavigationServices(context).gotoHowDoScreen();
+                          }
                         : null,
                     child: Column(
                       children: <Widget>[
@@ -60,33 +59,33 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                                   child: Text(
                                     helpSearchList[index].titleTxt != ""
                                         ? AppLocalizations(context)
-                                        .of(helpSearchList[index].titleTxt)
+                                            .of(helpSearchList[index].titleTxt)
                                         : AppLocalizations(context)
-                                        .of(helpSearchList[index].subTxt),
+                                            .of(helpSearchList[index].subTxt),
                                     style: TextStyles(context)
                                         .getRegularStyle()
                                         .copyWith(
-                                        fontWeight: helpSearchList[index]
-                                            .titleTxt !=
-                                            ""
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
-                                        fontSize: helpSearchList[index]
-                                            .titleTxt !=
-                                            ""
-                                            ? 18
-                                            : 14),
+                                            fontWeight: helpSearchList[index]
+                                                        .titleTxt !=
+                                                    ""
+                                                ? FontWeight.bold
+                                                : FontWeight.normal,
+                                            fontSize: helpSearchList[index]
+                                                        .titleTxt !=
+                                                    ""
+                                                ? 18
+                                                : 14),
                                   ),
                                 ),
                               ),
                               helpSearchList[index].subTxt != ""
                                   ? Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Icon(Icons.keyboard_arrow_right,
-                                    color: Theme.of(context)
-                                        .disabledColor
-                                        .withOpacity(0.3)),
-                              )
+                                      padding: const EdgeInsets.all(16),
+                                      child: Icon(Icons.keyboard_arrow_right,
+                                          color: Theme.of(context)
+                                              .disabledColor
+                                              .withOpacity(0.3)),
+                                    )
                                   : SizedBox()
                             ],
                           ),
@@ -122,15 +121,16 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
           titleText: AppLocalizations(context).of("how_can_help_you"),
         ),
         Padding(
-            padding: const EdgeInsets.only(left: 24, right: 24, top: 16),
-            child: CommonCard(
-              color: AppTheme.backgroundColor,
-              radius: 36,
-              child: CommonSearchBar(
-                iconData: FontAwesomeIcons.search,
-                text: AppLocalizations(context).of("search_help_artical"),
-              ),
-            )),
+          padding: const EdgeInsets.only(left: 24, right: 24, top: 16),
+          child: CommonCard(
+            color: AppTheme.backgroundColor,
+            radius: 36,
+            child: CommonSearchBar(
+              iconData: FontAwesomeIcons.search,
+              text: AppLocalizations(context).of("search_help_artical"),
+            ),
+          ),
+        ),
       ],
     );
   }

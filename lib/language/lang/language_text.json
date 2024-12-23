@@ -440,6 +440,11 @@
     "vn": "Xem và Chỉnh sửa hồ sơ"
   },
   {
+    "text_id": "view_profile",
+    "en": "View Profile",
+    "vn": "Xem hồ sơ"
+  },
+  {
     "text_id": "edit_profile",
     "en": "Edit Profile",
     "vn": "Chỉnh sửa hồ sơ"

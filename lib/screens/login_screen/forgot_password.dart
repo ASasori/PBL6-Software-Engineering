@@ -7,6 +7,7 @@ import 'package:booking_hotel_app/widgets/remove_focuse.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../widgets/common_snack_bar.dart';
 import '../../widgets/common_textfield_view.dart';
 
 class ForgotPassword extends StatefulWidget {
@@ -44,7 +45,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(
+                      padding: const EdgeInsets.only(
                           top: 16, bottom: 16, left: 24, right: 24),
                       child: Row(
                         children: [
@@ -68,8 +69,26 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     CommonButton(
                       padding: EdgeInsets.only(left: 24, right: 24, bottom: 16),
                       buttonText: AppLocalizations(context).of("send"),
-                      onTap: () {
-                        if (allValidation()) Navigator.pop(context);
+                      onTap: () async {
+                        if (allValidation()) {
+                          final status =
+                              await authProvider.resetPasswordByEmail(
+                                  _emailController.text.trim());
+                          CommonSnackBar.show(
+                            context: context,
+                            iconData: status
+                                ? Icons.check_circle
+                                : Icons.error_outline,
+                            iconColor: status ? Colors.white : Colors.red,
+                            message: status
+                                ? 'Reset password email has been sent'
+                                : 'No account associated with this email',
+                            backgroundColor: status
+                                ? Theme.of(context).primaryColor
+                                : Colors.black87,
+                          );
+                        }
+                        ;
                       },
                     ),
                   ],

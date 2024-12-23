@@ -55,7 +55,6 @@ class _WishlistScreenState extends State<WishlistScreen>
 
   @override
   Widget build(BuildContext context) {
-    final wishlistProvider = Provider.of<WishlistProvider>(context);
     return Scaffold(
       body: Column(
         children: [
@@ -288,7 +287,7 @@ class _WishlistScreenState extends State<WishlistScreen>
                               children: [
                                 CommonButton(
                                   buttonTextWidget: Padding(
-                                    padding: EdgeInsets.only(
+                                    padding: const EdgeInsets.only(
                                       left: 24,
                                       right: 24,
                                       top: 8,
@@ -312,7 +311,7 @@ class _WishlistScreenState extends State<WishlistScreen>
                                 ),
                                 CommonButton(
                                   buttonTextWidget: Padding(
-                                    padding: EdgeInsets.only(
+                                    padding: const EdgeInsets.only(
                                       left: 24,
                                       right: 24,
                                       top: 8,
