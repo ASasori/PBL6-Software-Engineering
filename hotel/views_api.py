@@ -19,6 +19,7 @@ from django.db.models import Q
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 import logging
+import os
 
 class HotelViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
@@ -384,7 +385,7 @@ class BookingViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['GET'], url_path='detail-booking')
-    def get_detail_booking(self, request, booking_id=None):
+    def get_detail_booking(self, booking_id=None):
         try:
             # booking = Booking.objects.get(booking_id=booking_id)
             booking = Booking.objects.select_related('user__profile').get(booking_id=booking_id)
@@ -479,8 +480,11 @@ def create_checkout_session(request, booking_id):
     try:
         booking = Booking.objects.get(booking_id=booking_id)
         stripe.api_key = settings.STRIPE_SECRET_KEY
-        success_url = f"http://localhost:3000/success-payment?session_id={{CHECKOUT_SESSION_ID}}&booking_id={booking.booking_id}&cart_item_id={cart_item_id}"
-        cancel_url = "http://localhost:3000/payment-failed"
+
+        domain = os.getenv('DOMAIN', 'http://localhost:3000')
+
+        success_url = f"{domain}/success-payment?session_id={{CHECKOUT_SESSION_ID}}&booking_id={booking.booking_id}&cart_item_id={cart_item_id}"
+        cancel_url = f"{domain}/payment-failed"
 
         checkout_session = stripe.checkout.Session.create(
             customer_email=booking.email,
