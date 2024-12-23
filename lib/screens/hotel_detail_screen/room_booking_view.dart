@@ -1,12 +1,9 @@
 import 'package:booking_hotel_app/models/available_room.dart';
 import 'package:booking_hotel_app/providers/wish_list_provider.dart';
-import 'package:booking_hotel_app/screens/hotel_detail_screen/select_room_dialog.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../language/appLocalizations.dart';
-import '../../models/room.dart';
 import '../../models/room_data.dart';
 import '../../utils/text_styles.dart';
 import '../../widgets/common_button.dart';
@@ -167,10 +164,10 @@ class _RoomBookViewState extends State<RoomBookView> {
                               onTap: () async {
                                 _addToWishList(
                                     widget.roomData.roomId!,
-                                    widget.startDate,
-                                    widget.endDate,
-                                    widget.roomDataPeople.adult,
-                                    widget.roomDataPeople.children);
+                                    widget.roomData.checkInDate,
+                                    widget.roomData.checkOutDate,
+                                    widget.roomData.adults,
+                                    widget.roomData.children);
                               },
                             ),
                           ),

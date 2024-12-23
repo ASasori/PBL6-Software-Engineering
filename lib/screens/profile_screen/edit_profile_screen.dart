@@ -107,9 +107,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     .getRegularStyle()
                     .copyWith(color: Colors.black87),
               ),
-              onTap: () {
+              onTap: () async{
                 Navigator.pop(context);
-                authProvider.pickImage(ImageSource.gallery);
+                await authProvider.pickImage(ImageSource.gallery);
               },
             ),
             ListTile(
@@ -124,9 +124,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     .getRegularStyle()
                     .copyWith(color: Colors.black87),
               ),
-              onTap: () {
+              onTap: () async{
                 Navigator.pop(context);
-                authProvider.pickImage(ImageSource.camera);
+                await authProvider.pickImage(ImageSource.camera);
               },
             ),
           ],
@@ -134,7 +134,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
     );
   }
-
   Widget _buildListTileProfile(
       IconData iconData, String title, String? trailingText) {
     return Column(
@@ -169,7 +168,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ],
     );
   }
-
   Widget getProfileUI() {
     final authProvider = Provider.of<AuthProvider>(context);
     return Padding(
@@ -245,28 +243,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
     );
   }
-
-  // appBar: AppBar(
-  // backgroundColor: Colors.transparent,
-  // leading: IconButton(
-  // icon: const Icon(
-  // Icons.arrow_back,
-  // size: 24,
-  // color: Colors.black87,
-  // ),
-  // onPressed: () {
-  // Navigator.of(context).pop();
-  // },
-  // ),
-  // title: Text(
-  // AppLocalizations(context).of("view_profile"),
-  // style: TextStyles(context).getTitleStyle(),
-  // ),
-  // actions: [
-
-  // )
-  // ],
-  // ),
   Widget appBar() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,

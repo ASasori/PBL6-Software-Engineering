@@ -1,3 +1,4 @@
+import 'package:booking_hotel_app/models/booking.dart';
 import 'package:booking_hotel_app/models/review.dart';
 import 'package:booking_hotel_app/models/wishlist_item.dart';
 import 'package:booking_hotel_app/screens/bottom_tab/bottom_tab_screen.dart';
@@ -7,6 +8,7 @@ import 'package:booking_hotel_app/screens/login_screen/forgot_password.dart';
 import 'package:booking_hotel_app/screens/login_screen/login_screen.dart';
 import 'package:booking_hotel_app/screens/login_screen/sign_up_screen.dart';
 import 'package:booking_hotel_app/routes/routes.dart';
+import 'package:booking_hotel_app/screens/mytrip_screen/invoice_screen.dart';
 import 'package:booking_hotel_app/screens/profile_screen/change_password_screen.dart';
 import 'package:booking_hotel_app/screens/profile_screen/edit_profile_screen.dart';
 import 'package:booking_hotel_app/screens/profile_screen/help_center_screen.dart';
@@ -105,5 +107,9 @@ class NavigationServices {
 
   Future<void> gotoSettingsScreen()  async{
     return await _pushMasterialPageRoute(SettingsScreen());
+  }
+
+  Future<void> gotoInvoiceScreen(BookingData booking)  async{
+    return await _pushMasterialPageRoute(InvoiceScreen(bookingData: booking));
   }
 }

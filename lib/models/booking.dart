@@ -14,6 +14,8 @@ class BookingData {
   String room;
   double pricePernight;
   double? totalAmount;
+  double saved;
+  int totalDays;
 
   BookingData({
     this.id = 0,
@@ -35,8 +37,10 @@ class BookingData {
     this.room = "",
     this.pricePernight = 0,
     this.totalAmount,
+    this.saved = 0, 
     this.startDate,
     this.endDate,
+    this.totalDays = 0,
   });
 
   factory BookingData.fromJson(Map<String, dynamic> json) {
@@ -53,6 +57,7 @@ class BookingData {
       endDate: json['check_out_date'] != null
           ? DateTime.parse(json['check_out_date'])
           : null,
+      totalDays: json['total_days'] ?? 0,
       checkedIn: json['checked_in'] ?? false,
       checkedOut: json['checked_out'] ?? false,
       checkedInTracker: json['checked_in_tracker'] ?? false,
@@ -71,6 +76,10 @@ class BookingData {
       totalAmount: json['total'] != null
           ? double.tryParse(json['total'])
           : null,
+      saved: (json['saved'] != null
+          ? double.tryParse(json['saved'])
+          : 0.0) ??
+          0.0,
     );
   }
 }
