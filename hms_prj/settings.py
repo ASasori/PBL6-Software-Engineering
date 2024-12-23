@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-&8$zx(^(s0nmnx4k-+4g2&*=nh7ox1e^jxu905v)h#^h@z&z!0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['103.78.0.191', 'wireguard.nguyentanloc.top', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['103.78.0.191', 'wireguard.nguyentanloc.top', '127.0.0.1', 'localhost', 'demo-8000.nguyentanloc.top']
 SECURE_CROSS_ORIGIN_OPENER_POLICY='same-origin-allow-popups'
 
 # Application definition
@@ -84,6 +84,8 @@ MIDDLEWARE = [
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Thay đổi thành miền frontend của bạn
+    "https://hotel-management-fe-omega.vercel.app",  # Địa chỉ của ứng dụng React
+    "https://pbl6-receptionist.netlify.app",
 ]
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'Server-Domain',
@@ -95,12 +97,19 @@ ROOT_URLCONF = 'hms_prj.urls'
 
 CSRF_COOKIE_NAME = 'csrftoken'
 CSRF_COOKIE_HTTPONLY = False  
-CSRF_COOKIE_SECURE = False    
+# CSRF_COOKIE_SECURE = True    
 CSRF_COOKIE_SAMESITE = 'Lax' 
+# SESSION_COOKIE_SECURE = True
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5173',
 ]
+
+# SECURE_HSTS_SECONDS = 31536000  # 1 year
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_PRELOAD = True
+
+# SECURE_SSL_REDIRECT = True
 
 TEMPLATES = [
     {
@@ -202,9 +211,9 @@ STRIPE_PUBLIC_KEY=env("STRIPE_PUBLIC_KEY")
 JAZZMIN_SETTINGS = {
     'site_header': "Nguyen",
     'site_brand': "Manage Hotel",
-    'site_logo': "/images/logo.png",
+    'site_logo': "/images/logo_hotel.png",
     'copyright':  "All Right Reserved 2024",
-    "welcome_sign": "Welcome to Nguyen, Login Now.",
+    "welcome_sign": "Welcome to Hotel Admin Site, Login Now.",
     "topmenu_links": [
 
         {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
@@ -252,6 +261,7 @@ JAZZMIN_SETTINGS = {
     "custom_links":{},
     "hide_apps": [],
     "hide_models": [],
+    'custom_css': 'css/custom_admin.css',
 }
 
 JAZZMIN_UI_TWEAKS = {
@@ -311,7 +321,9 @@ SIMPLE_JWT = {
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True  # Chỉ cho phép các nguồn cụ thể
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3000',  # Địa chỉ của ứng dụng React
+    'http://localhost:3000',
+    'https://hotel-management-fe-omega.vercel.app',  # Địa chỉ của ứng dụng React
+    'https://pbl6-receptionist.netlify.app',
 ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -321,4 +333,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = 'Hotel Management <minamisasori28@gmail.com>'
-FRONTEND_URL = 'http://localhost:3000'
+#FRONTEND_URL = 'http://localhost:3000'
+FRONTEND_URL = 'https://hotel-management-fe-omega.vercel.app'
