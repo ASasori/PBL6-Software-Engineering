@@ -53,33 +53,42 @@ class ProfileSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
     
-# User Serializer
 class UserSerializer(serializers.ModelSerializer):
-    # Thêm trường date từ Profile
+    # Add a read-only date field from the Profile model
     date_joined = serializers.DateTimeField(source='profile.date', read_only=True)
 
     class Meta:
         model = User
         fields = '__all__'
         extra_kwargs = {
-            'password': {'write_only': True}  # Mật khẩu sẽ không được trả về trong phản hồi
+            'password': {'write_only': True},  # Ensure password is write-only
+            'phone': {'required': False},     # Make phone optional
+            'full_name': {'required': False}  # Make full_name optional
         }
 
     def create(self, validated_data):
-        # Tạo người dùng mới với mật khẩu được mã hóa
-        profile_data = validated_data.pop('profile', {})  # Lấy dữ liệu từ profile nếu có
+        # Handle optional fields safely
+        profile_data = validated_data.pop('profile', {})  # Extract profile data if present
+        phone = validated_data.pop('phone', None)         # Safely pop phone if provided
+        full_name = validated_data.pop('full_name', None) # Safely pop full_name if provided
+
+        # Create the user with the remaining validated data
         user = User(
             username=validated_data['username'],
             email=validated_data['email'],
-            full_name=validated_data['full_name'],
-            phone=validated_data['phone'],
+            full_name=full_name,
+            phone=phone,
         )
-        user.set_password(validated_data['password'])  # Sử dụng phương thức set_password để mã hóa mật khẩu
+        user.set_password(validated_data['password'])  # Hash the password
         user.save()
-        
-        # Tạo profile cho user
-        Profile.objects.create(user=user, **profile_data)
-        
+
+           # Ensure Profile exists or create one
+        profile, created = Profile.objects.get_or_create(user=user, defaults=profile_data)
+         # Update profile data if needed (optional)
+        if not created:
+            for key, value in profile_data.items():
+                setattr(profile, key, value)
+            profile.save()
         return user
 
 

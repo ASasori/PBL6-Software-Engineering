@@ -19,6 +19,7 @@ from django.db.models import Q
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 import logging
+import os
 
 class HotelViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
@@ -383,6 +384,48 @@ class BookingViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(user_bookings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=['GET'], url_path='detail-booking')
+    def get_detail_booking(self, booking_id=None):
+        try:
+            # booking = Booking.objects.get(booking_id=booking_id)
+            booking = Booking.objects.select_related('user__profile').get(booking_id=booking_id)
+            booking_info = {
+                'accommodation_information': [booking.full_name, booking.email, booking.phone],
+                'accommodation_information': {
+                    'full_name_accommodation': booking.full_name,
+                    'phone_accommodation': booking.phone,
+                    'email_accommodation': booking.email,
+                    },
+                'hotel_name': booking.hotel.name,
+                'room_type': booking.room_type.type,
+                'payment_status': booking.payment_status,
+                'full_name': booking.full_name,
+                'phone': booking.phone,
+                'email': booking.email,
+                'before_discount': booking.before_discount,
+                'total_bookings': booking.total,
+                'discount': booking.saved,
+                'check_in_date': booking.check_in_date,
+                'check_out_date': booking.check_out_date,
+                'num_adults': booking.num_adults,
+                'num_children': booking.num_children,
+                'date': booking.date,
+                'address_hotel': booking.hotel.address,
+                'email_hotel': booking.hotel.email,
+                'total_days': booking.total_days,
+                'orderer_information': {
+                    'username_order': booking.user.username,
+                    'full_name_order': booking.user.profile.full_name,
+                    'phone_order': booking.user.profile.phone,
+                    'address_order': booking.user.profile.address,
+                    'city_order': booking.user.profile.city,
+                    'country_order': booking.user.profile.country,
+                    'email_order': booking.user.email,
+                    }
+            }
+            return Response(booking_info, status=status.HTTP_200_OK)
+        except Booking.DoesNotExist:
+            return Response({'error': 'Booking does not exist'}, status=status.HTTP_404_NOT_FOUND)
 @api_view(['POST'])
 def checkout_api(request, booking_id):
     try:
@@ -437,8 +480,11 @@ def create_checkout_session(request, booking_id):
     try:
         booking = Booking.objects.get(booking_id=booking_id)
         stripe.api_key = settings.STRIPE_SECRET_KEY
-        success_url = f"http://localhost:3000/success-payment?session_id={{CHECKOUT_SESSION_ID}}&booking_id={booking.booking_id}&cart_item_id={cart_item_id}"
-        cancel_url = "http://localhost:3000/payment-failed"
+
+        domain = os.getenv('DOMAIN', 'http://localhost:3000')
+
+        success_url = f"{domain}/success-payment?session_id={{CHECKOUT_SESSION_ID}}&booking_id={booking.booking_id}&cart_item_id={cart_item_id}"
+        cancel_url = f"{domain}/payment-failed"
 
         checkout_session = stripe.checkout.Session.create(
             customer_email=booking.email,

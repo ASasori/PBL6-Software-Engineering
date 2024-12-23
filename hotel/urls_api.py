@@ -39,6 +39,8 @@ urlpatterns = [
           views_api.BookingViewSet.as_view({'post': 'create_booking'}), name='create_booking'),
      path('bookings/my-bookings/', 
           views_api.BookingViewSet.as_view({'get': 'get_user_bookings'}), name='get_user_bookings'),
+     path('bookings/get-detail-booking/<str:booking_id>/', 
+          views_api.BookingViewSet.as_view({'get': 'get_detail_booking'}), name='get_detail_booking'),
 
 # Custom Review Endpoints
      path('reviews/post/', 

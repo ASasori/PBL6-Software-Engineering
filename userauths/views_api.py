@@ -178,4 +178,50 @@ def user_profile_view(request):
     except Profile.DoesNotExist:
         return Response({"detail": "Profile not found."}, status=status.HTTP_404_NOT_FOUND)
 
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def edit_profile_view(request):
+    """
+    API to partially update a user's profile.
+    """
+    user = request.user
+    profile, _ = Profile.objects.get_or_create(user=user)
 
+    # Validate input fields
+    allowed_fields = ['full_name', 'phone', 'gender', 'country', 'city', 'state', 'address']
+    for field, value in request.data.items():
+        if field in allowed_fields:
+            setattr(profile, field, value)
+
+     # Update files
+    profile.image = request.FILES.get('image', profile.image)
+    profile.indentity_image = request.FILES.get('indentity_image', profile.indentity_image)
+
+    profile.save()
+
+    serializer = ProfileSerializer(profile)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def change_password_view(request):
+    """
+    API to change a user's password.
+    """
+    user = request.user
+    old_password = request.data.get('old_password')
+    new_password = request.data.get('new_password')
+
+    if not old_password or not new_password:
+        return Response({'error': 'Both old and new passwords are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not user.check_password(old_password):
+        return Response({'error': 'Incorrect old password.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if len(new_password) < 8:  # Example password validation
+        return Response({'error': 'New password must be at least 8 characters long.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user.set_password(new_password)
+    user.save()
+
+    return Response({'message': 'Password changed successfully.'}, status=status.HTTP_200_OK)
