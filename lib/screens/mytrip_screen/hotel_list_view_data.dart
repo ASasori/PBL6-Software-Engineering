@@ -1,4 +1,5 @@
 import 'package:booking_hotel_app/models/booking.dart';
+import 'package:booking_hotel_app/routes/route_names.dart';
 import 'package:booking_hotel_app/utils/helper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -142,7 +143,9 @@ class HotelListViewData extends StatelessWidget {
             Align(
               alignment: Alignment.bottomRight,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  NavigationServices(context).gotoInvoiceScreen(myBooking);
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).primaryColor,
                   shape: RoundedRectangleBorder(
