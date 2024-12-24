@@ -34,7 +34,7 @@ def check_room_availability(request):
         ).exclude(
             Q(check_out_date__lte=checkin) 
             | Q(check_in_date__gte=checkout)
-            #& Q(payment_status='paid')
+            # & Q(payment_status='paid')
         ).values_list('room', flat=True)
         available_rooms = rooms.exclude(id__in=booked_rooms)
 
@@ -43,6 +43,7 @@ def check_room_availability(request):
 
         # If no rooms are available after filtering
         if not suitable_rooms.exists():
+            print("0")
             return Response({
                 'message': 'No rooms available for the selected criteria.',
                 'checkin': checkin.date(),
@@ -77,10 +78,13 @@ def check_room_availability(request):
         }, status=status.HTTP_200_OK)
 
     except Hotel.DoesNotExist:
+        print("1")
         return Response({'error': 'Hotel not found'}, status=status.HTTP_404_NOT_FOUND)
     except RoomType.DoesNotExist:
+        print("2")
         return Response({'error': 'Room type not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
+        print("3")
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])

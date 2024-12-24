@@ -35,6 +35,9 @@ DEBUG = True
 ALLOWED_HOSTS = ['103.78.0.191', 'wireguard.nguyentanloc.top', '127.0.0.1', 'localhost', 'demo-8000.nguyentanloc.top']
 SECURE_CROSS_ORIGIN_OPENER_POLICY='same-origin-allow-popups'
 
+APPEND_SLASH = False
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -300,7 +303,7 @@ JAZZMIN_UI_TWEAKS = {
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated', 
-        #'rest_framework.permissions.AllowAny',
+        # 'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -333,5 +336,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = 'Hotel Management <minamisasori28@gmail.com>'
-#FRONTEND_URL = 'http://localhost:3000'
-FRONTEND_URL = 'https://hotel-management-fe-omega.vercel.app'
+FRONTEND_URL = 'http://localhost:3000'
+# FRONTEND_URL = 'https://hotel-management-fe-omega.vercel.app'
