@@ -19,6 +19,7 @@ from django.db.models import Q
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 import logging
+from django.core.mail import send_mail
 
 class HotelViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
@@ -363,6 +364,33 @@ class BookingViewSet(viewsets.ModelViewSet):
 
             booking.room.add(room) 
             booking.save()
+# Send booking confirmation email
+            subject = "Booking Confirmation"
+            message = (
+                f"Dear {full_name},\n\n"
+                f"Thank you for booking with us at {hotel.name}.\n"
+                f"Here are your booking details:\n\n"
+                f"Booking ID: {booking.booking_id}\n"
+                f"Hotel: {hotel.name}\n"
+                f"Room Type: {room_type.type}\n"
+                f"Room Number: {room.room_number}\n"
+                f"Check-in: {check_in_date}\n"
+                f"Check-out: {check_out_date}\n"
+                f"Total Days: {total_days}\n"
+                f"Guests: {num_adults} Adults, {num_children} Children\n"
+                f"Total Price: ${total}\n\n"
+                f"We look forward to hosting you!\n\n"
+                f"Best regards,\n{hotel.name} Team"
+            )
+
+            send_mail(
+                subject=subject,
+                message=message,
+                #from_email="no-reply@hotelbooking.com",
+                from_email="minamisasori28@gmail.com",
+                recipient_list=[email],
+                fail_silently=False,
+            )
 
             return Response({
                 'message': 'Booking created successfully',
@@ -404,7 +432,9 @@ def checkout_api(request, booking_id):
             # Check if the coupon is already used for this booking
             if coupon in booking.coupons.all():
                 return Response({'error': 'Coupon already activated'}, status=status.HTTP_400_BAD_REQUEST)
-
+            if coupon.valid_to < datetime.now().date():
+                return Response({'error': 'Coupon expired'}, status=status.HTTP_400_BAD_REQUEST)
+            
             # Calculate the discount
             if coupon.type == "Percentage":
                 discount = booking.total * coupon.discount / 100
@@ -439,7 +469,9 @@ def create_checkout_session(request, booking_id):
         stripe.api_key = settings.STRIPE_SECRET_KEY
         success_url = f"http://localhost:3000/success-payment?session_id={{CHECKOUT_SESSION_ID}}&booking_id={booking.booking_id}&cart_item_id={cart_item_id}"
         cancel_url = "http://localhost:3000/payment-failed"
-
+        #{settings.FRONTEND_URL}
+        # success_url = f"{settings.FRONTEND_URL}/success-payment?session_id={{CHECKOUT_SESSION_ID}}&booking_id={booking.booking_id}&cart_item_id={cart_item_id}"
+        # cancel_url = f"{settings.FRONTEND_URL}/payment-failed"
         checkout_session = stripe.checkout.Session.create(
             customer_email=booking.email,
             payment_method_types=['card'],

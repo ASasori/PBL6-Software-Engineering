@@ -7,7 +7,8 @@ from datetime import datetime
 from django.urls import reverse
 from django.db.models import Q
 from django.utils import timezone
-
+from django.utils.timezone import now
+from datetime import datetime, date
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def check_room_availability(request):
@@ -33,7 +34,7 @@ def check_room_availability(request):
         ).exclude(
             Q(check_out_date__lte=checkin) 
             | Q(check_in_date__gte=checkout)
-            | Q(payment_status='paid')
+            #& Q(payment_status='paid')
         ).values_list('room', flat=True)
         available_rooms = rooms.exclude(id__in=booked_rooms)
 
@@ -137,3 +138,53 @@ def delete_session(request):
     
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def check_booking_availability(request):
+    try:
+        # Extract data from the request
+        hotel_id = request.data.get('hotel_id')
+        room_id = request.data.get('room_id')
+        checkin_date = request.data.get('checkin')
+        checkout_date = request.data.get('checkout')
+
+        # Validate input
+        if not (hotel_id and room_id and checkin_date and checkout_date):
+            return Response({'error': 'All fields are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Convert string dates to datetime objects
+        checkin_date_obj = datetime.strptime(checkin_date, '%Y-%m-%d').date()
+        checkout_date_obj = datetime.strptime(checkout_date, '%Y-%m-%d').date()
+        # Ensure dates are in the correct format
+        current_date = date.today()  # Ensure this is a date object
+        # Check if dates are in the past
+        if checkin_date_obj < current_date or checkout_date_obj < current_date:
+            return Response({
+                'message': 'Invalid date: Check-in or check-out date has already passed.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Fetch the room object
+        try:
+            room = Room.objects.get(id=room_id)
+        except Room.DoesNotExist:
+            return Response({'error': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check if the room is booked for the given dates
+        existing_bookings = Booking.objects.filter(
+            room=room
+        ).exclude(
+            Q(check_out_date__lte=checkin_date_obj) | Q(check_in_date__gte=checkout_date_obj)
+        )
+
+        if existing_bookings.exists():
+            return Response({
+                'message': 'Room is already booked for the selected dates.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # If all checks pass
+        return Response({'message': 'Room is available for booking'}, status=status.HTTP_200_OK)
+
+    except ValueError as ve:
+        return Response({'error': f'Date parsing error: {str(ve)}'}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({'error': f'Internal server error: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

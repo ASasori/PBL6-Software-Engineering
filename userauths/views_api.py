@@ -225,3 +225,40 @@ def change_password_view(request):
     user.save()
 
     return Response({'message': 'Password changed successfully.'}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def send_contact_email(request):
+    try:
+        # Extract data from the request
+        email = request.data.get('email')
+        message = request.data.get('message')
+
+        # Validate the input
+        if not email or not message:
+            return Response({'error': 'Email and message are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Prepare the email
+        subject = "Customer Contact Form Submission"
+        admin_email = "minamisasori28@gmail.com"  # Replace with your admin email
+        email_message = (
+            f"You have received a new message from a customer:\n\n"
+            f"Email: {email}\n"
+            f"Message:\n{message}"
+        )
+
+        # Send the email
+        send_mail(
+            subject=subject,
+            message=email_message,
+            from_email="no-reply@yourcompany.com",  # Replace with your no-reply email
+            #from_email=email,
+            recipient_list=[admin_email],
+            fail_silently=False,
+        )
+
+        # Send success response
+        return Response({'message': 'Your message has been sent successfully!'}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
