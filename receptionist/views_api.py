@@ -14,6 +14,39 @@ from userauths.serializers import ProfileSerializer, UserSerializer
 from django.middleware.csrf import get_token
 from django.http import JsonResponse
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_info(request):
+    try:
+        user = request.user
+        serializer = UserSerializer(user)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    user = request.user
+    current_password = request.data.get("current_password")
+    new_password = request.data.get("new_password")
+    confirm_password = request.data.get("confirm_password")
+
+    # Kiểm tra mật khẩu cũ
+    if not user.check_password(current_password):
+        return Response({"error": "Mật khẩu cũ không chính xác."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Kiểm tra mật khẩu mới và xác nhận mật khẩu mới
+    if new_password != confirm_password:
+        return Response({"error": "Mật khẩu mới và xác nhận mật khẩu không trùng khớp."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Đổi mật khẩu
+    user.set_password(new_password)
+    user.save()
+
+    return Response({"message": "Mật khẩu đã được đổi thành công."}, status=status.HTTP_200_OK)
+
 #Room management
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -408,3 +441,26 @@ def list_bookings(request):
     serializer = BookingSerializer(bookings, many=True)
     
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsReceptionist])
+def delete_booking(request, booking_id):
+    try:
+        receptionist = request.user.receptionist
+        hotel = receptionist.hotel
+    except AttributeError:
+        return Response({"error": "Người dùng không phải là receptionist hoặc không có thông tin receptionist."}, status=400)
+
+    if not hotel:
+        return Response({"error": "Receptionist không được liên kết với khách sạn."}, status=400)
+
+    try:
+        # Lấy đối tượng booking theo booking_id
+        booking = Booking.objects.get(booking_id=booking_id, hotel=hotel)
+    except Booking.DoesNotExist:
+        return Response({"error": "Không tìm thấy booking hoặc booking không thuộc khách sạn này."}, status=404)
+
+    # Xóa booking
+    booking.delete()
+
+    return Response({"detail": "Booking đã được xóa thành công."}, status=status.HTTP_204_NO_CONTENT)

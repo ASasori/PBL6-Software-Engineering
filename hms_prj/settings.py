@@ -35,6 +35,9 @@ DEBUG = True
 ALLOWED_HOSTS = ['103.78.0.191', 'wireguard.nguyentanloc.top', '127.0.0.1', 'localhost', 'demo-8000.nguyentanloc.top']
 SECURE_CROSS_ORIGIN_OPENER_POLICY='same-origin-allow-popups'
 
+APPEND_SLASH = False
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -300,7 +303,7 @@ JAZZMIN_UI_TWEAKS = {
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated', 
-        #'rest_framework.permissions.AllowAny',
+        # 'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
