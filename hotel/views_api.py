@@ -385,7 +385,7 @@ class BookingViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['GET'], url_path='detail-booking')
-    def get_detail_booking(self, booking_id=None):
+    def get_detail_booking(self, request, booking_id=None):
         try:
             # booking = Booking.objects.get(booking_id=booking_id)
             booking = Booking.objects.select_related('user__profile').get(booking_id=booking_id)
