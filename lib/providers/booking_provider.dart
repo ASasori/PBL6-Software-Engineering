@@ -18,6 +18,8 @@ class BookingProvider extends ChangeNotifier {
 
   BookingData _bookingData = BookingData();
   List<BookingData> _myBookings = [];
+  List<BookingData> _myUpcomingBookings = [];
+  List<BookingData> _myFinishedBookings = [];
   double _discount = 0.0;
   bool _isLoading = false;
 
@@ -27,7 +29,9 @@ class BookingProvider extends ChangeNotifier {
 
   double get discount => _discount;
 
-  List<BookingData> get myBookings => _myBookings;
+  List<BookingData> get myUpcomingBookings => _myUpcomingBookings;
+  List<BookingData> get myFinishedBookings => _myFinishedBookings;
+
   void resetBookingData() {
     _bookingData = BookingData();
     _discount = 0.0;
@@ -119,8 +123,18 @@ class BookingProvider extends ChangeNotifier {
     try {
       _isLoading = false;
       _myBookings = await _bookingServices.fetchMyBookings();
+      for (BookingData myBooking in _myBookings) {
+        if (myBooking.endDate!.isBefore(DateTime.now())) {
+          _myFinishedBookings.add(myBooking);
+        } else{
+          _myUpcomingBookings.add(myBooking);
+        }
+      }
       notifyListeners();
     } catch (e) {
+      _myFinishedBookings = [];
+      _myUpcomingBookings = [];
+      notifyListeners();
       print ('Error provider get history booking list');
     }
   }

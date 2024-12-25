@@ -1,14 +1,9 @@
-import 'dart:convert';
-
 import 'package:booking_hotel_app/models/wishlist_item.dart';
 import 'package:booking_hotel_app/providers/wish_list_provider.dart';
 import 'package:booking_hotel_app/widgets/common_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 
 import '../../language/appLocalizations.dart';
 import '../../routes/route_names.dart';
@@ -181,7 +176,7 @@ class _WishlistScreenState extends State<WishlistScreen>
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                           Text(
-                                            provider.wishlist[index].typeRoom,
+                                            '${provider.wishlist[index].typeRoom} - ${provider.wishlist[index].roomNumber}',
                                             maxLines: 2,
                                             textAlign: TextAlign.left,
                                             style: TextStyles(context)

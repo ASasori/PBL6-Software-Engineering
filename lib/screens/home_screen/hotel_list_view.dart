@@ -46,14 +46,14 @@ class HotelListView extends StatelessWidget {
                                 imageUrl:
                                     hotelListData.galleryImages[0].imageUrl,
                                 placeholder: (context, url) =>
-                                    Center(child: CircularProgressIndicator()),
+                                    const Center(child: CircularProgressIndicator()),
                                 errorWidget: (context, url, error) =>
-                                    Icon(Icons.error),
+                                    const Icon(Icons.error),
                                 fit: BoxFit.cover,
                               )
                             : Container(
                                 color: Colors.grey.shade200,
-                                child: Icon(Icons.image_not_supported,
+                                child: const Icon(Icons.image_not_supported,
                                     color: Colors.grey, size: 40),
                               ),
                       ),
@@ -73,14 +73,23 @@ class HotelListView extends StatelessWidget {
                                     .getBoldStyle()
                                     .copyWith(fontSize: 16),
                               ),
-                              Text(
-                                hotelListData.description,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.left,
-                                style: TextStyles(context)
-                                    .getDescriptionStyle()
-                                    .copyWith(fontSize: 13),
+                              Row (
+                                children: [
+                                  Icon(Icons.phone,
+                                      size: 12,
+                                      color: Theme.of(context)
+                                          .primaryColor),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    hotelListData.mobile,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.left,
+                                    style: TextStyles(context)
+                                        .getDescriptionStyle()
+                                        .copyWith(fontSize: 13),
+                                  ),
+                                ],
                               ),
                               Expanded(
                                 child: Row(
@@ -100,7 +109,7 @@ class HotelListView extends StatelessWidget {
                                                   size: 12,
                                                   color: Theme.of(context)
                                                       .primaryColor),
-                                              const SizedBox(width: 5),
+                                              const SizedBox(width: 10),
                                               Expanded(
                                                 child: Text(
                                                   hotelListData.address,
@@ -110,7 +119,7 @@ class HotelListView extends StatelessWidget {
                                                   style: TextStyles(context)
                                                       .getDescriptionStyle()
                                                       .copyWith(fontSize: 13),
-                                                  maxLines: 1,
+                                                  maxLines: 2,
                                                 ),
                                               ),
                                             ],
@@ -125,7 +134,7 @@ class HotelListView extends StatelessWidget {
                                                     size: 12,
                                                     color: Theme.of(context)
                                                         .primaryColor),
-                                                const SizedBox(width: 5),
+                                                const SizedBox(width: 10),
                                                 Expanded(
                                                   child: Text(
                                                     "${hotelListData.views}",
@@ -143,6 +152,7 @@ class HotelListView extends StatelessWidget {
                                         ],
                                       ),
                                     ),
+                                    const SizedBox(width: 10),
                                     FittedBox(
                                       child: Padding(
                                         padding: EdgeInsets.only(right: 8),
@@ -157,7 +167,7 @@ class HotelListView extends StatelessWidget {
                                               textAlign: TextAlign.left,
                                               style: TextStyles(context)
                                                   .getBoldStyle()
-                                                  .copyWith(fontSize: 20),
+                                                  .copyWith(fontSize: 20, color: Theme.of(context).primaryColor),
                                             ),
                                           ],
                                         ),

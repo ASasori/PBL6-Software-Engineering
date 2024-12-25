@@ -23,8 +23,8 @@ class WishlistServices {
           "room": roomId,
           "check_in_date": checkinDate,
           "check_out_date": checkoutDate,
-          "adult": adult,
-          "children": children,
+          "num_adults": adult,
+          "num_children": children,
         }),
       );
       if (response.statusCode == 201) {

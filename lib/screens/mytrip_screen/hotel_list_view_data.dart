@@ -14,15 +14,12 @@ class HotelListViewData extends StatelessWidget {
   final bool isShowDate;
   final VoidCallback callback;
   final Profile myProfile;
-
-  // final HotelListData hotelData;
   final BookingData myBooking;
   final AnimationController animationController;
   final Animation<double> animation;
 
   const HotelListViewData(
       {Key? key,
-      // required this.hotelData,
       required this.myBooking,
       required this.myProfile,
       required this.animationController,

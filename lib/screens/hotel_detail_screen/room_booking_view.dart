@@ -203,6 +203,7 @@ class _RoomBookViewState extends State<RoomBookView> {
   void _addToWishList(int roomId, DateTime checkInDate, DateTime checkOutDate,
       int adult, int children) async {
     final wishlist = Provider.of<WishlistProvider>(context, listen: false);
+    print('Before: ${adult} + ${children}');
     final errorMessage = await wishlist.addCartItem(
         roomId, checkInDate, checkOutDate, adult, children);
 
