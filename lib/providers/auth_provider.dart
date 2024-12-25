@@ -12,9 +12,11 @@ class AuthProvider with ChangeNotifier {
 
   Profile _profile = Profile();
   User _user = User();
+
   Map<String, dynamic> _userProfile = {};
   bool _isLoading = false;
-  String _avatar = '';
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
 
@@ -22,6 +24,8 @@ class AuthProvider with ChangeNotifier {
   Profile get profile => _profile;
   User get user => _user;
   bool get isLoading => _isLoading;
+  bool get  isPasswordVisible => _isPasswordVisible;
+  bool get  isConfirmPasswordVisible => _isConfirmPasswordVisible;
   File? get selectedImage => _selectedImage;
 
   Future<void> pickImage(ImageSource source) async {
@@ -55,11 +59,10 @@ class AuthProvider with ChangeNotifier {
       return false;
     }
   }
-  Future<bool> register(String username, String email, String password,
-      String full_name, String phone) async {
+  Future<bool> register(String email, String password,
+      String username, String phone) async {
     try {
-      bool isSuccess = await _authService.register(
-          username, email, password, full_name, phone);
+      bool isSuccess = await _authService.register(email, password, username, phone);
       if (isSuccess) {
         return true;
       }
@@ -92,9 +95,9 @@ class AuthProvider with ChangeNotifier {
       _profile = Profile();
       _user = User();
       notifyListeners();
-      print('Error: $e');
     }
   }
+
   Future<bool> resetPasswordByEmail(String email) async {
     _isLoading = true;
     notifyListeners();
@@ -153,27 +156,192 @@ class AuthProvider with ChangeNotifier {
       return false;
     }
   }
-  // Biến lưu lỗi của các trường
-  String _errorEmail = "";
-  String _errorPhone = "";
-  String _errorGender = "";
-
-  // Getter để lấy lỗi
-  String get errorEmail => _errorEmail;
-  String get errorPhone => _errorPhone;
-  String get errorGender => _errorGender;
 
 
-  void validatePhone(String value) {
-    final phoneRegExp = RegExp(r'^\d{10}$');
-    if (value.isEmpty) {
-      _errorPhone = 'Phone number is required';
-    } else if (!phoneRegExp.hasMatch(value)) {
-      _errorPhone = 'Phone number must be have 10 digits!';
-    } else {
-      _errorPhone = "";
-    }
+  final Map<String, TextEditingController> controllers = {
+    'email': TextEditingController(),
+    'fullName': TextEditingController(),
+    'phone': TextEditingController(),
+    'username': TextEditingController(),
+    'gender': TextEditingController(),
+    'country': TextEditingController(),
+    'city': TextEditingController(),
+    'state': TextEditingController(),
+    'address': TextEditingController(),
+    'password': TextEditingController(),
+    'confirmPassword': TextEditingController(),
+    'newPassword': TextEditingController(),
+    'confirmNewPassword': TextEditingController(),
+  };
+
+  final Map<String, String?> errors = {
+    'email': null,
+    'fullName': null,
+    'phone': null,
+    'username': null,
+    'gender': null,
+    'password': null,
+    'confirmPassword': null,
+    'newPassword': null,
+    'confirmNewPassword': null,
+  };
+
+  String? getError(String field) => errors[field];
+
+  void resetError() {
+    errors.updateAll((key, value) => null);
     notifyListeners();
   }
 
+  void resetController() {
+    controllers.updateAll((key, value) => TextEditingController());
+    notifyListeners();
+  }
+  void resetPasswordVisible() {
+    _isPasswordVisible = false;
+    _isConfirmPasswordVisible = false;
+    notifyListeners();
+  }
+
+  void validateField(String field) {
+    final value = controllers[field]?.text.trim() ?? '';
+    final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+    final phoneRegExp = RegExp(r'^\d{10}$');
+
+    switch (field) {
+      case 'email':
+        if (value.isEmpty) {
+          errors[field] = 'Email is required';
+        } else if (!emailRegExp.hasMatch(value)) {
+          errors[field] = 'Invalid email address!';
+        } else {
+          errors[field] = null;
+        }
+        break;
+
+      case 'phone':
+        if (value.isEmpty) {
+          errors[field] = 'Phone number is required';
+        } else if (!phoneRegExp.hasMatch(value)) {
+          errors[field] = 'Phone number must be 10 digits!';
+        } else {
+          errors[field] = null;
+        }
+        break;
+
+      case 'fullName':
+        if (value.isEmpty) {
+          errors[field] = 'Full name is required';
+        } else {
+          errors[field] = null;
+        }
+        break;
+
+      case 'username':
+        if (value.isEmpty) {
+          errors[field] = 'Username is required';
+        } else {
+          errors[field] = null;
+        }
+        break;
+
+      case 'password':
+        if (value.isEmpty) {
+          errors[field] = 'Password is required';
+        } else if (value.length < 8) {
+          errors[field] = 'Password must be at least 8 characters!';
+        } else {
+          errors[field] = null;
+        }
+        break;
+
+      case 'confirmPassword':
+        if (value.isEmpty) {
+          errors[field] = 'Confirm password is required';
+        } else if (value != controllers['password']?.text.trim()) {
+          errors[field] = 'Passwords do not match!';
+        } else {
+          errors[field] = null;
+        }
+        break;
+
+      case 'newPassword':
+        if (value.isEmpty) {
+          errors[field] = 'New password is required';
+        } else if (value.length < 8) {
+          errors[field] = 'New password must be at least 8 characters!';
+        } else {
+          errors[field] = null;
+        }
+        break;
+
+      case 'confirmNewPassword':
+        if (value.isEmpty) {
+          errors[field] = 'Confirm new password is required';
+        } else if (value != controllers['newPassword']?.text.trim()) {
+          errors[field] = 'New passwords do not match!';
+        } else {
+          errors[field] = null;
+        }
+        break;
+
+      default:
+        throw Exception('Unknown field: $field');
+    }
+
+    notifyListeners();
+  }
+
+  bool validateAll(List<String> fields) {
+    bool isValid = true;
+
+    for (var field in fields) {
+      validateField(field);
+      if (errors[field] != null) {
+        isValid = false;
+      }
+    }
+
+    return isValid;
+  }
+
+  bool validateLogin() {
+    return validateAll(['email', 'password']);
+  }
+
+  bool validateRegister() {
+    return validateAll(['email', 'password', 'username', 'phone']);
+  }
+
+  bool validateForgotPassword() {
+    return validateAll(['email']);
+  }
+
+  bool validateChangePassword() {
+    return validateAll(['password', 'newPassword', 'confirmNewPassword']);
+  }
+
+  bool validateBillingInfo() {
+    return validateAll(['email', 'fullName', 'phone']);
+  }
+
+  void initialValue(Profile profile) {
+    controllers['fullName']?.text = profile.fullName ?? '';
+    controllers['phone']?.text = profile.phone ?? '';
+    controllers['gender']?.text = profile.gender ?? '';
+    controllers['country']?.text = profile.country ?? '';
+    controllers['city']?.text = profile.city ?? '';
+    controllers['state']?.text = profile.state ?? '';
+    controllers['address']?.text = profile.address ?? '';
+    notifyListeners();
+  }
+
+  void togglePasswordVisibility() {
+     _isPasswordVisible = !_isPasswordVisible;
+     notifyListeners();
+  }
+  void toggleConfirmPasswordVisibility() {
+    _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+    notifyListeners();
+  }
 }

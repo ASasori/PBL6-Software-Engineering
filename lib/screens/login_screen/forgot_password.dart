@@ -18,8 +18,13 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
-  String _errorEmail = '';
-  TextEditingController _emailController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AuthProvider>(context, listen: false).resetError();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,23 +62,26 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       ),
                     ),
                     CommonTextFieldView(
-                      controller: _emailController,
-                      errorText: _errorEmail,
+                      controller: authProvider.controllers['email'],
+                      errorText: authProvider.errors['email'],
                       titleText: AppLocalizations(context).of("your_mail"),
-                      padding: EdgeInsets.only(left: 24, right: 24, bottom: 24),
+                      padding: EdgeInsets.only(left: 24, right: 24, top: 24),
                       hintText:
-                          AppLocalizations(context).of("enter_your_email"),
+                      AppLocalizations(context).of("enter_your_email"),
                       keyboardType: TextInputType.emailAddress,
-                      onChanged: (String txt) {},
+                      onChanged: (String txt) {
+                        authProvider.validateField('email');
+                      },
                     ),
+                    const SizedBox(height: 30),
                     CommonButton(
                       padding: EdgeInsets.only(left: 24, right: 24, bottom: 16),
                       buttonText: AppLocalizations(context).of("send"),
                       onTap: () async {
-                        if (allValidation()) {
+                        if (authProvider.validateForgotPassword()) {
                           final status =
-                              await authProvider.resetPasswordByEmail(
-                                  _emailController.text.trim());
+                          await authProvider.resetPasswordByEmail(
+                              authProvider.controllers['email']!.text.trim());
                           CommonSnackBar.show(
                             context: context,
                             iconData: status
@@ -84,7 +92,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                 ? 'Reset password email has been sent'
                                 : 'No account associated with this email',
                             backgroundColor: status
-                                ? Theme.of(context).primaryColor
+                                ? Theme
+                                .of(context)
+                                .primaryColor
                                 : Colors.black87,
                           );
                         }
@@ -99,21 +109,5 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         ),
       ),
     );
-  }
-
-  bool allValidation() {
-    bool isValid = true;
-    if (_emailController.text.trim().isEmpty) {
-      _errorEmail = AppLocalizations(context).of("email_cannot_empty");
-      isValid = false;
-    } else if (!Validator.validateEmail(_emailController.text.trim())) {
-      _errorEmail = AppLocalizations(context).of("enter_valid_email");
-      isValid = false;
-    } else {
-      _errorEmail = "";
-    }
-
-    setState(() {});
-    return isValid;
   }
 }

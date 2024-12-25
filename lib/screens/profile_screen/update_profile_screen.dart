@@ -1,5 +1,5 @@
+import 'package:booking_hotel_app/models/profile.dart';
 import 'package:booking_hotel_app/utils/themes.dart';
-import 'package:booking_hotel_app/widgets/common_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,60 +7,30 @@ import '../../language/appLocalizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/text_styles.dart';
 import '../../widgets/common_appbar_view.dart';
+import '../../widgets/common_snack_bar.dart';
 import '../../widgets/common_textfield_view.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
-  const UpdateProfileScreen({super.key});
+  final Profile profile;
+  const UpdateProfileScreen({super.key, required this.profile});
 
   @override
   State<UpdateProfileScreen> createState() => _UpdateProfileScreenState();
 }
 
 class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
-  bool isLoading = true;
-
-  late TextEditingController emailController;
-  late TextEditingController fullNameController;
-  late TextEditingController phoneController;
-  late TextEditingController genderController;
-  late TextEditingController countryController;
-  late TextEditingController cityController;
-  late TextEditingController stateController;
-  late TextEditingController addressController;
-
   @override
   void initState() {
     super.initState();
-    _initializeData();
-  }
-
-  Future<void> _initializeData() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    await authProvider.fetchProfile();
-
-    setState(() {
-      emailController = TextEditingController(text: authProvider.user.email);
-      fullNameController =
-          TextEditingController(text: authProvider.profile.fullName ?? "");
-      phoneController = TextEditingController(text: authProvider.profile.phone);
-      genderController =
-          TextEditingController(text: authProvider.profile.gender);
-      countryController =
-          TextEditingController(text: authProvider.profile.country ?? "");
-      cityController =
-          TextEditingController(text: authProvider.profile.city ?? "");
-      stateController =
-          TextEditingController(text: authProvider.profile.state ?? "");
-      addressController =
-          TextEditingController(text: authProvider.profile.address ?? "");
-      isLoading = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) async{
+      Provider.of<AuthProvider>(context, listen: false).resetError();
+      Provider.of<AuthProvider>(context, listen: false).initialValue(widget.profile);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-
     return Scaffold(
       backgroundColor: AppTheme.scaffoldBackgroundColor,
       body: Column(
@@ -76,7 +46,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
           ),
           const SizedBox(height: 10),
           Expanded(
-            child: isLoading
+            child: authProvider.isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : SingleChildScrollView(
                     child: Padding(
@@ -85,55 +55,56 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CommonTextFieldView(
-                            titleText: "Full Name",
-                            controller: fullNameController,
-                            hintText: "Enter your full name",
-                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            controller: authProvider.controllers['fullName'],
+                            errorText: authProvider.errors['fullName'],
+                            titleText: AppLocalizations(context).of("your_full_name"),
+                            padding: const EdgeInsets.only(bottom: 10),
+                            hintText: AppLocalizations(context).of("enter_your_full_name"),
                             keyboardType: TextInputType.text,
+                            onChanged: (String txt) {authProvider.validateField('fullName');},
                           ),
                           CommonTextFieldView(
-                            titleText: "Phone Number",
-                            controller: phoneController,
-                            hintText: "Enter your phone number",
-                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            controller: authProvider.controllers['phone'],
+                            errorText: authProvider.errors['phone'],
+                            titleText: AppLocalizations(context).of("your_phone_number"),
+                            padding: const EdgeInsets.only(bottom: 10),
+                            hintText: AppLocalizations(context).of("enter_your_phone"),
                             keyboardType: TextInputType.phone,
-                            onChanged: (value) =>
-                                authProvider.validatePhone(value),
-                            errorText: authProvider.errorPhone,
+                            onChanged: (String txt) {authProvider.validateField('phone');},
                           ),
                           CommonTextFieldView(
                             titleText: "Gender",
-                            controller: genderController,
+                            controller: authProvider.controllers['gender'],
+                            errorText: authProvider.errors['gender'],
                             hintText: "Enter your gender",
                             padding: const EdgeInsets.symmetric(vertical: 8),
                             keyboardType: TextInputType.text,
-                            // onChanged: (value) => authProvider.gender = value,
-                            errorText: authProvider.errorGender,
+                            onChanged: (String txt) {authProvider.validateField('gender');},
                           ),
                           CommonTextFieldView(
                             titleText: "Country",
-                            controller: countryController,
+                            controller: authProvider.controllers['country'],
                             hintText: "Enter your country",
                             padding: const EdgeInsets.symmetric(vertical: 8),
                             keyboardType: TextInputType.text,
                           ),
                           CommonTextFieldView(
                             titleText: "City",
-                            controller: cityController,
+                            controller: authProvider.controllers['city'],
                             hintText: "Enter your city",
                             padding: const EdgeInsets.symmetric(vertical: 8),
                             keyboardType: TextInputType.text,
                           ),
                           CommonTextFieldView(
                             titleText: "State",
-                            controller: stateController,
+                            controller: authProvider.controllers['state'],
                             hintText: "Enter your state",
                             padding: const EdgeInsets.symmetric(vertical: 8),
                             keyboardType: TextInputType.text,
                           ),
                           CommonTextFieldView(
                             titleText: "Address",
-                            controller: addressController,
+                            controller: authProvider.controllers['address'],
                             hintText: "Enter your address",
                             padding: const EdgeInsets.symmetric(vertical: 8),
                             keyboardType: TextInputType.text,
@@ -171,13 +142,13 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                   onPressed: () async {
                                     bool result =
                                         await authProvider.updateProfile(
-                                            fullNameController.text.trim(),
-                                            phoneController.text.trim(),
-                                            genderController.text.trim(),
-                                            countryController.text.trim(),
-                                            cityController.text.trim(),
-                                            stateController.text.trim(),
-                                            addressController.text.trim(),
+                                            authProvider.controllers['fullName']!.text.trim(),
+                                            authProvider.controllers['phone']!.text.trim(),
+                                            authProvider.controllers['gender']!.text.trim(),
+                                            authProvider.controllers['country']!.text.trim(),
+                                            authProvider.controllers['city']!.text.trim(),
+                                            authProvider.controllers['state']!.text.trim(),
+                                            authProvider.controllers['address']!.text.trim(),
                                             null,
                                             null);
                                     if (result) {

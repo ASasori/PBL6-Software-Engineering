@@ -93,8 +93,8 @@ class NavigationServices {
     return await _pushMasterialPageRoute(EditProfileScreen());
   }
 
-  Future<void> gotoUpdateProfileScreen() async{
-    return await _pushMasterialPageRoute(UpdateProfileScreen());
+  Future<void> gotoUpdateProfileScreen(Profile profile) async{
+    return await _pushMasterialPageRoute(UpdateProfileScreen(profile: profile));
   }
 
   Future<void> gotoChangePasswordScreen()  async{

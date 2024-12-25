@@ -37,6 +37,12 @@ class BookingProvider extends ChangeNotifier {
     _discount = 0.0;
     notifyListeners();
   }
+  void resetMyBooking() {
+    _myBookings = [];
+    _myUpcomingBookings = [];
+    _myFinishedBookings = [];
+    notifyListeners();
+  }
 
   Future<bool> continueCheckout(
       int hotelId,

@@ -1,4 +1,5 @@
 import 'package:booking_hotel_app/models/wishlist_item.dart';
+import 'package:booking_hotel_app/providers/auth_provider.dart';
 import 'package:booking_hotel_app/providers/booking_provider.dart';
 import 'package:booking_hotel_app/providers/wish_list_provider.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import '../../utils/enum.dart';
 import '../../utils/text_styles.dart';
 import '../../widgets/common_button.dart';
 import '../../widgets/common_snack_bar.dart';
+import '../../widgets/common_textfield_view.dart';
 import '../../widgets/remove_focuse.dart';
 import '../bottom_tab/bottom_tab_screen.dart';
 
@@ -34,6 +36,8 @@ class _CheckoutScreenState extends State<CheckoutScreen>
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<BookingProvider>(context, listen: false).resetBookingData();
+      Provider.of<AuthProvider>(context, listen: false).resetError();
+      Provider.of<AuthProvider>(context, listen: false).resetController();
     });
     super.initState();
   }
@@ -147,7 +151,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) =>
-                                                          BottomTabScreen(
+                                                          const BottomTabScreen(
                                                               initialBottomBarType:
                                                                   BottomBarType
                                                                       .Trips)));
@@ -250,13 +254,14 @@ class _CheckoutScreenState extends State<CheckoutScreen>
   }
 
   Widget _billingInformationCard() {
+    final authProvider = Provider.of<AuthProvider>(context);
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -267,47 +272,40 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                     fontWeight: FontWeight.bold,
                   ),
             ),
-            const SizedBox(height: 10),
             Divider(color: Colors.grey[300]),
-            // Improved input fields with labels
-            TextFormField(
-              controller: _fullNameController,
-              decoration: InputDecoration(
-                labelText: "Full Name",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
+            CommonTextFieldView(
+              controller: authProvider.controllers['email'],
+              errorText: authProvider.errors['email'],
+              titleText: AppLocalizations(context).of("your_mail"),
+              padding: const EdgeInsets.only(bottom: 10),
+              hintText: AppLocalizations(context).of("enter_your_email"),
+              keyboardType: TextInputType.emailAddress,
+              onChanged: (String txt) {authProvider.validateField('email');},
             ),
-            const SizedBox(height: 10),
-            TextFormField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: "Email",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
+            CommonTextFieldView(
+              controller: authProvider.controllers['fullName'],
+              errorText: authProvider.errors['fullName'],
+              titleText: AppLocalizations(context).of("your_full_name"),
+              padding: const EdgeInsets.only(bottom: 10),
+              hintText: AppLocalizations(context).of("enter_your_full_name"),
+              keyboardType: TextInputType.text,
+              onChanged: (String txt) {authProvider.validateField('fullName');},
             ),
-            SizedBox(height: 10),
-            TextFormField(
-              controller: _phoneNumberController,
-              decoration: InputDecoration(
-                labelText: "Phone",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
+            CommonTextFieldView(
+              controller: authProvider.controllers['phone'],
+              errorText: authProvider.errors['phone'],
+              titleText: AppLocalizations(context).of("your_phone_number"),
+              padding: const EdgeInsets.only(bottom: 10),
+              hintText: AppLocalizations(context).of("enter_your_phone"),
+              keyboardType: TextInputType.phone,
+              onChanged: (String txt) {authProvider.validateField('phone');},
             ),
             const SizedBox(height: 10),
             CommonButton(
-              padding: const EdgeInsets.only(left: 8, right: 8),
               buttonText: "Continue Checkout",
               onTap: () {
-                if (_fullNameController.text.isNotEmpty &&
-                    _emailController.text.isNotEmpty &&
-                    _phoneNumberController.text.isNotEmpty) {
-                  _showConfirmationDialog();
+                if (authProvider.validateBillingInfo()) {
+                  _showConfirmationDialog(authProvider);
                 } else {
                   CommonSnackBar.show(
                     context: context,
@@ -327,7 +325,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
 
   Widget _bookingSummaryCard() {
     return Card(
-      elevation: 3, // Add elevation for a shadow effect
+      elevation: 3,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10), // Rounded corners
       ),
@@ -445,7 +443,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
     );
   }
 
-  void _showConfirmationDialog() {
+  void _showConfirmationDialog(AuthProvider authProvider) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -461,7 +459,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Divider(height: 1, color: Colors.grey.withOpacity(0.5)),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             Text(
               AppLocalizations(context).of("confirm_book_room"),
               style: TextStyles(context)
@@ -469,7 +467,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                   .copyWith(color: Colors.black87),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Text(
               AppLocalizations(context).of("check_info"),
               style: TextStyles(context)
@@ -477,7 +475,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                   .copyWith(color: Colors.black87),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             Divider(height: 1, color: Colors.grey.withOpacity(0.5)),
           ],
         ),
@@ -527,9 +525,9 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                             widget.cartItem.children!,
                             widget.cartItem.rt_slug,
                             widget.cartItem.totalAmount,
-                            _fullNameController.text.trim(),
-                            _emailController.text.trim(),
-                            _phoneNumberController.text.trim());
+                            authProvider.controllers['fullName']!.text.trim(),
+                            authProvider.controllers['email']!.text.trim(),
+                            authProvider.controllers['phone']!.text.trim());
                     Navigator.of(context).pop();
                     if (result) {
                       setState(() {

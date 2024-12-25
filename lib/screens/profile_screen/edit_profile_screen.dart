@@ -244,6 +244,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
   Widget appBar() {
+    final authProvider = Provider.of<AuthProvider>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -263,7 +264,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             color: Colors.black87,
           ),
           onPressed: () {
-            NavigationServices(context).gotoUpdateProfileScreen();
+            NavigationServices(context).gotoUpdateProfileScreen(authProvider.profile);
           },
         ),
       ],

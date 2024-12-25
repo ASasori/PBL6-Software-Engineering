@@ -49,7 +49,7 @@ class CommonTextFieldView extends StatelessWidget {
               borderRadius: BorderRadius.circular(24),
             ),
             shadowColor: Colors.black12.withOpacity(
-                Theme.of(context).brightness == Brightness.dark ? 0.6 : 0.2),
+                Theme.of(context).brightness == Brightness.dark ? 0.6 : 0.35),
             child: Padding(
               padding: EdgeInsets.only(left: 16, right: 16),
               child: SizedBox(

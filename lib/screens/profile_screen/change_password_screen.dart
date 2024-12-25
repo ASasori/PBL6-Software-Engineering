@@ -23,6 +23,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   TextEditingController _currentController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AuthProvider>(context, listen: false).resetError();
+      Provider.of<AuthProvider>(context, listen: false).resetController();
+      Provider.of<AuthProvider>(context, listen: false).resetPasswordVisible();
+    });
+  }
+  @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(

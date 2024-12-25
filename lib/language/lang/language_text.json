@@ -66,8 +66,18 @@
   },
   {
     "text_id": "your_mail",
-    "en": "Your email",
+    "en": "Email",
     "vn": "Email của bạn"
+  },
+  {
+    "text_id": "your_full_name",
+    "en": "Fullname",
+    "vn": "Họ và tên của bạn"
+  },
+  {
+    "text_id": "your_phone_number",
+    "en": "Phone number",
+    "vn": "Số điện thoại của bạn"
   },
   {
     "text_id": "password",
@@ -93,6 +103,11 @@
     "text_id": "sign_up",
     "en": "Sign up",
     "vn": "Đăng ký"
+  },
+  {
+    "text_id": "user_name",
+    "en": "Username",
+    "vn": "Tên đăng nhập"
   },
   {
     "text_id": "first_name",
@@ -786,8 +801,8 @@
   },
   {
     "text_id": "enter_confirm_password",
-    "en": "enter confirm password",
-    "vn": "nhập xác nhận mật khẩu"
+    "en": "Enter confirm password",
+    "vn": "Nhập xác nhận mật khẩu"
   },
   {
     "text_id": "password_cannot_empty",
@@ -811,8 +826,8 @@
   },
   {
     "text_id": "enter_your_email",
-    "en": "enter your email",
-    "vn": "nhập email của bạn"
+    "en": "Enter your email",
+    "vn": "Nhập email của bạn"
   },
   {
     "text_id": "email_cannot_empty",
@@ -825,24 +840,39 @@
     "vn": "Vui lòng nhập địa chỉ email hợp lệ, abc@xyz.com"
   },
   {
+    "text_id": "enter_your_user_name",
+    "en": "Enter your username",
+    "vn": "Nhập teen đăng nhập của bạn"
+  },
+  {
+    "text_id": "enter_your_full_name",
+    "en": "Enter your full name",
+    "vn": "Nhập họ và tên của bạn"
+  },
+  {
+    "text_id": "enter_your_phone",
+    "en": "Enter your phone number",
+    "vn": "Nhập số điện thoại của bạn"
+  },
+  {
     "text_id": "enter_password",
-    "en": "enter password",
-    "vn": "nhập mật khẩu"
+    "en": "Enter password",
+    "vn": "Nhập mật khẩu"
   },
   {
     "text_id": "enter_first_name",
-    "en": "enter first name",
-    "vn": "nhập tên"
+    "en": "Enter first name",
+    "vn": "Nhập tên"
   },
   {
     "text_id": "enter_last_name",
-    "en": "enter last name",
-    "vn": "nhập họ"
+    "en": "Enter last name",
+    "vn": "Nhập họ"
   },
   {
     "text_id": "enter_phone_number",
     "en": "Enter phone number",
-    "vn": "nhập số điện thoại"
+    "vn": "Nhập số điện thoại"
   },
   {
     "text_id": "first_name_cannot_empty",

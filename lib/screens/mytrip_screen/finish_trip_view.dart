@@ -22,9 +22,10 @@ class _FinishTripViewState extends State<FinishTripView> {
   @override
   void initState() {
     widget.animationController.forward();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<BookingProvider>(context, listen: false).getMyBookings();
-      Provider.of<AuthProvider>(context, listen: false).fetchProfile();
+    WidgetsBinding.instance.addPostFrameCallback((_) async{
+      Provider.of<BookingProvider>(context, listen: false).resetMyBooking();
+      await Provider.of<BookingProvider>(context, listen: false).getMyBookings();
+      await Provider.of<AuthProvider>(context, listen: false).fetchProfile();
     });
     super.initState();
   }

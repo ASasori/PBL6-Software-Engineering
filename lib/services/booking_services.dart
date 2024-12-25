@@ -134,16 +134,13 @@ class BookingServices {
       String? sessionId = await getSessionId(bookingId, cartItemId);
 
       if (isPaymentSuccessful) {
-        log("Thanh toán thành công");
         bool checkPaymentSuccess = await paymentSuccess(bookingId, sessionId!);
         return checkPaymentSuccess;
       } else {
-        log("Thanh toán thất bại");
         bool checkPaymentFailed = await paymentFailed(bookingId);
         return !checkPaymentFailed;
       }
     } catch (e) {
-      log("Lỗi khi khởi tạo thanh toán: $e");
       return false;
     }
   }
