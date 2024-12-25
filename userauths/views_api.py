@@ -9,15 +9,16 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, LoginSerializer
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.conf import settings
-from .serializers import UserSerializer, LoginSerializer, ProfileSerializer
-from .models import Profile
+from .serializers import UserSerializer, LoginSerializer, ProfileSerializer, ReceptionistSerializer
+from .models import Profile, Receptionist
+from rest_framework import status, viewsets, permissions
+
 
 User = get_user_model()
 
@@ -225,3 +226,53 @@ def change_password_view(request):
     user.save()
 
     return Response({'message': 'Password changed successfully.'}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def send_contact_email(request):
+    try:
+        # Extract data from the request
+        email = request.data.get('email')
+        message = request.data.get('message')
+
+        # Validate the input
+        if not email or not message:
+            return Response({'error': 'Email and message are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Prepare the email
+        subject = "Customer Contact Form Submission"
+        admin_email = "minamisasori28@gmail.com"  # Replace with your admin email
+        email_message = (
+            f"You have received a new message from a customer:\n\n"
+            f"Email: {email}\n"
+            f"Message:\n{message}"
+        )
+
+        # Send the email
+        send_mail(
+            subject=subject,
+            message=email_message,
+            from_email="no-reply@yourcompany.com",  # Replace with your no-reply email
+            #from_email=email,
+            recipient_list=[admin_email],
+            fail_silently=False,
+        )
+
+        # Send success response
+        return Response({'message': 'Your message has been sent successfully!'}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ReceptionistViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = ReceptionistSerializer
+    permission_classes = [AllowAny]
+    def get_receptionist_by_hotel(self, request, hotel_id=None):
+        try:
+            receptionist = Receptionist.objects.get(hotel__id=hotel_id)
+            serializer = self.get_serializer(receptionist)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Receptionist.DoesNotExist:
+            return Response({'error': 'Receptionist not found for the specified hotel.'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

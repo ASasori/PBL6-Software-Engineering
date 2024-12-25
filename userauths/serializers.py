@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Profile
+from .models import Profile, Receptionist
 User = get_user_model()
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -90,6 +90,14 @@ class UserSerializer(serializers.ModelSerializer):
                 setattr(profile, key, value)
             profile.save()
         return user
+
+class ReceptionistSerializer(serializers.ModelSerializer):
+    user = UserSerializer() 
+    profile = ProfileSerializer(source='user.profile')
+
+    class Meta:
+        model = Receptionist
+        fields = ['user', 'hotel', 'profile']
 
 
 # Login Serializer
