@@ -30,7 +30,7 @@ class HotelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hotel
         fields = [
-            'user', 'name', 'description', 'map_image', 'address', 'mobile',
+            'id', 'user', 'name', 'description', 'map_image', 'address', 'mobile',
             'email', 'status', 'tags', 'views', 'featured', 'hid', 'slug',
             'date', 'hotel_gallery', 'reviews'
         ]

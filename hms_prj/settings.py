@@ -336,5 +336,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = 'Hotel Management <minamisasori28@gmail.com>'
-FRONTEND_URL = 'http://localhost:3000'
-# FRONTEND_URL = 'https://hotel-management-fe-omega.vercel.app'
+# FRONTEND_URL = 'http://localhost:3000'
+FRONTEND_URL = 'https://pbl6-fe-hotel-management.vercel.app/'
