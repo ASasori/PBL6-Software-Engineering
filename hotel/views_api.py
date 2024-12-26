@@ -536,6 +536,16 @@ def create_checkout_session(request, booking_id):
             success_url=success_url,
             cancel_url=cancel_url,
         )
+        payment_intent = stripe.PaymentIntent.create(
+            amount=int(booking.total * 100),  # Convert amount to cents
+            currency="usd",
+            payment_method_types=["card"],
+            metadata={
+                "booking_id": booking_id,
+                "email": booking.email,
+                "full_name": booking.full_name,
+            },
+        )
 
         booking.payment_status = "processing"
         booking.stripe_payment_intent = checkout_session['id']
@@ -543,6 +553,7 @@ def create_checkout_session(request, booking_id):
 
         return Response({
             'sessionId': checkout_session.id,
+            'clientSecret': payment_intent['client_secret'],
             'bookingId': booking_id
             }, status=status.HTTP_200_OK)
 
