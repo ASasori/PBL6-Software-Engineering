@@ -33,7 +33,7 @@ urlpatterns = [
           views_api.CartViewSet.as_view({'post': 'delete_cart_item'}), name='delete_cart_item'),
      path('view_cart', 
           views_api.CartViewSet.as_view({'get': 'view_cart'}), name='view_cart'),
-     path('cart/view_cart_item/<int:cart_item_id>/', 
+     path('cart/view_cart_item/<int:cart_item_id>', 
          views_api.CartViewSet.as_view({'get': 'view_cart_item'}), name='view_cart_item'),
      path('bookings/create/', 
           views_api.BookingViewSet.as_view({'post': 'create_booking'}), name='create_booking'),

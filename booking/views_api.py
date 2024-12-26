@@ -172,7 +172,7 @@ def check_booking_availability(request):
         # Check if dates are in the past
         if checkin_date_obj < current_date or checkout_date_obj < current_date:
             return Response({
-                'message': 'Invalid date: Check-in or check-out date has already passed.'
+                'error': 'Invalid date: Ngày Check-in hoặc Check-out đã qua.'
             }, status=status.HTTP_400_BAD_REQUEST)
 
         # Fetch the room object
@@ -190,7 +190,7 @@ def check_booking_availability(request):
 
         if existing_bookings.exists():
             return Response({
-                'message': 'Room is already booked for the selected dates.'
+                'error': 'Phòng đã được đặt trước đó, vui lòng xoá và chọn lại.'
             }, status=status.HTTP_400_BAD_REQUEST)
 
         # If all checks pass
