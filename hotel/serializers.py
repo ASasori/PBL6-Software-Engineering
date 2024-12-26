@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Hotel, RoomType, Room, Booking, Cart, CartItem, HotelGallery, Review
+from .models import Hotel, RoomType, Room, Booking, Cart, CartItem, HotelGallery, Review, Coupon
 from taggit.serializers import TagListSerializerField
 
 class HotelGallerySerializer(serializers.ModelSerializer):
@@ -64,3 +64,9 @@ class CartItemSerializer(serializers.ModelSerializer):
         model = CartItem
         fields = '__all__'
         read_only_fields = ['cart']
+
+class CouponSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coupon
+        fields = '__all__'
+        read_only_fields = ['user']

@@ -1,12 +1,12 @@
 from django.http import JsonResponse
 from rest_framework import status, viewsets, permissions, generics
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from hotel.models import Hotel, Booking, ActivityLog, StaffOnDuty, Room, RoomType, Coupon, Notification, Cart, CartItem, Review
-from .serializers import HotelSerializer, RoomTypeSerializer, RoomSerializer, CartSerializer, CartItemSerializer, ReviewSerializer, BookingSerializer
+from hotel.models import Hotel, Booking, ActivityLog, StaffOnDuty, Room, RoomType, Coupon, Notification, Cart, CartItem, Review, HotelGallery
+from .serializers import HotelSerializer, RoomTypeSerializer, RoomSerializer, CartSerializer, CartItemSerializer, ReviewSerializer, BookingSerializer,CouponSerializer
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAdminUser
 from datetime import datetime
@@ -630,8 +630,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 
-# Hoàng
-# Search Hotel by location
 logger = logging.getLogger(__name__)
 
 @api_view(['GET'])
@@ -643,10 +641,15 @@ def location(request):
     for hotel in hotels:
         logger.debug(f"Processing hotel: {hotel}")
         
-        # Nhóm các khách sạn theo địa chỉ
-        if hotel.address not in location_images_map:
-            location_images_map[hotel.address] = []
+        address_parts = hotel.address.split(',')
+        if len(address_parts) >= 2:
+            city = address_parts[-2].strip()
+        else:
+            city = hotel.address.strip()  # Nếu không thể tách, dùng địa chỉ gốc
 
+        # Nhóm các khách sạn theo thành phố
+        if city not in location_images_map:
+            location_images_map[city] = []
         # Lấy danh sách hình ảnh của khách sạn từ bảng HotelGallery
         hotel_gallery_images = HotelGallery.objects.filter(hotel=hotel)
 
@@ -656,12 +659,13 @@ def location(request):
                 image_path = hotel_gallery_images[2].image.url
             else:
                 image_path = hotel_gallery_images[0].image.url
+            full_image_url = request.build_absolute_uri(image_path)
         else:
             logger.debug(f"Hotel {hotel} has no images, returning null.")
-            image_path = None  # Trả về null nếu không có ảnh
+            full_image_url = None  # Trả về null nếu không có ảnh
 
         # Thêm ảnh vào danh sách ảnh của địa chỉ
-        location_images_map[hotel.address].append(image_path)
+        location_images_map[city].append(full_image_url)
 
     # Chuẩn bị dữ liệu trả về
     response_data = []
@@ -691,3 +695,28 @@ def search_hotel_by_location_name(request):
     # Serialize kết quả và trả về
     serializer = HotelSerializer(hotels, many=True, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_public_coupon(request):
+    try:
+        # Retrieve active and public coupons
+        coupons = Coupon.objects.filter(active=True, make_public=True)
+        
+        # Check if there are coupons available
+        if not coupons.exists():
+            return Response(
+                {'message': 'No public coupons available.'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Serialize the data
+        serializer = CouponSerializer(coupons, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    except Exception as e:
+        # Log the error and return a generic error response
+        return Response(
+            {'error': 'An error occurred while fetching public coupons.', 'details': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

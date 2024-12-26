@@ -1,5 +1,5 @@
 from django.urls import path, re_path, include
-from hotel.views_api import location, search_hotel_by_location_name, index, hotel_detail, room_type_detail, create_checkout_session, payment_success, payment_failed, checkout_api, ReviewViewSet, BookingViewSet
+from hotel.views_api import location, search_hotel_by_location_name, index, hotel_detail, room_type_detail, create_checkout_session, payment_success, payment_failed, checkout_api, ReviewViewSet, BookingViewSet, get_public_coupon
 from hotel import views, views_api
 from rest_framework.routers import DefaultRouter
 
@@ -55,4 +55,7 @@ urlpatterns = [
 # Location 
      path('locations/', location, name = 'location'),
      path('locations/hotels_by_location/', search_hotel_by_location_name, name = 'hotels_by_location'),
+
+     #Coupon public
+     path('coupons/', get_public_coupon, name='get_coupon'),
 ]
