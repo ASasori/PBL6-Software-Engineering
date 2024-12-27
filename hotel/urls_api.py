@@ -1,6 +1,6 @@
 from django.urls import path, re_path, include
-from hotel.views_api import location, search_hotel_by_location_name, index, hotel_detail, room_type_detail, create_checkout_session, payment_success, payment_failed, checkout_api, ReviewViewSet, BookingViewSet, get_public_coupon
-from hotel import views, views_api
+from hotel.views_api import location, search_hotel_by_location_name, index, hotel_detail, room_type_detail, create_checkout_session, payment_success, payment_failed, checkout_api, ReviewViewSet, BookingViewSet, get_public_coupon, get_range_price_hotel, get_range_price_by_hotel
+from hotel import views_api
 from rest_framework.routers import DefaultRouter
 
 app_name = "hotel_api"
@@ -42,7 +42,7 @@ urlpatterns = [
      path('bookings/get-detail-booking/<str:booking_id>/', 
           views_api.BookingViewSet.as_view({'get': 'get_detail_booking'}), name='get_detail_booking'),
 
-# Custom Review Endpoints
+     # Custom Review Endpoints
      path('reviews/post/', 
          ReviewViewSet.as_view({'post': 'create_review'}), name='create_review'),
      path('reviews/hotel-reviews/<str:pk>/', 
@@ -52,10 +52,15 @@ urlpatterns = [
      path('reviews/delete/<str:pk>/', 
          ReviewViewSet.as_view({'delete': 'delete_review'}), name='delete_review'),   
 
-# Location 
+     # Location 
      path('locations/', location, name = 'location'),
      path('locations/hotels_by_location/', search_hotel_by_location_name, name = 'hotels_by_location'),
 
      #Coupon public
      path('coupons/', get_public_coupon, name='get_coupon'),
+
+     # Range of price
+     path('range-price-all/', get_range_price_hotel, name='get_range_price_hotel'),
+     path('range-price/<str:hid>/', get_range_price_by_hotel, name='get_range_price_by_hotel'),
+
 ]

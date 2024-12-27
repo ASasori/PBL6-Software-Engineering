@@ -721,13 +721,68 @@ def get_public_coupon(request):
                 status=status.HTTP_404_NOT_FOUND
             )
 
+        coupons_valid = coupons.filter(valid_to__gte=datetime.now().date())
+
         # Serialize the data
-        serializer = CouponSerializer(coupons, many=True)
+        serializer = CouponSerializer(coupons_valid, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     except Exception as e:
         # Log the error and return a generic error response
         return Response(
             {'error': 'An error occurred while fetching public coupons.', 'details': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_range_price_hotel(request):
+    try:
+        # Retrieve the price range for each hotel
+        hotels_price_range = (
+            RoomType.objects.values('hotel__id')  # Group by hotel ID and name
+            .annotate(
+                min_price=models.Min('price'),  # Minimum price in the hotel
+                max_price=models.Max('price')   # Maximum price in the hotel
+            )
+        )
+
+        # Format the response
+        formatted_data = [
+            {
+                'hotel_id': hotel['hotel__id'],
+                #'hotel_name': hotel['hotel__name'],
+                'min_price': hotel['min_price'],
+                'max_price': hotel['max_price']
+            }
+            for hotel in hotels_price_range
+        ]
+
+        return Response(formatted_data, status=status.HTTP_200_OK)
+    
+    except Exception as e:
+        # Log the error and return a generic error response
+        return Response(
+            {'error': 'An error occurred while fetching price ranges for hotels.', 'details': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_range_price_by_hotel(request, hid):
+    try:
+        # Retrieve all room types
+        hotel = Hotel.objects.get(hid=hid)
+        room_types = RoomType.objects.filter(hotel=hotel)
+        room_types_price_range = room_types.aggregate(
+            min_price=models.Min('price'),
+            max_price=models.Max('price')
+        )
+        
+        return Response(room_types_price_range, status=status.HTTP_200_OK)
+    
+    except Exception as e:
+        # Log the error and return a generic error response
+        return Response(
+            {'error': 'An error occurred while fetching room types.', 'details': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
