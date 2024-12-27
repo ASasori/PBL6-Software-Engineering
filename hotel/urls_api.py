@@ -1,5 +1,5 @@
 from django.urls import path, re_path, include
-from hotel.views_api import location, search_hotel_by_location_name, index, hotel_detail, room_type_detail, create_checkout_session, payment_success, payment_failed, checkout_api, ReviewViewSet, BookingViewSet
+from hotel.views_api import location, search_hotel_by_location_name, index, hotel_detail, room_type_detail, create_checkout_session, payment_success, payment_failed, checkout_api, ReviewViewSet, BookingViewSet, get_public_coupon
 from hotel import views, views_api
 from rest_framework.routers import DefaultRouter
 
@@ -23,17 +23,17 @@ urlpatterns = [
          views_api.RoomViewSet.as_view({'get': 'room_by_roomtype'}), name='room-by-roomtype'),
      path('hotels/<slug:h_slug>/room-types/', 
          views_api.RoomTypeViewSet.as_view({'get': 'roomtype_by_hotel'}), name='roomtype-by-hotel'),
-     path('cart',
+     path('cart/',
           views_api.CartViewSet.as_view({'get': 'get_or_create_cart'}), name='get-cart-by-user'),
-     path('add-cart-item', 
+     path('add-cart-item/', 
           views_api.CartViewSet.as_view({'post': 'add_cart_item'}), name='add-cart-item'),
-     path('get_cart_item_count', 
+     path('get_cart_item_count/', 
           views_api.CartViewSet.as_view({'get': 'get_cart_item_count'}), name='get_cart_item_count'),
-     path('delete_cart_item', 
+     path('delete_cart_item/', 
           views_api.CartViewSet.as_view({'post': 'delete_cart_item'}), name='delete_cart_item'),
-     path('view_cart', 
+     path('view_cart/', 
           views_api.CartViewSet.as_view({'get': 'view_cart'}), name='view_cart'),
-     path('cart/view_cart_item/<int:cart_item_id>', 
+     path('cart/view_cart_item/<int:cart_item_id>/', 
          views_api.CartViewSet.as_view({'get': 'view_cart_item'}), name='view_cart_item'),
      path('bookings/create/', 
           views_api.BookingViewSet.as_view({'post': 'create_booking'}), name='create_booking'),
@@ -55,4 +55,7 @@ urlpatterns = [
 # Location 
      path('locations/', location, name = 'location'),
      path('locations/hotels_by_location/', search_hotel_by_location_name, name = 'hotels_by_location'),
+
+     #Coupon public
+     path('public-coupons/', get_public_coupon, name='get_coupon'),
 ]

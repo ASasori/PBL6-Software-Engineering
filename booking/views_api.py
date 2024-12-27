@@ -27,7 +27,11 @@ def check_room_availability(request):
 
         # Step 1: Get rooms of the selected type
         rooms = Room.objects.filter(room_type=room_type, is_available=True)
-
+        if not rooms.exists():
+            return Response({
+                'error': 'No available rooms for the selected type.'
+            }, status=status.HTTP_404_NOT_FOUND)
+        
         # Step 2: Exclude rooms already booked for the given dates
         booked_rooms = Booking.objects.filter(
             room__in=rooms
@@ -37,7 +41,11 @@ def check_room_availability(request):
             # & Q(payment_status='paid')
         ).values_list('room', flat=True)
         available_rooms = rooms.exclude(id__in=booked_rooms)
-
+        if not available_rooms.exists():
+            return Response({
+                'error': 'Loại phòng này đã được đặt hết.'
+            }, status=status.HTTP_404_NOT_FOUND)
+        
         # Step 3: Check room capacity
         suitable_rooms = available_rooms.filter(room_type__room_capacity__gte=total_guests)
 
@@ -45,7 +53,7 @@ def check_room_availability(request):
         if not suitable_rooms.exists():
             print("0")
             return Response({
-                'message': 'No rooms available for the selected criteria.',
+                'error': 'Sức chứa của loại phòng không phù hợp.',
                 'checkin': checkin.date(),
                 'checkout': checkout.date(),
                 'adults': adult,

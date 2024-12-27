@@ -14,6 +14,22 @@ from userauths.serializers import ProfileSerializer, UserSerializer
 from django.middleware.csrf import get_token
 from django.http import JsonResponse
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_receptionist_profile(request):
+    try:
+        # Lấy đối tượng user từ request.user
+        user = request.user
+        profile = user.profile  # Lấy profile liên kết với user
+        
+        # Sử dụng serializer để trả về thông tin profile
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Profile.DoesNotExist:
+        return Response({"error": "Không tìm thấy thông tin profile."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_info(request):
