@@ -66,6 +66,4 @@ class Localfiles {
   static const String birghtness = BaseImageUrl + 'birghtness.png';
   static const String parth = BaseImageUrl + 'parth.png';
   static const String logoweb = BaseImageUrl + 'logoweb.jpg';
- // static const String baseUrl = "https://demo-8000.nguyentanloc.top";
-  static const String baseUrl = "http://192.168.1.16:8000";
 }

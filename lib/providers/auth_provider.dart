@@ -17,6 +17,8 @@ class AuthProvider with ChangeNotifier {
   bool _isLoading = false;
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _isNewPasswordVisible = false;
+  bool _isConfirmNewPasswordVisible = false;
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
 
@@ -26,6 +28,8 @@ class AuthProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get  isPasswordVisible => _isPasswordVisible;
   bool get  isConfirmPasswordVisible => _isConfirmPasswordVisible;
+  bool get  isNewPasswordVisible => _isNewPasswordVisible;
+  bool get  isConfirmNewPasswordVisible => _isConfirmNewPasswordVisible;
   File? get selectedImage => _selectedImage;
 
   Future<void> pickImage(ImageSource source) async {
@@ -192,7 +196,6 @@ class AuthProvider with ChangeNotifier {
     errors.updateAll((key, value) => null);
     notifyListeners();
   }
-
   void resetController() {
     controllers.updateAll((key, value) => TextEditingController());
     notifyListeners();
@@ -200,9 +203,10 @@ class AuthProvider with ChangeNotifier {
   void resetPasswordVisible() {
     _isPasswordVisible = false;
     _isConfirmPasswordVisible = false;
+    _isNewPasswordVisible = false;
+    _isConfirmNewPasswordVisible = false;
     notifyListeners();
   }
-
   void validateField(String field) {
     final value = controllers[field]?.text.trim() ?? '';
     final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
@@ -291,7 +295,6 @@ class AuthProvider with ChangeNotifier {
 
     notifyListeners();
   }
-
   bool validateAll(List<String> fields) {
     bool isValid = true;
 
@@ -304,27 +307,21 @@ class AuthProvider with ChangeNotifier {
 
     return isValid;
   }
-
   bool validateLogin() {
     return validateAll(['email', 'password']);
   }
-
   bool validateRegister() {
     return validateAll(['email', 'password', 'username', 'phone']);
   }
-
   bool validateForgotPassword() {
     return validateAll(['email']);
   }
-
   bool validateChangePassword() {
     return validateAll(['password', 'newPassword', 'confirmNewPassword']);
   }
-
   bool validateBillingInfo() {
     return validateAll(['email', 'fullName', 'phone']);
   }
-
   void initialValue(Profile profile) {
     controllers['fullName']?.text = profile.fullName ?? '';
     controllers['phone']?.text = profile.phone ?? '';
@@ -342,6 +339,14 @@ class AuthProvider with ChangeNotifier {
   }
   void toggleConfirmPasswordVisibility() {
     _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+    notifyListeners();
+  }
+  void toggleNewPasswordVisibility() {
+    _isNewPasswordVisible = !_isNewPasswordVisible;
+    notifyListeners();
+  }
+  void toggleConfirmNewPasswordVisibility() {
+    _isConfirmNewPasswordVisible = !_isConfirmNewPasswordVisible;
     notifyListeners();
   }
 }

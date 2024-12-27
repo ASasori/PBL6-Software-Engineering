@@ -113,28 +113,32 @@ class BookingServices {
       Stripe.publishableKey = publishableKey;
       Stripe.instance.applySettings();
 
-      Map<String, dynamic>? intentPaymentData = await makeIntentForPayment(amountToBeCharge, currency);
+      // Map<String, dynamic>? intentPaymentData = await makeIntentForPayment(amountToBeCharge, currency);
+      //
+      // if (intentPaymentData == null) {
+      //   throw Exception("Payment intent creation failed");
+      // }
+      //
+      // String paymentIntentId = intentPaymentData['id'];
 
-      if (intentPaymentData == null) {
-        throw Exception("Payment intent creation failed");
-      }
-
-      String paymentIntentId = intentPaymentData['id'];
-
+      final response  = await getSessionId(bookingId, cartItemId);
+      String sessionId = response['sessionId'];
+      String clientSecret = response['clientSecret'];
+      String paymentIntentId = clientSecret.split('_secret_')[0];
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           allowsDelayedPaymentMethods: true,
           merchantDisplayName: 'BookingApp Store',
-          paymentIntentClientSecret: intentPaymentData['client_secret'],
+          // paymentIntentClientSecret: intentPaymentData['client_secret'],
+          paymentIntentClientSecret: clientSecret,
           style: ThemeMode.dark,
         ),
       );
 
       bool isPaymentSuccessful = await showPaymentSheet(paymentIntentId);
-      String? sessionId = await getSessionId(bookingId, cartItemId);
 
       if (isPaymentSuccessful) {
-        bool checkPaymentSuccess = await paymentSuccess(bookingId, sessionId!);
+        bool checkPaymentSuccess = await paymentSuccess(bookingId, sessionId);
         return checkPaymentSuccess;
       } else {
         bool checkPaymentFailed = await paymentFailed(bookingId);
@@ -186,7 +190,7 @@ class BookingServices {
       throw Exception("Failed to fetch payment intent status");
     }
   }
-  Future<String?> getSessionId(String bookingId, int cartItemId) async {
+  Future<Map<String, dynamic>> getSessionId(String bookingId, int cartItemId) async {
     try {
       Stripe.publishableKey = publishableKey;
       Stripe.instance.applySettings();
@@ -204,13 +208,14 @@ class BookingServices {
       }
 
       final data = response.data;
-      if (!data.containsKey('sessionId')) {
-        throw Exception("Key 'sessionId' not found in response data");
-      }
-      return data['sessionId'];
+      // if (!data.containsKey('sessionId')) {
+      //   throw Exception("Key 'sessionId' not found in response data");
+      // }
+      // return data['sessionId'];
+      return data;
     } catch (e) {
       print('Error call api session: $e');
-      return null;
+      return {};
     }
   }
   Future<bool> paymentSuccess(String bookingId, String sessionId) async {

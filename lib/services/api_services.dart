@@ -1,10 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:booking_hotel_app/models/token_manager.dart';
-import 'package:booking_hotel_app/utils/localfiles.dart';
+
+import '../app_config.dart';
 
 class ApiService {
   final Dio _dio = Dio();
-  static const String _baseUrl = Localfiles.baseUrl;
+  static const String _baseUrl = AppConfig.baseUrl;
 
   ApiService() {
     _dio.interceptors.add(InterceptorsWrapper(

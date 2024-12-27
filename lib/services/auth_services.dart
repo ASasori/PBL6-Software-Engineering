@@ -1,15 +1,15 @@
 import 'dart:convert';
+import 'package:booking_hotel_app/app_config.dart';
 import 'package:booking_hotel_app/models/profile.dart';
 import 'package:dio/dio.dart';
 import 'package:booking_hotel_app/models/token_manager.dart';
 import 'api_services.dart';
-import 'package:booking_hotel_app/utils/localfiles.dart';
 
 class AuthService {
   final Dio _dio = Dio();
 
   final ApiService _apiService = ApiService();
-  static const String baseUrl = Localfiles.baseUrl;
+  static const String baseUrl = AppConfig.baseUrl;
 
   Future<bool> login(String email, String password) async {
     try {
@@ -65,14 +65,11 @@ class AuthService {
       );
 
       if (response.statusCode == 201) {
-        print('Register successful: ${response.data}');
         return true;
       } else {
-        print('Register failed: ${response.data}');
         return false;
       }
     } catch (e) {
-      print('Error during register: $e');
       return false;
     }
   }
@@ -81,7 +78,9 @@ class AuthService {
       final response = await _apiService.dio.get("${baseUrl}/user/api/userauths/profile/");
       if (response.statusCode == 200) {
         return response.data;
-      } else throw ('Failed to load profile');
+      } else {
+        throw ('Failed to load profile');
+      }
     } catch (e) {
       rethrow;
     }

@@ -1,5 +1,6 @@
-import 'package:booking_hotel_app/utils/localfiles.dart';
 import 'package:intl/intl.dart';
+
+import '../app_config.dart';
 
 class Profile {
   String? fullName;
@@ -40,7 +41,7 @@ class Profile {
 
     return Profile(
       fullName: json['full_name'] ?? '',
-      image: '${Localfiles.baseUrl}${json['image']}',
+      image: '${AppConfig.baseUrl}${json['image']}',
       phone: json['phone'] ?? '',
       gender: json['gender'] ?? '',
       country: json['country'] ?? '',
@@ -48,7 +49,7 @@ class Profile {
       state: json['state'] ?? '',
       address: json['address'] ?? '',
       identityType: json['indentity_type'],
-      identityImage: '${Localfiles.baseUrl}${json['indentity_image']}',
+      identityImage: '${AppConfig.baseUrl}${json['indentity_image']}',
       wallet: (json['wallet'] as num?)?.toDouble() ?? 0.0,
       verified: json['verified'] ?? false,
       date: json['date'] != null ? _parseDate(json['date']) : null,

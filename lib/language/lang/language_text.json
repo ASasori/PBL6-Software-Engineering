@@ -11,8 +11,8 @@
   },
   {
     "text_id": "enter_current_password",
-    "en": "enter current password",
-    "vn": "nhập mật khẩu hiện tại"
+    "en": "Enter current password",
+    "vn": "Nhập mật khẩu hiện tại"
   },
   {
     "text_id": "already_have_account",
@@ -796,8 +796,8 @@
   },
   {
     "text_id": "enter_new_password",
-    "en": "enter new password",
-    "vn": "nhập mật khẩu mới"
+    "en": "Enter new password",
+    "vn": "Nhập mật khẩu mới"
   },
   {
     "text_id": "enter_confirm_password",

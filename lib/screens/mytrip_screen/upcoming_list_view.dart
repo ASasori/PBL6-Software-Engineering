@@ -3,10 +3,7 @@ import 'package:booking_hotel_app/providers/booking_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/hotel_list_data.dart';
-import '../../routes/route_names.dart';
 import '../../utils/text_styles.dart';
-import 'hotel_list_view.dart';
 import 'hotel_list_view_data.dart';
 
 class UpcomingListView extends StatefulWidget {

@@ -15,12 +15,6 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
-  String _errorCurrentPassword = '';
-  String _errorNewPassword = '';
-  String _errorConfirmPassword = '';
-  TextEditingController _newController = TextEditingController();
-  TextEditingController _confirmController = TextEditingController();
-  TextEditingController _currentController = TextEditingController();
 
   @override
   void initState() {
@@ -31,6 +25,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       Provider.of<AuthProvider>(context, listen: false).resetPasswordVisible();
     });
   }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
@@ -75,48 +70,76 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       ),
                     ),
                     CommonTextFieldView(
-                      controller: _currentController,
+                      controller: authProvider.controllers['password'],
+                      errorText: authProvider.errors['password'],
                       titleText:
                           AppLocalizations(context).of("current_password"),
-                      padding: EdgeInsets.only(left: 24, right: 24, bottom: 16),
+                      padding: const EdgeInsets.only(
+                          left: 24, right: 24, bottom: 16),
                       hintText: AppLocalizations(context)
-                          .of('enter_current_password'),
-                      keyboardType: TextInputType.visiblePassword,
-                      isObsecureText: true,
-                      onChanged: (String txt) {},
-                      errorText: _errorCurrentPassword,
+                          .of("enter_current_password"),
+                      onChanged: (String txt) {
+                        authProvider.validateField('password');
+                      },
+                      isObsecureText: !authProvider.isPasswordVisible,
+                      isPasswordField: true,
+                      togglePasswordVisibility: () {
+                        authProvider.togglePasswordVisibility();
+                      },
+                      keyboardType: TextInputType.text,
                     ),
                     CommonTextFieldView(
-                      controller: _newController,
+                      controller: authProvider.controllers['newPassword'],
+                      errorText: authProvider.errors['newPassword'],
                       titleText: AppLocalizations(context).of("new_password"),
-                      padding: EdgeInsets.only(left: 24, right: 24, bottom: 16),
+                      padding: const EdgeInsets.only(
+                          left: 24, right: 24, bottom: 16),
                       hintText:
-                          AppLocalizations(context).of('enter_new_password'),
-                      keyboardType: TextInputType.visiblePassword,
-                      isObsecureText: true,
-                      onChanged: (String txt) {},
-                      errorText: _errorNewPassword,
+                          AppLocalizations(context).of("enter_new_password"),
+                      onChanged: (String txt) {
+                        authProvider.validateField('newPassword');
+                      },
+                      isObsecureText: !authProvider.isNewPasswordVisible,
+                      isPasswordField: true,
+                      togglePasswordVisibility: () {
+                        authProvider.toggleNewPasswordVisibility();
+                      },
+                      keyboardType: TextInputType.text,
                     ),
                     CommonTextFieldView(
-                      controller: _confirmController,
+                      controller:
+                          authProvider.controllers['confirmNewPassword'],
+                      errorText: authProvider.errors['confirmNewPassword'],
                       titleText:
                           AppLocalizations(context).of("confirm_password"),
-                      padding: EdgeInsets.only(left: 24, right: 24, bottom: 24),
+                      padding: const EdgeInsets.only(
+                          left: 24, right: 24, bottom: 16),
                       hintText: AppLocalizations(context)
                           .of("enter_confirm_password"),
-                      keyboardType: TextInputType.visiblePassword,
-                      isObsecureText: true,
-                      onChanged: (String txt) {},
-                      errorText: _errorConfirmPassword,
+                      onChanged: (String txt) {
+                        authProvider.validateField('confirmNewPassword');
+                      },
+                      isObsecureText: !authProvider.isConfirmNewPasswordVisible,
+                      isPasswordField: true,
+                      togglePasswordVisibility: () {
+                        authProvider.toggleConfirmNewPasswordVisibility();
+                      },
+                      keyboardType: TextInputType.text,
                     ),
                     CommonButton(
-                      padding: EdgeInsets.only(left: 24, right: 24, bottom: 16),
+                      padding: const EdgeInsets.only(
+                          left: 24, right: 24, bottom: 16),
                       buttonText: AppLocalizations(context).of("Apply_text"),
                       onTap: () async {
-                        if (_allValidation()) {
+                        if (authProvider.validateChangePassword()) {
                           bool status = await authProvider.changePassword(
-                              _currentController.text.trim(),
-                              _newController.text.trim());
+                              authProvider.controllers['password']!.text.trim(),
+                              authProvider.controllers['newPassword']!.text.trim());
+                          if (status) {
+                            authProvider.resetController();
+                            authProvider.resetError();
+                            authProvider.resetPasswordVisible();
+                          }
                           CommonSnackBar.show(
                             context: context,
                             iconData: status
@@ -130,56 +153,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                 ? Theme.of(context).primaryColor
                                 : Colors.black87,
                           );
-                          // Navigator.pop(context);
                         }
                       },
                     )
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
     );
-  }
-
-  bool _allValidation() {
-    bool isValid = true;
-
-    if (_currentController.text.trim().isEmpty) {
-      _errorCurrentPassword =
-          AppLocalizations(context).of('password_cannot_empty');
-      isValid = false;
-    } else if (_newController.text.trim().length < 6) {
-      _errorCurrentPassword =
-          AppLocalizations(context).of('valid_new_password');
-      isValid = false;
-    } else {
-      _errorCurrentPassword = '';
-    }
-
-    if (_newController.text.trim().isEmpty) {
-      _errorNewPassword = AppLocalizations(context).of('password_cannot_empty');
-      isValid = false;
-    } else if (_newController.text.trim().length < 6) {
-      _errorNewPassword = AppLocalizations(context).of('valid_new_password');
-      isValid = false;
-    } else {
-      _errorNewPassword = '';
-    }
-    if (_confirmController.text.trim().isEmpty) {
-      _errorConfirmPassword =
-          AppLocalizations(context).of('password_cannot_empty');
-      isValid = false;
-    } else if (_newController.text.trim() != _confirmController.text.trim()) {
-      _errorConfirmPassword =
-          AppLocalizations(context).of('password_not_match');
-      isValid = false;
-    } else {
-      _errorConfirmPassword = '';
-    }
-    setState(() {});
-    return isValid;
   }
 }

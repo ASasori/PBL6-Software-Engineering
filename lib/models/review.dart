@@ -1,5 +1,6 @@
-import 'package:booking_hotel_app/utils/localfiles.dart';
 import 'package:intl/intl.dart';
+
+import '../app_config.dart';
 
 class Review {
   int? reviewId;
@@ -35,7 +36,7 @@ class Review {
     return Review(
       reviewId: json['id'] ?? 0,
       hotelId: json['hotel'] ?? 0,
-      profileImage: '${Localfiles.baseUrl}${json['profile_image']}',
+      profileImage: '${AppConfig.baseUrl}${json['profile_image']}',
       hotelName: json['hotel_name'] ?? '',
       email: json['email'] ?? '',
       userId: json['user'] ?? 0,

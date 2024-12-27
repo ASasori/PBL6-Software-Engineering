@@ -1,4 +1,4 @@
-import '../utils/localfiles.dart';
+import 'package:booking_hotel_app/app_config.dart';
 
 class RoomType {
   final int roomtypeId;
@@ -26,7 +26,7 @@ class RoomType {
   });
   // Tạo RoomType từ JSON
   factory RoomType.fromJson(Map<String, dynamic> json) {
-    const String baseUrl = Localfiles.baseUrl ;
+    const String baseUrl = AppConfig.baseUrl ;
     return RoomType(
       roomtypeId: json['id'] ?? '',
       hotelId: json['hotel'] ?? '',
@@ -90,7 +90,6 @@ class Room {
     );
   }
 
-  // Chuyển Room sang JSON
   Map<String, dynamic> toJson() {
     return {
       'id': roomId,
