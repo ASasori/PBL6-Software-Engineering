@@ -78,13 +78,10 @@ def check_room_availability(request):
         }, status=status.HTTP_200_OK)
 
     except Hotel.DoesNotExist:
-        print("1")
         return Response({'error': 'Hotel not found'}, status=status.HTTP_404_NOT_FOUND)
     except RoomType.DoesNotExist:
-        print("2")
         return Response({'error': 'Room type not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
-        print("3")
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
@@ -92,7 +89,6 @@ def add_to_selection(request):
     try:
         data = request.data
         selection_data = request.session.get('selection_data_obj', {})
-
         room_selection = {
             'hotel_id': data['hotel_id'],
             'hotel_name': data['hotel_name'],
