@@ -59,7 +59,6 @@ class BookingServices {
         return data;
       }
     } catch (e) {
-      print('Error call api create booking: $e');
       throw 'Fail to create booking';
     }
   }
@@ -85,41 +84,11 @@ class BookingServices {
       return {};
     }
   }
-  Future<Map<String, dynamic>?> makeIntentForPayment(String amountToBeCharge, String currency) async {
-    try {
-      Map<String, dynamic> paymentInfo = {
-        "amount": (int.parse(amountToBeCharge) * 100).toString(),
-        "currency": currency,
-        "payment_method_types[]": "card",
-      };
 
-      var response = await http.post(
-        Uri.parse("https://api.stripe.com/v1/payment_intents"),
-        body: paymentInfo,
-        headers: {
-          "Authorization": "Bearer $secretKey",
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-      );
-
-      return jsonDecode(response.body);
-    } catch (e) {
-      log("Error in making intent for payment: $e");
-      return null;
-    }
-  }
   Future<bool> paymentSheetInitialization(String amountToBeCharge, String currency, String bookingId, int cartItemId) async {
     try {
       Stripe.publishableKey = publishableKey;
       Stripe.instance.applySettings();
-
-      // Map<String, dynamic>? intentPaymentData = await makeIntentForPayment(amountToBeCharge, currency);
-      //
-      // if (intentPaymentData == null) {
-      //   throw Exception("Payment intent creation failed");
-      // }
-      //
-      // String paymentIntentId = intentPaymentData['id'];
 
       final response  = await getSessionId(bookingId, cartItemId);
       String sessionId = response['sessionId'];
@@ -129,7 +98,6 @@ class BookingServices {
         paymentSheetParameters: SetupPaymentSheetParameters(
           allowsDelayedPaymentMethods: true,
           merchantDisplayName: 'BookingApp Store',
-          // paymentIntentClientSecret: intentPaymentData['client_secret'],
           paymentIntentClientSecret: clientSecret,
           style: ThemeMode.dark,
         ),
@@ -202,19 +170,12 @@ class BookingServices {
             contentType: 'application/json',
           )
       );
-
       if (response.statusCode != 200) {
         throw Exception("Failed to create checkout session");
       }
-
       final data = response.data;
-      // if (!data.containsKey('sessionId')) {
-      //   throw Exception("Key 'sessionId' not found in response data");
-      // }
-      // return data['sessionId'];
       return data;
     } catch (e) {
-      print('Error call api session: $e');
       return {};
     }
   }
@@ -268,127 +229,3 @@ class BookingServices {
     }
   }
 }
-
-// comment first: chua xu li su kien
-// Future<Map<String, dynamic>?> makeIntentForPayment(
-//     String amountToBeCharge, String currency) async {
-//   try {
-//     Map<String, dynamic> paymentInfo = {
-//       "amount": (int.parse(amountToBeCharge) * 100).toString(),
-//       "currency": currency,
-//       "payment_method_types[]": "card",
-//     };
-//
-//     var response = await http.post(
-//       Uri.parse("https://api.stripe.com/v1/payment_intents"),
-//       body: paymentInfo,
-//       headers: {
-//         "Authorization": "Bearer ${secretKey}",
-//         "Content-Type": "application/x-www-form-urlencoded"
-//       },
-//     );
-//
-//     return jsonDecode(response.body);
-//   } catch (e) {
-//     log("Error in making intent for payment: $e");
-//     return null;
-//   }
-// }
-//
-// Future<void> paymentSheetInitialization(
-//     String amountToBeCharge, String currency) async {
-//   try {
-//     Stripe.publishableKey = publishableKey;
-//     Stripe.instance.applySettings();
-//
-//     Map<String, dynamic>? intentPaymentData =
-//     await makeIntentForPayment(amountToBeCharge, currency);
-//
-//     if (intentPaymentData == null) {
-//       throw Exception("Payment intent creation failed");
-//     }
-//
-//     await Stripe.instance.initPaymentSheet(
-//       paymentSheetParameters: SetupPaymentSheetParameters(
-//         allowsDelayedPaymentMethods: true,
-//         merchantDisplayName: 'Flutter Stripe Store Demo',
-//         paymentIntentClientSecret: intentPaymentData['client_secret'],
-//         style: ThemeMode.dark,
-//       ),
-//     );
-//     await showPaymentSheet();
-//   } catch (e) {
-//     log("Error during payment initialization: $e");
-//   }
-// }
-//
-// Future<void> showPaymentSheet() async {
-//   try {
-//     await Stripe.instance.presentPaymentSheet();
-//   } catch (e) {
-//     if (e is StripeException) {
-//       log("Stripe exception: ${e.error.localizedMessage}");
-//     } else {
-//       log("Error displaying payment sheet: $e");
-//     }
-//   }
-// }
-
-// goi toi checkout
-/*
-Future<void> paymentSheetInitialization(String bookingId, int cartItemId) async {
-  try {
-    Stripe.publishableKey = publishableKey;
-    Stripe.instance.applySettings();
-
-    var response = await _apiService.dio.post(
-        '$baseUrl/api/checkout/$bookingId/',
-        data: jsonEncode({"cart_item_id": cartItemId}),
-        options: Options(
-          contentType: 'application/json',
-        )
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception("Failed to create checkout session");
-    }
-
-    final responseData = response.data;
-    if (!responseData.containsKey('sessionId')) {
-      throw Exception("Key 'sessionId' not found in response data");
-    }
-
-    final clientSecret = responseData['sessionId'];
-    print("Client Secret: $clientSecret");
-
-    if (!clientSecret.startsWith("cs_")) {
-      throw Exception("Invalid client secret format");
-    }
-
-    print("$clientSecret");
-    await Stripe.instance.initPaymentSheet(
-      paymentSheetParameters: SetupPaymentSheetParameters(
-        allowsDelayedPaymentMethods: true,
-        merchantDisplayName: 'Boooking App Stripe',
-        paymentIntentClientSecret: clientSecret,
-        style: ThemeMode.dark,
-      ),
-    );
-    await showPaymentSheet();
-  } catch (e) {
-    log("Error during payment initialization: $e");
-  }
-}
-
-Future<void> showPaymentSheet() async {
-  try {
-    await Stripe.instance.presentPaymentSheet();
-  } catch (e) {
-    if (e is StripeException) {
-      log("Stripe exception: ${e.error.localizedMessage}");
-    } else {
-      log("Error displaying payment sheet: $e");
-    }
-  }
-}
-* */

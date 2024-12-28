@@ -231,7 +231,7 @@ class _HotelHomeScreenState extends State<ExploreScreen> with TickerProviderStat
                   Navigator.pop(context);
                 },
                 child: const Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(8.0),
                   child: Icon(Icons.arrow_back),
                 ),
               ),
@@ -246,47 +246,51 @@ class _HotelHomeScreenState extends State<ExploreScreen> with TickerProviderStat
             ),
           ),
           SizedBox(
-            width: AppBar().preferredSize.height + 40,
+            width: AppBar().preferredSize.height ,
             height: AppBar().preferredSize.height,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(32.0),
-                    ),
-                    onTap: () {},
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(Icons.favorite_border),
-                    ),
-                  ),
-                ),
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(32.0),
-                    ),
-                    onTap: () {
-                      setState(() {
-                        _isShowMap = !_isShowMap;
-                      });
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(_isShowMap
-                          ? Icons.sort
-                          : FontAwesomeIcons.mapMarkedAlt),
-                    ),
-                  ),
-                ),
-              ],
-            ),
           )
+          // SizedBox(
+          //   width: AppBar().preferredSize.height + 40,
+          //   height: AppBar().preferredSize.height,
+          //   child: Row(
+          //     crossAxisAlignment: CrossAxisAlignment.center,
+          //     mainAxisAlignment: MainAxisAlignment.end,
+          //     children: <Widget>[
+          //       Material(
+          //         color: Colors.transparent,
+          //         child: InkWell(
+          //           borderRadius: BorderRadius.all(
+          //             Radius.circular(32.0),
+          //           ),
+          //           onTap: () {},
+          //           child: Padding(
+          //             padding: const EdgeInsets.all(8.0),
+          //             child: Icon(Icons.favorite_border),
+          //           ),
+          //         ),
+          //       ),
+          //       Material(
+          //         color: Colors.transparent,
+          //         child: InkWell(
+          //           borderRadius: BorderRadius.all(
+          //             Radius.circular(32.0),
+          //           ),
+          //           onTap: () {
+          //             setState(() {
+          //               _isShowMap = !_isShowMap;
+          //             });
+          //           },
+          //           child: Padding(
+          //             padding: const EdgeInsets.all(8.0),
+          //             child: Icon(_isShowMap
+          //                 ? Icons.sort
+          //                 : FontAwesomeIcons.mapMarkedAlt),
+          //           ),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // )
         ],
       ),
     );

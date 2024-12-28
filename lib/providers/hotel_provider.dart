@@ -31,8 +31,12 @@ class HotelProvider with ChangeNotifier {
       if (!_fetchDetailCompleter.isCompleted) {
         _fetchDetailCompleter.complete();
       }
+      _isLoading = false;
+      notifyListeners();
     } catch (e) {
-      print(e);
+      _hotels = [];
+      _isLoading = false;
+      notifyListeners();
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -43,8 +47,10 @@ class HotelProvider with ChangeNotifier {
     notifyListeners();
     try {
       _topHotels = await _hotelServices.fetchTopHotels();
+      _isLoading = false;
+      notifyListeners();
     } catch (e) {
-      print(e);
+      _topHotels = [];
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -73,7 +79,6 @@ class HotelProvider with ChangeNotifier {
       notifyListeners();
       return _hotelsByLocation;
     } catch (e) {
-      print(e);
       return [];
     } finally {
       _isLoading = false;
@@ -87,8 +92,7 @@ class HotelProvider with ChangeNotifier {
       _hotelDetail = await _hotelServices.fetchHotelsByHotelSlug(hotelSlug);
       notifyListeners();
     } catch (e) {
-      print(e);
-    } finally {
+      print('Error fetch hotel by slug: $e');
       _isLoading = false;
       notifyListeners();
     }

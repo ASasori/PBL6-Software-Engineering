@@ -86,19 +86,20 @@ class _MyTripsScreenState extends State<MyTripsScreen>
               animationController: tabAnimationController,
             );
           });
-        } else if (tabType == TopBarType.Finished) {
+        } else {
           setState(() {
             indexView = FinishTripView(
               animationController: tabAnimationController,
             );
           });
-        } else if (tabType == TopBarType.Favorites) {
-          setState(() {
-            indexView = FavoritesListView(
-              animationController: tabAnimationController,
-            );
-          });
         }
+        // else if (tabType == TopBarType.Favorites) {
+        //   setState(() {
+        //     indexView = FavoritesListView(
+        //       animationController: tabAnimationController,
+        //     );
+        //   });
+        // }
       });
     }
   }
@@ -127,13 +128,13 @@ class _MyTripsScreenState extends State<MyTripsScreen>
                         ? AppTheme.primaryColor
                         : AppTheme.secondaryTextColor,
                     "finished"),
-                _getTopBarUi(() {
-                  tabClick(TopBarType.Favorites);
-                },
-                    tabType == TopBarType.Favorites
-                        ? AppTheme.primaryColor
-                        : AppTheme.secondaryTextColor,
-                    "favorites"),
+                // _getTopBarUi(() {
+                //   tabClick(TopBarType.Favorites);
+                // },
+                //     tabType == TopBarType.Favorites
+                //         ? AppTheme.primaryColor
+                //         : AppTheme.secondaryTextColor,
+                //     "favorites"),
               ],
             ),
             SizedBox(
@@ -185,4 +186,4 @@ class _MyTripsScreenState extends State<MyTripsScreen>
   }
 }
 
-enum TopBarType { Upcomming, Finished, Favorites }
+enum TopBarType { Upcomming, Finished }

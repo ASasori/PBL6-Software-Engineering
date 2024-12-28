@@ -276,7 +276,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           // HotelListView
           return HotelListView(
             callback: () {
-              // Xử lý khi nhấn vào từng khách sạn
               NavigationServices(context).gotoHotelDetails(hotel);
             },
             hotelListData: hotel,

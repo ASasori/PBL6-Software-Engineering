@@ -55,7 +55,7 @@ class HotelListViewData extends StatelessWidget {
                             ],
                           ),
                         )
-                      : SizedBox(),
+                      : const SizedBox(),
                   SizedBox(
                     height: 100,
                     child: ClipOval(

@@ -61,7 +61,7 @@ class InvoiceScreen extends StatelessWidget {
                     children: [
                       _buildInfoHeader(context,'Client Information'),
                       _buildInfoRow('Name', bookingData.fullName),
-                      _buildInfoRow('Address', bookingData.address),
+                      // _buildInfoRow('Address', bookingData.address),
                       _buildInfoRow('Email', bookingData.email),
                       _buildInfoRow('Phone', bookingData.phone),
                     ],
@@ -105,6 +105,8 @@ class InvoiceScreen extends StatelessWidget {
                       Text(
                         '${bookingData.hotelName} - ${bookingData.roomType} x ${bookingData.totalDays} days',
                         style: const TextStyle(fontSize: 16, color: Colors.black87),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 10),
                       Row(
@@ -117,8 +119,8 @@ class InvoiceScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Discount:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                          Text('${bookingData.saved} USD', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                          const Text('Discount:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                          Text('${bookingData.saved} USD', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                         ],
                       ),
                       Row(
@@ -134,24 +136,6 @@ class InvoiceScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              // Container(
-              //   width: double.infinity,
-              //   padding: const EdgeInsets.symmetric(vertical: 16),
-              //   decoration: BoxDecoration(
-              //     color: Colors.green,
-              //     borderRadius: BorderRadius.circular(12),
-              //   ),
-              //   child: const Center(
-              //     child: Text(
-              //       'PAID',
-              //       style: TextStyle(
-              //         color: Colors.white,
-              //         fontSize: 18,
-              //         fontWeight: FontWeight.bold,
-              //       ),
-              //     ),
-              //   ),
-              // ),
             ],
           ),
         ),
