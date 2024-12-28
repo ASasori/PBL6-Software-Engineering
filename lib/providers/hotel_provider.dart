@@ -27,10 +27,7 @@ class HotelProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      _hotels = await _hotelServices.fetchHotels();
-      if (!_fetchDetailCompleter.isCompleted) {
-        _fetchDetailCompleter.complete();
-      }
+      _hotels = await _hotelServices.fetchHotelsByLocation("", "");
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -60,26 +57,29 @@ class HotelProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      await _fetchDetailCompleter.future;
+      _isLoading = false;
       _locations = await _hotelServices.fetchLocations();
-      _fetchDetailCompleter = Completer<void>();
       notifyListeners();
     } catch (e) {
-      print(e);
+      _locations = [];
+      notifyListeners();
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  Future<List<Hotel>> fetchHotelsByLocation(String location, String name) async {
+  Future<void> fetchHotelsByLocation(String location, String name) async {
+    _isLoading = true;
     try {
-      _isLoading = true;
+      _isLoading = false;
       _hotelsByLocation = await _hotelServices.fetchHotelsByLocation(location, name);
+      _topHotels = _hotelsByLocation;
       notifyListeners();
-      return _hotelsByLocation;
     } catch (e) {
-      return [];
+      _hotelsByLocation = [];
+      _topHotels = [];
+      notifyListeners();
     } finally {
       _isLoading = false;
       notifyListeners();

@@ -1,11 +1,8 @@
-import 'package:booking_hotel_app/models/hotel_list_data.dart';
 import 'package:booking_hotel_app/models/room.dart';
 import 'package:booking_hotel_app/providers/wish_list_provider.dart';
 import 'package:booking_hotel_app/routes/route_names.dart';
-import 'package:booking_hotel_app/screens/bottom_tab/bottom_tab_screen.dart';
 import 'package:booking_hotel_app/screens/explore_screen/components/time_date_view.dart';
 import 'package:booking_hotel_app/screens/hotel_detail_screen/room_booking_view.dart';
-import 'package:booking_hotel_app/screens/wishlist_screen/wishlist_screen.dart';
 import 'package:booking_hotel_app/widgets/common_button.dart';
 import 'package:flutter/material.dart';
 import 'package:badges/badges.dart' as badges;
