@@ -89,6 +89,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Thay đổi thành miền frontend của bạn
     "https://hotel-management-fe-omega.vercel.app",  # Địa chỉ của ứng dụng React
     "https://pbl6-receptionist.netlify.app",
+    'https://demo-8000.nguyentanloc.top',
 ]
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'Server-Domain',
@@ -106,6 +107,7 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5173',
+    'https://demo-8000.nguyentanloc.top',
 ]
 
 # SECURE_HSTS_SECONDS = 31536000  # 1 year
@@ -327,6 +329,7 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
     'https://hotel-management-fe-omega.vercel.app',  # Địa chỉ của ứng dụng React
     'https://pbl6-receptionist.netlify.app',
+    'https://demo-8000.nguyentanloc.top',
 ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
