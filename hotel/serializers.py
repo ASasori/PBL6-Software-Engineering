@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Hotel, RoomType, Room, Booking, Cart, CartItem, HotelGallery, Review, Coupon
 from taggit.serializers import TagListSerializerField
+from django.db.models import Min, Max
 
 class HotelGallerySerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,10 +9,6 @@ class HotelGallerySerializer(serializers.ModelSerializer):
         fields = ['image']  # Add fields you want to expose
 
 class ReviewSerializer(serializers.ModelSerializer):
-    # room_type = serializers.SlugRelatedField(
-    #     queryset=RoomType.objects.all(),
-    #     slug_field='type'  # Trường 'type' của RoomType
-    # )
     profile_image = serializers.CharField(source='user.profile.image.url', read_only=True) 
     email = serializers.CharField(source='user.email', read_only=True)
     hotel_name = serializers.CharField(source='hotel.name', read_only=True)
@@ -27,13 +24,22 @@ class HotelSerializer(serializers.ModelSerializer):
     hotel_gallery = HotelGallerySerializer(many=True, read_only=True) 
     reviews = ReviewSerializer(many=True, read_only=True)
     tags = TagListSerializerField()
+    price_min = serializers.SerializerMethodField()
+    price_max = serializers.SerializerMethodField()
+
     class Meta:
         model = Hotel
         fields = [
             'id', 'user', 'name', 'description', 'map_image', 'address', 'mobile',
             'email', 'status', 'tags', 'views', 'featured', 'hid', 'slug',
-            'date', 'hotel_gallery', 'reviews'
+            'date', 'hotel_gallery', 'reviews', 'price_min', 'price_max'
         ]
+
+    def get_price_min(self, obj):
+        return RoomType.objects.filter(hotel=obj).aggregate(Min('price'))['price__min'] or 0.00
+
+    def get_price_max(self, obj):
+        return RoomType.objects.filter(hotel=obj).aggregate(Max('price'))['price__max'] or 0.00
 
 class RoomTypeSerializer(serializers.ModelSerializer):
     class Meta:

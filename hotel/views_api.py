@@ -24,7 +24,6 @@ import os
 
 class HotelViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
-
     queryset = Hotel.objects.filter(status='Live')
     serializer_class = HotelSerializer
     lookup_field = 'slug'
@@ -642,6 +641,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 logger = logging.getLogger(__name__)
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def location(request):
     location_images_map = {}
 
@@ -687,6 +687,7 @@ def location(request):
     return Response(response_data)
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def search_hotel_by_location_name(request):
     location = request.data.get('location', '').strip()
     name = request.data.get('name', '').strip()
@@ -700,6 +701,10 @@ def search_hotel_by_location_name(request):
 
     # Lấy các khách sạn khớp với bộ lọc
     hotels = Hotel.objects.filter(**filters)
+
+    # Kiểm tra xem có khách sạn nào được tìm thấy không
+    if not hotels.exists():  # Kiểm tra nếu không có khách sạn nào
+        return Response({'error': 'Không tìm thấy khách sạn nào.'}, status=status.HTTP_404_NOT_FOUND)
 
     # Serialize kết quả và trả về
     serializer = HotelSerializer(hotels, many=True, context={'request': request})
@@ -719,8 +724,10 @@ def get_public_coupon(request):
                 status=status.HTTP_404_NOT_FOUND
             )
 
+        coupons_valid = coupons.filter(valid_to__gte=datetime.now().date())
+
         # Serialize the data
-        serializer = CouponSerializer(coupons, many=True)
+        serializer = CouponSerializer(coupons_valid, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     except Exception as e:
@@ -729,3 +736,67 @@ def get_public_coupon(request):
             {'error': 'An error occurred while fetching public coupons.', 'details': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+@api_view(['GET'])
+@permission_classes([AllowAny])  
+def get_featured_hotels(request):
+
+    featured_hotels = Hotel.objects.filter(featured=True)
+    if not featured_hotels.exists():
+        return Response({'error': 'Không có khách sạn nào nổi bật.'}, status=status.HTTP_404_NOT_FOUND)
+    serializer = HotelSerializer(featured_hotels, many=True, context={'request': request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+# @api_view(['GET'])
+# @permission_classes([AllowAny])
+# def get_range_price_hotel(request):
+#     try:
+#         # Retrieve the price range for each hotel
+#         hotels_price_range = (
+#             RoomType.objects.values('hotel__id')  # Group by hotel ID and name
+#             .annotate(
+#                 min_price=models.Min('price'),  # Minimum price in the hotel
+#                 max_price=models.Max('price')   # Maximum price in the hotel
+#             )
+#         )
+
+#         # Format the response
+#         formatted_data = [
+#             {
+#                 'hotel_id': hotel['hotel__id'],
+#                 #'hotel_name': hotel['hotel__name'],
+#                 'min_price': hotel['min_price'],
+#                 'max_price': hotel['max_price']
+#             }
+#             for hotel in hotels_price_range
+#         ]
+
+#         return Response(formatted_data, status=status.HTTP_200_OK)
+    
+#     except Exception as e:
+#         # Log the error and return a generic error response
+#         return Response(
+#             {'error': 'An error occurred while fetching price ranges for hotels.', 'details': str(e)},
+#             status=status.HTTP_500_INTERNAL_SERVER_ERROR
+#         )
+    
+# @api_view(['GET'])
+# @permission_classes([AllowAny])
+# def get_range_price_by_hotel(request, hid):
+    # try:
+    #     # Retrieve all room types
+    #     hotel = Hotel.objects.get(hid=hid)
+    #     room_types = RoomType.objects.filter(hotel=hotel)
+    #     room_types_price_range = room_types.aggregate(
+    #         min_price=models.Min('price'),
+    #         max_price=models.Max('price')
+    #     )
+        
+    #     return Response(room_types_price_range, status=status.HTTP_200_OK)
+    
+    # except Exception as e:
+    #     # Log the error and return a generic error response
+    #     return Response(
+    #         {'error': 'An error occurred while fetching room types.', 'details': str(e)},
+    #         status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        # )

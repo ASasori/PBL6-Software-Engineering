@@ -1,6 +1,6 @@
 from django.urls import path, re_path, include
-from hotel.views_api import location, search_hotel_by_location_name, index, hotel_detail, room_type_detail, create_checkout_session, payment_success, payment_failed, checkout_api, ReviewViewSet, BookingViewSet, get_public_coupon
-from hotel import views, views_api
+from hotel.views_api import location, search_hotel_by_location_name, index, hotel_detail, room_type_detail, create_checkout_session, payment_success, payment_failed, checkout_api, ReviewViewSet, BookingViewSet, get_public_coupon, get_featured_hotels
+from hotel import views_api
 from rest_framework.routers import DefaultRouter
 
 app_name = "hotel_api"
@@ -19,6 +19,7 @@ urlpatterns = [
      path('payment-failed/<str:booking_id>/', payment_failed, name='payment_failed'),
 
      path('', include(router.urls)),
+     path('featured-hotels/', get_featured_hotels, name='featured_hotels'),
      path('hotels/<slug:h_slug>/room-types/<slug:rt_slug>/rooms/', 
          views_api.RoomViewSet.as_view({'get': 'room_by_roomtype'}), name='room-by-roomtype'),
      path('hotels/<slug:h_slug>/room-types/', 
@@ -42,7 +43,7 @@ urlpatterns = [
      path('bookings/get-detail-booking/<str:booking_id>/', 
           views_api.BookingViewSet.as_view({'get': 'get_detail_booking'}), name='get_detail_booking'),
 
-# Custom Review Endpoints
+     # Custom Review Endpoints
      path('reviews/post/', 
          ReviewViewSet.as_view({'post': 'create_review'}), name='create_review'),
      path('reviews/hotel-reviews/<str:pk>/', 
@@ -52,10 +53,12 @@ urlpatterns = [
      path('reviews/delete/<str:pk>/', 
          ReviewViewSet.as_view({'delete': 'delete_review'}), name='delete_review'),   
 
-# Location 
+     # Location 
      path('locations/', location, name = 'location'),
      path('locations/hotels_by_location/', search_hotel_by_location_name, name = 'hotels_by_location'),
 
      #Coupon public
      path('public-coupons/', get_public_coupon, name='get_coupon'),
+     path('coupons/', get_public_coupon, name='get_coupon'),
+
 ]
