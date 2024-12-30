@@ -61,4 +61,7 @@ urlpatterns = [
      path('public-coupons/', get_public_coupon, name='get_coupon'),
      path('coupons/', get_public_coupon, name='get_coupon'),
 
+     #Filter location and price
+     #path('filter/', search_hotel_by_location_and_price, name='filter'),
+
 ]

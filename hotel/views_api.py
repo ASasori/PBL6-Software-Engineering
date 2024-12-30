@@ -1,3 +1,4 @@
+from decimal import Decimal, InvalidOperation
 from django.http import JsonResponse
 from rest_framework import status, viewsets, permissions, generics
 from rest_framework.decorators import api_view, action, permission_classes
@@ -691,25 +692,59 @@ def location(request):
 def search_hotel_by_location_name(request):
     location = request.data.get('location', '').strip()
     name = request.data.get('name', '').strip()
-
-    # Tạo bộ lọc dựa trên location và name
+    price_min = request.data.get('price_min', None)
+    price_max = request.data.get('price_max', None)
+    
+    # Create filters for location and name
     filters = {}
     if location:
-        filters['address__icontains'] = location  # Dùng icontains để tìm kiếm không phân biệt hoa thường
+        filters['address__icontains'] = location  # Case-insensitive match for location
     if name:
         filters['name__icontains'] = name
 
-    # Lấy các khách sạn khớp với bộ lọc
+    # Filter hotels by location and name
     hotels = Hotel.objects.filter(**filters)
 
-    # Kiểm tra xem có khách sạn nào được tìm thấy không
-    if not hotels.exists():  # Kiểm tra nếu không có khách sạn nào
-        return Response({'error': 'Không tìm thấy khách sạn nào.'}, status=status.HTTP_404_NOT_FOUND)
+    # Validate price_min and price_max if provided
+    min_price = None
+    max_price = None
 
-    # Serialize kết quả và trả về
-    serializer = HotelSerializer(hotels, many=True, context={'request': request})
+    if price_min:
+        try:
+            min_price = Decimal(price_min)
+        except InvalidOperation:
+            return Response({'error': 'Giá tối thiểu không hợp lệ.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if price_max:
+        try:
+            max_price = Decimal(price_max)
+        except InvalidOperation:
+            return Response({'error': 'Giá tối đa không hợp lệ.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Filter hotels by price range
+    valid_hotels = []
+    for hotel in hotels:     
+        price_min_hotel = RoomType.objects.filter(hotel=hotel).aggregate(models.Min('price'))['price__min'] or Decimal('0.00')
+        price_max_hotel = RoomType.objects.filter(hotel=hotel).aggregate(models.Max('price'))['price__max'] or Decimal('0.00')       
+    # Adjust price range comparison
+        if min_price and max_price:
+            if min_price <= price_min_hotel <= max_price or min_price <= price_max_hotel <= max_price:
+                valid_hotels.append(hotel)
+        elif min_price:
+            if price_min_hotel >= min_price:
+                valid_hotels.append(hotel)
+        elif max_price:
+            if price_min_hotel <= max_price:
+                valid_hotels.append(hotel)
+        else:
+            valid_hotels.append(hotel)  # No price filter applied
+
+    if not valid_hotels:
+        return Response({'error': 'Không tìm thấy khách sạn nào thỏa mãn điều kiện.'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Serialize and return results
+    serializer = HotelSerializer(valid_hotels, many=True, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
-
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_public_coupon(request):
@@ -800,3 +835,51 @@ def get_featured_hotels(request):
     #         {'error': 'An error occurred while fetching room types.', 'details': str(e)},
     #         status=status.HTTP_500_INTERNAL_SERVER_ERROR
         # )
+
+# @api_view(['POST'])
+# @permission_classes([AllowAny])
+# def search_hotel_by_location_and_price(request):
+#     location = request.data.get('location', '').strip()
+#     price_min = request.data.get('price_min', None)
+#     price_max = request.data.get('price_max', None)
+#     name_hotel
+#     min_price = None
+#     max_price = None
+
+#     if price_min:
+#         try:
+#             min_price = Decimal(price_min)
+#         except InvalidOperation:
+#             return Response({'error': 'Giá tối thiểu không hợp lệ.'}, status=status.HTTP_400_BAD_REQUEST)
+
+#     if price_max:
+#         try:
+#             max_price = Decimal(price_max)
+#         except InvalidOperation:
+#             return Response({'error': 'Giá tối đa không hợp lệ.'}, status=status.HTTP_400_BAD_REQUEST)
+
+#     filters = {}
+#     if location:
+#         filters['address__icontains'] = location  
+
+#     hotels = Hotel.objects.filter(**filters)
+
+#     valid_hotels = []
+#     for hotel in hotels:
+#         price_min_hotel = RoomType.objects.filter(hotel=hotel).aggregate(Min('price'))['price__min'] or Decimal(0.00)
+
+#         if min_price is not None and max_price is not None:
+#             if price_min_hotel >= min_price and price_min_hotel <= max_price:
+#                 valid_hotels.append(hotel)
+#         elif min_price is not None and price_min_hotel >= min_price:
+#             valid_hotels.append(hotel)
+#         elif max_price is not None and price_min_hotel <= max_price:
+#             valid_hotels.append(hotel)
+#         elif min_price is None and max_price is None:
+#             valid_hotels.append(hotel)
+
+#     if not valid_hotels:
+#         return Response({'error': 'Không tìm thấy khách sạn nào thỏa mãn điều kiện.'}, status=status.HTTP_404_NOT_FOUND)
+
+#     serializer = HotelSerializer(valid_hotels, many=True, context={'request': request})
+#     return Response(serializer.data, status=status.HTTP_200_OK)
