@@ -21,6 +21,8 @@ from drf_yasg import openapi
 import logging
 from django.core.mail import send_mail
 import os
+from django.db.models import Min, Max
+from decimal import Decimal, InvalidOperation
 
 class HotelViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
@@ -746,6 +748,55 @@ def get_featured_hotels(request):
         return Response({'error': 'Không có khách sạn nào nổi bật.'}, status=status.HTTP_404_NOT_FOUND)
     serializer = HotelSerializer(featured_hotels, many=True, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def search_hotel_by_location_and_price(request):
+    location = request.data.get('location', '').strip()
+    price_min = request.data.get('price_min', None)
+    price_max = request.data.get('price_max', None)
+
+    min_price = None
+    max_price = None
+
+    if price_min:
+        try:
+            min_price = Decimal(price_min)
+        except InvalidOperation:
+            return Response({'error': 'Giá tối thiểu không hợp lệ.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if price_max:
+        try:
+            max_price = Decimal(price_max)
+        except InvalidOperation:
+            return Response({'error': 'Giá tối đa không hợp lệ.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    filters = {}
+    if location:
+        filters['address__icontains'] = location  
+
+    hotels = Hotel.objects.filter(**filters)
+
+    valid_hotels = []
+    for hotel in hotels:
+        price_min_hotel = RoomType.objects.filter(hotel=hotel).aggregate(Min('price'))['price__min'] or Decimal(0.00)
+
+        if min_price is not None and max_price is not None:
+            if price_min_hotel >= min_price and price_min_hotel <= max_price:
+                valid_hotels.append(hotel)
+        elif min_price is not None and price_min_hotel >= min_price:
+            valid_hotels.append(hotel)
+        elif max_price is not None and price_min_hotel <= max_price:
+            valid_hotels.append(hotel)
+        elif min_price is None and max_price is None:
+            valid_hotels.append(hotel)
+
+    if not valid_hotels:
+        return Response({'error': 'Không tìm thấy khách sạn nào thỏa mãn điều kiện.'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = HotelSerializer(valid_hotels, many=True, context={'request': request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 # @api_view(['GET'])
 # @permission_classes([AllowAny])

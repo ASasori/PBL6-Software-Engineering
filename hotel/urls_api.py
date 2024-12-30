@@ -1,5 +1,5 @@
 from django.urls import path, re_path, include
-from hotel.views_api import location, search_hotel_by_location_name, index, hotel_detail, room_type_detail, create_checkout_session, payment_success, payment_failed, checkout_api, ReviewViewSet, BookingViewSet, get_public_coupon, get_featured_hotels
+from hotel.views_api import location, search_hotel_by_location_name, index, hotel_detail, room_type_detail, create_checkout_session, payment_success, payment_failed, checkout_api, ReviewViewSet, BookingViewSet, get_public_coupon, get_featured_hotels, search_hotel_by_location_and_price
 from hotel import views_api
 from rest_framework.routers import DefaultRouter
 
@@ -19,6 +19,7 @@ urlpatterns = [
      path('payment-failed/<str:booking_id>/', payment_failed, name='payment_failed'),
 
      path('', include(router.urls)),
+     path('search-hotels/', search_hotel_by_location_and_price, name='search_hotels'),
      path('featured-hotels/', get_featured_hotels, name='featured_hotels'),
      path('hotels/<slug:h_slug>/room-types/<slug:rt_slug>/rooms/', 
          views_api.RoomViewSet.as_view({'get': 'room_by_roomtype'}), name='room-by-roomtype'),
