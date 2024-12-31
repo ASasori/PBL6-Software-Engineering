@@ -63,10 +63,22 @@ class ReviewAdmin(admin.ModelAdmin):
         queryset = super().get_queryset(request)
         return queryset.select_related('hotel', 'user')  # Tối ưu hóa truy vấn
 
+class BookingAdmin(admin.ModelAdmin):
+    list_display = ['hotel', 'get_room_numbers', 'user', 'check_in_date', 'check_out_date', 'payment_status', 'date']
+    list_filter = ['hotel', 'payment_status', 'date']
+    ordering = ['-date']
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related('hotel', 'user').prefetch_related('room')
+
+    def get_room_numbers(self, obj):
+        return ", ".join([str(room.room_number) for room in obj.room.all()])
+    get_room_numbers.short_description = 'Room Numbers'
 
 # Đăng ký các model
 admin.site.register(Hotel, HotelAdmin)
-admin.site.register(Booking)
+admin.site.register(Booking, BookingAdmin)
 admin.site.register(ActivityLog)
 admin.site.register(StaffOnDuty)
 admin.site.register(Room, RoomAdmin)
