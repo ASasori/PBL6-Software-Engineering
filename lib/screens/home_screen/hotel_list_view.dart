@@ -7,6 +7,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:booking_hotel_app/models/hotel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import '../../utils/helper.dart';
+
 class HotelListView extends StatelessWidget {
   final bool isShowData;
   final VoidCallback callback;
@@ -28,7 +30,7 @@ class HotelListView extends StatelessWidget {
       animation: animation,
       animationController: animationController,
       child: Padding(
-        padding: EdgeInsets.only(left: 24, right: 24, top: 8, bottom: 16),
+        padding: const EdgeInsets.only(left: 24, right: 24, top: 8, bottom: 16),
         child: CommonCard(
           color: AppTheme.backgroundColor,
           radius: 10,
@@ -73,24 +75,6 @@ class HotelListView extends StatelessWidget {
                                     .getBoldStyle()
                                     .copyWith(fontSize: 16),
                               ),
-                              Row (
-                                children: [
-                                  Icon(Icons.phone,
-                                      size: 12,
-                                      color: Theme.of(context)
-                                          .primaryColor),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    hotelListData.mobile,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.left,
-                                    style: TextStyles(context)
-                                        .getDescriptionStyle()
-                                        .copyWith(fontSize: 13),
-                                  ),
-                                ],
-                              ),
                               Expanded(
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -119,35 +103,56 @@ class HotelListView extends StatelessWidget {
                                                   style: TextStyles(context)
                                                       .getDescriptionStyle()
                                                       .copyWith(fontSize: 13),
-                                                  maxLines: 2,
                                                 ),
                                               ),
                                             ],
                                           ),
-                                          const SizedBox(height: 5),
-                                          Expanded(
-                                            child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.visibility,
-                                                    size: 12,
-                                                    color: Theme.of(context)
-                                                        .primaryColor),
-                                                const SizedBox(width: 10),
-                                                Expanded(
-                                                  child: Text(
-                                                    "${hotelListData.views}",
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    textAlign: TextAlign.left,
-                                                    style: TextStyles(context)
-                                                        .getDescriptionStyle()
-                                                        .copyWith(fontSize: 13),
-                                                  ),
+                                          Row(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.phone,
+                                                  size: 14,
+                                                  color: Theme.of(context)
+                                                      .primaryColor),
+                                              const SizedBox(width: 10),
+                                              Expanded(
+                                                child: Text(
+                                                  hotelListData.mobile,
+                                                  overflow:
+                                                  TextOverflow.ellipsis,
+                                                  textAlign: TextAlign.left,
+                                                  style: TextStyles(context)
+                                                      .getDescriptionStyle()
+                                                      .copyWith(fontSize: 13),
                                                 ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.price_change,
+                                                  size: 14,
+                                                  color: Theme.of(context)
+                                                      .primaryColor),
+                                              const SizedBox(width: 10),
+                                              Expanded(
+                                                child: Text(
+                                                  Helper.getPriceText(hotelListData.priceMin, hotelListData.priceMax),
+                                                  overflow:
+                                                  TextOverflow.ellipsis,
+                                                  textAlign: TextAlign.left,
+                                                  style: TextStyles(context)
+                                                      .getDescriptionStyle()
+                                                      .copyWith(fontSize: 13),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Expanded(
+                                            child: Helper.ratingStar(hotelRating: hotelListData.averageRating),
                                           ),
                                         ],
                                       ),
@@ -155,7 +160,7 @@ class HotelListView extends StatelessWidget {
                                     const SizedBox(width: 10),
                                     FittedBox(
                                       child: Padding(
-                                        padding: EdgeInsets.only(right: 8),
+                                        padding: const EdgeInsets.only(right: 8),
                                         child: Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,

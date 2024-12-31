@@ -64,9 +64,7 @@ class _MyTripsScreenState extends State<MyTripsScreen>
               padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
               child: Container(child: _getappBar()),
             ),
-            //upcoming finished favorites selected
             tabViewUI(topBarType),
-            //hotel list view
             Expanded(
               child: indexView,
             ),
@@ -151,7 +149,7 @@ class _MyTripsScreenState extends State<MyTripsScreen>
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.all(Radius.circular(32.0)),
+          borderRadius: const BorderRadius.all(Radius.circular(32.0)),
           highlightColor: Colors.transparent,
           splashColor: Theme.of(context).primaryColor.withOpacity(0.2),
           onTap: onTap,

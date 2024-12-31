@@ -6,7 +6,7 @@ import '../models/cart.dart';
 import 'api_services.dart';
 
 class HotelServices {
-  // final Dio _dio = Dio();
+  final Dio _dio = Dio();
 
   final ApiService _apiService = ApiService();
   String? baseUrl;
@@ -20,7 +20,6 @@ class HotelServices {
       final response = await _apiService.dio.get('$baseUrl/api/hotels/');
       if (response.statusCode == 200) {
         List<dynamic> data = response.data;
-        // convert data fromJson to List<Hotel>
         return data.map((json) => Hotel.fromJson(json)).toList();
       } else {
         throw Exception('Failed to load hotels');
@@ -33,10 +32,9 @@ class HotelServices {
 
   Future<List<Hotel>> fetchTopHotels() async {
     try {
-      final response = await _apiService.dio.get('$baseUrl/api/hotels/');
+      final response = await _apiService.dio.get('$baseUrl/api/featured-hotels/');
       if (response.statusCode == 200) {
         List<dynamic> data = response.data;
-        // convert data fromJson to List<Hotel>
         return data.map((json) => Hotel.fromJson(json)).toList();
       } else {
         throw Exception('Failed to load hotels');
@@ -77,7 +75,7 @@ class HotelServices {
   }
 
   Future<List<Hotel>> fetchHotelsByLocation(String location,
-      String name) async {
+      String name, String? priceMin, String? priceMax) async {
     try {
       final response = await _apiService.dio.post(
         '$baseUrl/api/locations/hotels_by_location/',
@@ -87,6 +85,8 @@ class HotelServices {
         data: jsonEncode({
           'location': location,
           'name': name,
+          'price_min': priceMin,
+          'price_max': priceMax,
         }),
       );
       if (response.statusCode == 200) {

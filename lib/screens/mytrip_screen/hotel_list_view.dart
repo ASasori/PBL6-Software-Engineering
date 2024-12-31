@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../language/appLocalizations.dart';
 import '../../models/hotel.dart';
+import '../../utils/helper.dart';
 import '../../utils/text_styles.dart';
 import '../../utils/themes.dart';
 import '../../widgets/common_card.dart';
@@ -37,7 +38,7 @@ class HotelListView extends StatelessWidget {
               color: AppTheme.backgroundColor,
               radius: 16,
               child: ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                borderRadius: const BorderRadius.all(Radius.circular(16.0)),
                 child: Stack(
                   children: <Widget>[
                     Column(
@@ -52,16 +53,16 @@ class HotelListView extends StatelessWidget {
                                               .galleryImages[1].imageUrl
                                           : hotelByLocation
                                               .galleryImages[0].imageUrl,
-                                  placeholder: (context, url) => Center(
+                                  placeholder: (context, url) => const Center(
                                     child: CircularProgressIndicator(),
                                   ),
                                   errorWidget: (context, url, error) =>
-                                      Icon(Icons.error),
+                                      const Icon(Icons.error),
                                   fit: BoxFit.cover,
                                 )
                               : Container(
                                   color: Colors.grey.shade200,
-                                  child: Icon(
+                                  child: const Icon(
                                     Icons.image_not_supported,
                                     color: Colors.grey,
                                     size: 40,
@@ -73,7 +74,7 @@ class HotelListView extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Expanded(
-                              child: Container(
+                              child: SizedBox(
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                       left: 16, top: 8, bottom: 8, right: 8),
@@ -104,7 +105,7 @@ class HotelListView extends StatelessWidget {
                                           const SizedBox(width: 5),
                                           Expanded(
                                             child: Text(
-                                              "${hotelByLocation.address}",
+                                              hotelByLocation.address,
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 2,
                                               softWrap: true,
@@ -115,24 +116,41 @@ class HotelListView extends StatelessWidget {
                                           const SizedBox(width: 4),
                                         ],
                                       ),
+                                      Row(
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.price_change,
+                                              size: 14,
+                                              color: Theme.of(context)
+                                                  .primaryColor),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Text(
+                                              Helper.getPriceText(hotelByLocation.priceMin, hotelByLocation.priceMax),
+                                              overflow:
+                                              TextOverflow.ellipsis,
+                                              textAlign: TextAlign.left,
+                                              style: TextStyles(context)
+                                                  .getDescriptionStyle(),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                       Padding(
                                         padding: const EdgeInsets.only(top: 4),
                                         child: Row(
                                           children: <Widget>[
-                                            // Helper.ratingStar(),
-                                            Icon(Icons.visibility,
-                                                size: 12,
-                                                color: Theme.of(context)
-                                                    .primaryColor),
+                                            Helper.ratingStar(hotelRating: hotelByLocation.averageRating),
                                             const SizedBox(width: 5),
                                             Text(
-                                              "${hotelByLocation.views} ",
+                                              "${hotelByLocation.reviewCount} ",
                                               style: TextStyles(context)
                                                   .getDescriptionStyle(),
                                             ),
                                             Text(
                                               AppLocalizations(context)
-                                                  .of("views"),
+                                                  .of("reviews"),
                                               style: TextStyles(context)
                                                   .getDescriptionStyle(),
                                             ),
@@ -159,7 +177,7 @@ class HotelListView extends StatelessWidget {
                           highlightColor: Colors.transparent,
                           splashColor:
                               Theme.of(context).primaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.all(
+                          borderRadius: const BorderRadius.all(
                             Radius.circular(16.0),
                           ),
                           onTap: () {
@@ -180,7 +198,7 @@ class HotelListView extends StatelessWidget {
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            borderRadius: BorderRadius.all(
+                            borderRadius: const BorderRadius.all(
                               Radius.circular(32.0),
                             ),
                             onTap: () {},

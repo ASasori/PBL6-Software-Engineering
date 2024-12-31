@@ -1,8 +1,5 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:booking_hotel_app/models/hotel.dart';
-import 'package:booking_hotel_app/models/location.dart';
-import '../models/cart.dart';
 import 'api_services.dart';
 
 class WishlistServices {
@@ -15,7 +12,7 @@ class WishlistServices {
   Future<String?> addCartItem (int roomId, String checkinDate, String checkoutDate, int adult, int children) async {
     try {
       final response = await _apiService.dio.post(
-        '${baseUrl}/api/add-cart-item',
+        '${baseUrl}/api/add-cart-item/',
         options: Options(
           contentType: 'application/json',
         ),
@@ -41,7 +38,7 @@ class WishlistServices {
 
   Future<Map<String, dynamic>> fetchCart() async {
     try {
-      final response = await _apiService.dio.get('$baseUrl/api/view_cart');
+      final response = await _apiService.dio.get('$baseUrl/api/view_cart/');
       if (response.statusCode == 200) {
         if (response.data['hotels'] == null) {
           throw Exception('No hotels found in cart');
@@ -57,7 +54,7 @@ class WishlistServices {
 
   Future<int> getCartItemCount() async {
     try {
-      final response = await _apiService.dio.get('$baseUrl/api/get_cart_item_count');
+      final response = await _apiService.dio.get('$baseUrl/api/get_cart_item_count/');
       if (response.statusCode == 200) {
         return response.data["total_items_in_cart"];
       } else {
@@ -71,7 +68,7 @@ class WishlistServices {
   Future<String?> deleteCartItem (int id) async {
     try {
       final response = await _apiService.dio.post(
-        '$baseUrl/api/delete_cart_item',
+        '$baseUrl/api/delete_cart_item/',
         options: Options(
           contentType: 'application/json',
         ),

@@ -240,6 +240,11 @@
     "vn": "Đã tìm thấy khách sạn"
   },
   {
+    "text_id": "sort",
+    "en": "Sort",
+    "vn": "Sắp xếp"
+  },
+  {
     "text_id": "filtter",
     "en": "Filter",
     "vn": "Bộ lọc"
@@ -278,6 +283,11 @@
     "text_id": "views",
     "en": "Views",
     "vn": "Lượt xem"
+  },
+  {
+    "text_id": "reviews",
+    "en": "Reviews",
+    "vn": "Luợt đánh giá"
   },
   {
     "text_id": "book_now",
@@ -376,8 +386,8 @@
   },
   {
     "text_id": "price_text",
-    "en": "price (for 1 night)",
-    "vn": "giá (cho 1 đêm)"
+    "en": "Price (for 1 night)",
+    "vn": "Giá (cho 1 đêm)"
   },
   {
     "text_id": "popular_filter",

@@ -23,22 +23,22 @@ class HotelProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   Hotel get hotelDetail => _hotelDetail;
 
-  Future<void> fetchHotels() async {
-    _isLoading = true;
-    notifyListeners();
-    try {
-      _hotels = await _hotelServices.fetchHotelsByLocation("", "");
-      _isLoading = false;
-      notifyListeners();
-    } catch (e) {
-      _hotels = [];
-      _isLoading = false;
-      notifyListeners();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
+  // Future<void> fetchHotels() async {
+  //   _isLoading = true;
+  //   notifyListeners();
+  //   try {
+  //     _hotels = await _hotelServices.fetchHotelsByLocation("", "", null, null);
+  //     _isLoading = false;
+  //     notifyListeners();
+  //   } catch (e) {
+  //     _hotels = [];
+  //     _isLoading = false;
+  //     notifyListeners();
+  //   } finally {
+  //     _isLoading = false;
+  //     notifyListeners();
+  //   }
+  // }
   Future<void> fetchTopHotels() async {
     _isLoading = true;
     notifyListeners();
@@ -69,16 +69,14 @@ class HotelProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchHotelsByLocation(String location, String name) async {
+  Future<void> fetchHotelsByLocation(String location, String name, String? priceMin, String? priceMax) async {
     _isLoading = true;
     try {
       _isLoading = false;
-      _hotelsByLocation = await _hotelServices.fetchHotelsByLocation(location, name);
-      _topHotels = _hotelsByLocation;
+      _hotelsByLocation = await _hotelServices.fetchHotelsByLocation(location, name, priceMin, priceMax);
       notifyListeners();
     } catch (e) {
       _hotelsByLocation = [];
-      _topHotels = [];
       notifyListeners();
     } finally {
       _isLoading = false;
@@ -95,6 +93,17 @@ class HotelProvider with ChangeNotifier {
       print('Error fetch hotel by slug: $e');
       _isLoading = false;
       notifyListeners();
+    }
+  }
+  void sortHotel (int methodIndex){
+    if (methodIndex == 0) {
+      _hotelsByLocation.sort((a,b) => a.priceMin.compareTo(b.priceMin));
+    } else if(methodIndex == 1) {
+      _hotelsByLocation.sort((a,b) => b.priceMin.compareTo(a.priceMin));
+    } else if (methodIndex == 2) {
+      _hotelsByLocation.sort((a,b) => a.averageRating.compareTo(b.averageRating));
+    } else  {
+      _hotelsByLocation.sort((a,b) => b.averageRating.compareTo(a.averageRating));
     }
   }
 }

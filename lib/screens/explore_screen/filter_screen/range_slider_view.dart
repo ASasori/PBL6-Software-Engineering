@@ -22,7 +22,7 @@ class _RangeSliderViewState extends State<RangeSliderView> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       child: Column(
         children: <Widget>[
           Stack(
@@ -33,7 +33,7 @@ class _RangeSliderViewState extends State<RangeSliderView> {
                     flex: _values.start.round(),
                     child: SizedBox(),
                   ),
-                  Container(
+                  SizedBox(
                     width: 54,
                     child: Text(
                       "\$${_values.start.round()}",
@@ -41,7 +41,7 @@ class _RangeSliderViewState extends State<RangeSliderView> {
                     ),
                   ),
                   Expanded(
-                    flex: 1000 - _values.start.round(),
+                    flex: 500 - _values.start.round(),
                     child: SizedBox(),
                   ),
                 ],
@@ -52,7 +52,7 @@ class _RangeSliderViewState extends State<RangeSliderView> {
                     flex: _values.end.round(),
                     child: SizedBox(),
                   ),
-                  Container(
+                  SizedBox(
                     width: 54,
                     child: Text(
                       "\$${_values.end.round()}",
@@ -60,7 +60,7 @@ class _RangeSliderViewState extends State<RangeSliderView> {
                     ),
                   ),
                   Expanded(
-                    flex: 1000 - _values.end.round(),
+                    flex: 500 - _values.end.round(),
                     child: SizedBox(),
                   ),
                 ],
@@ -69,15 +69,15 @@ class _RangeSliderViewState extends State<RangeSliderView> {
           ),
           SliderTheme(
             data: SliderThemeData(
-              //   rangeThumbShape: CustomRangeThumbShape(),
+              // rangeThumbShape: CustomRangeThumbShape(),
             ),
             child: RangeSlider(
               values: _values,
               min: 10.0,
-              max: 1000.0,
+              max: 500.0,
               activeColor: Theme.of(context).primaryColor,
               inactiveColor: Colors.grey.withOpacity(0.4),
-              divisions: 1000,
+              divisions: 500,
               onChanged: (RangeValues values) {
                 try {
                   setState(() {

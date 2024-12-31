@@ -20,7 +20,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
   List<PopularFilterListData> accomodationListData =
       PopularFilterListData.accomodationList;
 
-  RangeValues _values = RangeValues(100, 600);
+  RangeValues _values = const RangeValues(50,200);
   double distValue = 50.0;
 
   @override
@@ -34,7 +34,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             CommonAppbarView(
-              iconData: Icons.close,
+              iconData: Icons.arrow_back_ios,
               onBackClick: () {
                 Navigator.pop(context);
               },
@@ -52,19 +52,13 @@ class _FiltersScreenState extends State<FiltersScreen> {
                     children: <Widget>[
                       // hotel price filter
                       priceBarFilter(),
-                      Divider(
-                        height: 1,
-                      ),
+                      const Divider(height: 1),
                       // facilitate filter in hotel
                       popularFilter(),
-                      Divider(
-                        height: 1,
-                      ),
+                      const Divider(height: 1),
                       //hotel distance from city
                       distanceViewUI(),
-                      Divider(
-                        height: 1,
-                      ),
+                      const Divider(height: 1),
                       // all type of  accommodation
                       allAccommodationUI()
                     ],
@@ -72,9 +66,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
                 ),
               ),
             ),
-            Divider(
-              height: 1,
-            ),
+            const Divider(height: 1),
             Padding(
               padding: EdgeInsets.only(
                   left: 16,
@@ -100,9 +92,9 @@ class _FiltersScreenState extends State<FiltersScreen> {
       children: <Widget>[
         Padding(
           padding:
-          const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+              const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
           child: Text(
-            AppLocalizations(context).of("type of accommodation"),
+            AppLocalizations(context).of("type_of_accommodation"),
             textAlign: TextAlign.left,
             style: TextStyle(
                 color: Colors.grey,
@@ -116,9 +108,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
             children: getAccomodationListUI(),
           ),
         ),
-        SizedBox(
-          height: 8,
-        ),
+        const SizedBox(height: 8),
       ],
     );
   }
@@ -131,7 +121,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
         Material(
           color: Colors.transparent,
           child: InkWell(
-            borderRadius: BorderRadius.all(Radius.circular(4.0)),
+            borderRadius: const BorderRadius.all(Radius.circular(4.0)),
             onTap: () {
               setState(() {
                 checkAppPosition(i);
@@ -165,9 +155,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
         ),
       );
       if (i == 0) {
-        noList.add(Divider(
-          height: 1,
-        ));
+        noList.add(const Divider(height: 1));
       }
     }
     return noList;
@@ -186,7 +174,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
       }
     } else {
       accomodationListData[index].isSelected =
-      !accomodationListData[index].isSelected;
+          !accomodationListData[index].isSelected;
 
       var count = 0;
       for (var i = 0; i < accomodationListData.length; i++) {
@@ -213,9 +201,9 @@ class _FiltersScreenState extends State<FiltersScreen> {
       children: <Widget>[
         Padding(
           padding:
-          const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+              const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
           child: Text(
-            AppLocalizations(context).of("distance from city"),
+            AppLocalizations(context).of("distance_from_city"),
             textAlign: TextAlign.left,
             style: TextStyle(
                 color: Colors.grey,
@@ -229,9 +217,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
             distValue = value;
           },
         ),
-        SizedBox(
-          height: 8,
-        ),
+        const SizedBox(height: 8),
       ],
     );
   }
@@ -243,9 +229,9 @@ class _FiltersScreenState extends State<FiltersScreen> {
       children: <Widget>[
         Padding(
           padding:
-          const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+              const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
           child: Text(
-            AppLocalizations(context).of("popular filter"),
+            AppLocalizations(context).of("popular_filter"),
             textAlign: TextAlign.left,
             style: TextStyle(
                 color: Colors.grey,
@@ -259,9 +245,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
             children: getPList(),
           ),
         ),
-        SizedBox(
-          height: 8,
-        )
+        const SizedBox(height: 8)
       ],
     );
   }
@@ -282,7 +266,8 @@ class _FiltersScreenState extends State<FiltersScreen> {
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(4.0)),
                       onTap: () {
                         setState(() {
                           date.isSelected = !date.isSelected;
@@ -301,9 +286,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
                                   ? Theme.of(context).primaryColor
                                   : Colors.grey.withOpacity(0.6),
                             ),
-                            SizedBox(
-                              width: 4,
-                            ),
+                            const SizedBox(width: 4),
                             FittedBox(
                               fit: BoxFit.cover,
                               child: Text(
@@ -354,9 +337,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
             _values = values;
           },
         ),
-        SizedBox(
-          height: 8,
-        )
+        const SizedBox(height: 8)
       ],
     );
   }

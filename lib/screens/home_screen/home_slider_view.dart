@@ -29,7 +29,7 @@ class _HomeSliderViewState extends State<HomeSliderView> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<HotelProvider>(context, listen: false)
-          .fetchHotelsByLocation("", "")
+          .fetchTopHotels()
           .then((_) {
         setState(() {
           _startSliderTimer();

@@ -33,6 +33,11 @@ class Helper {
         "${roomData.children} ${AppLocalizations(applicationcontext!).of("children_data") }";
   }
 
+  static String getPriceText(double priceMin, double priceMax){
+    return
+      "\$$priceMin - \$$priceMax";
+  }
+
   static String getListSearchedDate(DateText dateText){
     LanguageType _languageType = applicationcontext == null ? LanguageType.en : applicationcontext!.read<ThemeProvider>().languageType;
     return "${dateText.startDate} - ${dateText.endDate} ${DateFormat('MMM', _languageType.toString().split('.')[1]).format(DateTime.now().add(Duration(days: 2)))}";
