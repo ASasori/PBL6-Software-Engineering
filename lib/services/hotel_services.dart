@@ -100,4 +100,25 @@ class HotelServices {
       throw Exception('Error fetching data api');
     }
   }
+  Future<String> fetchCityName(double lat, double lon) async {
+    try {
+      Dio dio = Dio();
+      final response = await dio.get(
+        'https://nominatim.openstreetmap.org/reverse',
+        queryParameters: {
+          'lat': lat,
+          'lon': lon,
+          'format': 'json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return response.data['address']['city'] ?? "Không tìm thấy thành phố";
+      } else {
+        throw "Lỗi khi gọi API: ${response.statusCode}";
+      }
+    } catch (e) {
+      throw "Lỗi khi gọi API: $e";
+    }
+  }
 }

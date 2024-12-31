@@ -1,6 +1,7 @@
 import 'package:booking_hotel_app/screens/mytrip_screen/hotel_list_view.dart';
 import 'package:booking_hotel_app/utils/themes.dart';
 import 'package:booking_hotel_app/widgets/common_button.dart';
+import 'package:booking_hotel_app/widgets/common_snack_bar.dart';
 import 'package:booking_hotel_app/widgets/remove_focuse.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -32,13 +33,13 @@ class _ExploreScreenState extends State<ExploreScreen>
 
   ScrollController scrollController = new ScrollController();
 
-  bool _isShowMap = false;
-
+  late RangeValues valueFilter;
   final searchBarHeight = 190.0;
   final filterBarHeight = 52.0;
 
   @override
   void initState() {
+    valueFilter = RangeValues(0, 0);
     animationController = AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this);
     _animationController =
@@ -142,6 +143,9 @@ class _ExploreScreenState extends State<ExploreScreen>
                                           hotelProvider.hotelsByLocation,
                                       onFilterChanged:
                                           (RangeValues values) async {
+                                        setState(() {
+                                          valueFilter = values;
+                                        });
                                         await hotelProvider
                                             .fetchHotelsByLocation(
                                                 placeNameController.text.trim(),
@@ -204,7 +208,10 @@ class _ExploreScreenState extends State<ExploreScreen>
                       String name = hotelNameController.text.trim();
                       String location = placeNameController.text.trim();
                       await hotelProvider.fetchHotelsByLocation(
-                          location, name, "", "");
+                          location,
+                          name,
+                          valueFilter.start.toString(),
+                          valueFilter.end.toString());
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -295,16 +302,28 @@ class _ExploreScreenState extends State<ExploreScreen>
                 borderRadius: const BorderRadius.all(
                   Radius.circular(32.0),
                 ),
-                onTap: () {
-                  setState( () async {
-
-                  });
+                onTap: () async {
+                  Map<String, dynamic> result =
+                      await hotelProvider.getCurrentCity();
+                  if (result['isSuccess']) {
+                    setState(() {
+                      placeNameController.text =
+                          result['cityName'] ?? "Không xác định";
+                    });
+                    await hotelProvider.fetchHotelsByLocation(
+                        result['cityName'] ?? "", "", "", "");
+                  } else {
+                    CommonSnackBar.show(
+                        context: context,
+                        iconData: Icons.error_outline,
+                        iconColor: Colors.red,
+                        message: result['errorMessage'],
+                        backgroundColor: Colors.black87);
+                  }
                 },
-                child: Padding(
+                child: const Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Icon(
-                      FontAwesomeIcons.mapMarkedAlt
-                  ),
+                  child: Icon(FontAwesomeIcons.mapMarkedAlt),
                 ),
               ),
             ),

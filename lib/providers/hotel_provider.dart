@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:geolocator/geolocator.dart';
 import '../models/hotel.dart';
 import '../models/location.dart';
 import '../services/hotel_services.dart';
@@ -93,6 +94,39 @@ class HotelProvider with ChangeNotifier {
       print('Error fetch hotel by slug: $e');
       _isLoading = false;
       notifyListeners();
+    }
+  }
+  Future<Map<String, dynamic>> getCurrentCity() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        throw "Please enable location services.";
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          throw "Location access denied.";
+        }
+      }
+      if (permission == LocationPermission.deniedForever) {
+        throw "Location access is permanently denied.";
+      }
+
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      String cityName = await _hotelServices.fetchCityName(position.latitude, position.longitude);
+      return {
+        'cityName': cityName,
+        'isSuccess': true,
+      };
+    } catch (e) {
+      return {
+        'errorMessage': e.toString(),
+        'isSuccess': false,
+      };
     }
   }
   void sortHotel (int methodIndex){

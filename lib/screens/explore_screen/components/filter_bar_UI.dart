@@ -188,7 +188,7 @@ class FilterBarUi extends StatefulWidget {
 }
 
 class _FilterBarUIState extends State<FilterBarUi> {
-  late RangeValues _values = const RangeValues(20, 200);
+  late RangeValues _values = const RangeValues(10, 500);
   int _selectedSortIndex = 1;
 
   @override

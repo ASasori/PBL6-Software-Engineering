@@ -32,7 +32,7 @@ class HotelListView extends StatelessWidget {
       animationController: animationController,
       child: Padding(
         padding: const EdgeInsets.only(left: 24, right: 24, top: 8, bottom: 16),
-        child: Column(
+          child: Column(
           children: <Widget>[
             CommonCard(
               color: AppTheme.backgroundColor,

@@ -297,7 +297,7 @@ class _WishlistScreenState extends State<WishlistScreen>
                                               fontSize: 18),
                                     ),
                                   ),
-                                  backgroundColor: Colors.green,
+                                  backgroundColor: Theme.of(context).primaryColor,
                                   onTap: () {
                                     NavigationServices(context)
                                         .gotoCheckoutScreen(
