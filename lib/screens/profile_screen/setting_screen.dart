@@ -427,7 +427,8 @@ class _SettingsScreenState extends State<SettingsScreen>  {
                         fontArray[0],
                         fontArray[1],
                         fontArray[2],
-                        fontArray[3]
+                        fontArray[3],
+                        fontArray[4],
                       ],
                     ),
                   )

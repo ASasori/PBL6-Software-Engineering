@@ -12,6 +12,7 @@ enum ColorType {
   Malibu,
   DarkSkyBlue,
   BilobaFlower,
+  ElectricViolet,
 }
 
 enum LanguageType { en, vn }

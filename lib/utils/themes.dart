@@ -87,6 +87,8 @@ class AppTheme {
         return isLightMode ? Color(0xFF458CEA) : Color(0xFF458CEA);
       case ColorType.BilobaFlower:
         return isLightMode ? Color(0xFFff5f5f) : Color(0xFFff5f5f);
+      case ColorType.ElectricViolet: // New color
+        return Color(0xFF8400FF); // Hex value for #8400FF
     }
   }
 

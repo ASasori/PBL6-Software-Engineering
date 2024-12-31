@@ -81,7 +81,7 @@ class _ExploreScreenState extends State<ExploreScreen>
               builder: (context, hotelProvider, child) {
                 return Column(
                   children: [
-                    _getAppBarUI(),
+                    _getAppBarUI(hotelProvider),
                     Expanded(
                       child: Stack(
                         children: [
@@ -245,13 +245,14 @@ class _ExploreScreenState extends State<ExploreScreen>
             },
             padding: const EdgeInsets.symmetric(horizontal: 8),
             buttonText: 'View all',
+            textColor: Colors.white,
           ),
         ],
       ),
     );
   }
 
-  Widget _getAppBarUI() {
+  Widget _getAppBarUI(HotelProvider hotelProvider) {
     return Padding(
       padding: EdgeInsets.only(
           top: MediaQuery.of(context).padding.top, left: 8, right: 8),
@@ -295,14 +296,15 @@ class _ExploreScreenState extends State<ExploreScreen>
                   Radius.circular(32.0),
                 ),
                 onTap: () {
-                  setState(() {
-                    _isShowMap = !_isShowMap;
+                  setState( () async {
+
                   });
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Icon(
-                      _isShowMap ? Icons.sort : FontAwesomeIcons.mapMarkedAlt),
+                      FontAwesomeIcons.mapMarkedAlt
+                  ),
                 ),
               ),
             ),
