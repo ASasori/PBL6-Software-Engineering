@@ -71,6 +71,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           },
                         ),
                         CommonTextFieldView(
+                          controller: authProvider.controllers['username'],
+                          errorText: authProvider.errors['username'],
+                          titleText: AppLocalizations(context).of("user_name"),
+                          padding: const EdgeInsets.only(
+                              left: 24, right: 24, bottom: 16),
+                          hintText: AppLocalizations(context)
+                              .of("enter_your_user_name"),
+                          onChanged: (String txt) {
+                            authProvider.validateField('username');
+                          },
+                          keyboardType: TextInputType.text,
+                        ),
+                        CommonTextFieldView(
                           controller: authProvider.controllers['password'],
                           errorText: authProvider.errors['password'],
                           titleText: AppLocalizations(context).of("password"),
@@ -89,45 +102,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           keyboardType: TextInputType.text,
                         ),
                         CommonTextFieldView(
-                          controller: authProvider.controllers['confirmPassword'],
+                          controller:
+                              authProvider.controllers['confirmPassword'],
                           errorText: authProvider.errors['confirmPassword'],
-                          titleText: AppLocalizations(context).of("confirm_password"),
+                          titleText:
+                              AppLocalizations(context).of("confirm_password"),
                           padding: const EdgeInsets.only(
                               left: 24, right: 24, bottom: 16),
-                          hintText:
-                          AppLocalizations(context).of("enter_confirm_password"),
+                          hintText: AppLocalizations(context)
+                              .of("enter_confirm_password"),
                           onChanged: (String txt) {
                             authProvider.validateField('confirmPassword');
                           },
-                          isObsecureText: !authProvider.isConfirmPasswordVisible,
+                          isObsecureText:
+                              !authProvider.isConfirmPasswordVisible,
                           isPasswordField: true,
                           togglePasswordVisibility: () {
                             authProvider.toggleConfirmPasswordVisibility();
                           },
                           keyboardType: TextInputType.text,
-                        ),
-                        CommonTextFieldView(
-                          controller: authProvider.controllers['username'],
-                          errorText: authProvider.errors['username'],
-                          titleText: AppLocalizations(context).of("user_name"),
-                          padding: const EdgeInsets.only(
-                              left: 24, right: 24, bottom: 16),
-                          hintText:
-                              AppLocalizations(context).of("enter_your_user_name"),
-                          onChanged: (String txt) {authProvider.validateField('username');},
-                          keyboardType: TextInputType.text,
-                        ),
-                        CommonTextFieldView(
-                          controller: authProvider.controllers['phone'],
-                          errorText: authProvider.errors['phone'],
-                          titleText:
-                              AppLocalizations(context).of("phone_number"),
-                          padding: const EdgeInsets.only(
-                              left: 24, right: 24, bottom: 24),
-                          hintText: AppLocalizations(context)
-                              .of("enter_phone_number"),
-                          onChanged: (String txt) { authProvider.validateField('phone');},
-                          keyboardType: TextInputType.phone,
                         ),
                         CommonButton(
                           padding: const EdgeInsets.only(
@@ -139,31 +132,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             String password = authProvider
                                 .controllers['password']!.text
                                 .trim();
-                            String phone =
-                                authProvider.controllers['phone']!.text.trim();
                             String username = authProvider
                                 .controllers['username']!.text
                                 .trim();
                             if (authProvider.validateRegister()) {}
                             bool isSuccess = await authProvider.register(
-                                email, password, username, phone);
+                                email, password, username);
                             if (isSuccess) {
                               CommonSnackBar.show(
                                   context: context,
                                   iconData: Icons.check_circle,
                                   iconColor: Colors.white,
-                                  message:
-                                  "Register successfully",
+                                  message: "Register successfully",
                                   backgroundColor:
-                                  Theme.of(context).primaryColor);
-                              NavigationServices(context)
-                                  .gotoLoginScreen();
+                                      Theme.of(context).primaryColor);
+                              NavigationServices(context).gotoLoginScreen();
                             } else {
                               CommonSnackBar.show(
                                   context: context,
                                   iconData: Icons.error_outline,
                                   iconColor: Colors.red,
-                                  message: "User with this email already exists!",
+                                  message:
+                                      "User with this email already exists!",
                                   backgroundColor: Colors.black87);
                             }
                           },
@@ -185,12 +175,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             InkWell(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
+                                  const BorderRadius.all(Radius.circular(8)),
                               onTap: () {
                                 NavigationServices(context).gotoLoginScreen();
                               },
                               child: Padding(
-                                padding: EdgeInsets.all(4.0),
+                                padding: const EdgeInsets.all(4.0),
                                 child: Text(
                                   AppLocalizations(context).of("login"),
                                   style: TextStyles(context)
@@ -200,15 +190,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           color: AppTheme.primaryColor),
                                 ),
                               ),
-                            )
+                            ),
                           ],
-                        )
+                        ),
                       ],
                     );
                   },
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

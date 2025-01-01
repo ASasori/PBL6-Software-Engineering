@@ -48,7 +48,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               Container(
                 color: Theme.of(context).primaryColor,
                 child: Padding(
-                  padding: EdgeInsets.only(bottom: 12, right: 12),
+                  padding: const EdgeInsets.only(bottom: 12, right: 12),
                   child: appBar(),
                 ),
               ),
@@ -67,7 +67,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           authProvider.profile.fullName),
                       _buildListTileProfile(Icons.phone, "Phone number",
                           authProvider.profile.phone),
-                      _buildListTileProfile(Icons.transgender, "Full name",
+                      _buildListTileProfile(Icons.transgender, "Gender",
                           authProvider.profile.gender),
                       _buildListTileProfile(Icons.public, "Country",
                           authProvider.profile.country),

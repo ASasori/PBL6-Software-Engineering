@@ -49,7 +49,7 @@ class AuthService {
   }
 
   Future<bool> register( String email, String password,
-      String username, String phone) async {
+      String username) async {
     try {
       final response = await _dio.post(
         '$baseUrl/user/api/userauths/register/',
@@ -60,7 +60,6 @@ class AuthService {
           'username': username,
           'email': email,
           'password': password,
-          'phone': phone
         }),
       );
 

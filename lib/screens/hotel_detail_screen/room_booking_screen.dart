@@ -117,7 +117,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen>
             ),
           ),
           CommonButton(
-            padding: EdgeInsets.only(top: 8, bottom: 24, left: 16, right: 16),
+            padding: const EdgeInsets.only(top: 8, bottom: 24, left: 16, right: 16),
             buttonText: "Check Availability",
             onTap: () {
               setState(() {

@@ -10,7 +10,6 @@ class HotelRoomList extends StatefulWidget {
 }
 
 class _HotelRoomeListState extends State<HotelRoomList> {
-  // dua link anh cua hotel xuong: roomtype, anh hotelgallery
   List<String> photosList = [
     Localfiles.hotel_room_1,
     Localfiles.hotel_room_2,
@@ -23,7 +22,7 @@ class _HotelRoomeListState extends State<HotelRoomList> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 120,
       child: ListView.builder(
         padding: const EdgeInsets.only(top: 0, bottom: 8, right: 16, left: 16),
@@ -36,7 +35,7 @@ class _HotelRoomeListState extends State<HotelRoomList> {
               color: AppTheme.backgroundColor,
               radius: 8,
               child: ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                borderRadius: const BorderRadius.all(Radius.circular(8.0)),
                 child: AspectRatio(
                   aspectRatio: 1,
                   child: Image.asset(

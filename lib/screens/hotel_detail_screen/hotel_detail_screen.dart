@@ -13,7 +13,6 @@ import 'package:provider/provider.dart';
 
 import '../../language/appLocalizations.dart';
 import '../../models/hotel.dart';
-import '../../models/hotel_list_data.dart';
 import '../../routes/route_names.dart';
 import '../../utils/helper.dart';
 import '../../utils/text_styles.dart';
@@ -21,6 +20,7 @@ import '../../utils/themes.dart';
 import '../../widgets/common_button.dart';
 import '../../widgets/common_card.dart';
 import '../../widgets/common_snack_bar.dart';
+import 'hotel_room_list.dart';
 
 class HotelDetailScreen extends StatefulWidget {
   final Hotel hotelData;
@@ -33,7 +33,6 @@ class HotelDetailScreen extends StatefulWidget {
 
 class _HotelDetailScreenState extends State<HotelDetailScreen>
     with TickerProviderStateMixin {
-  List<HotelListData> hotelDataTest = HotelListData.hotelList;
   ScrollController scrollController = ScrollController(initialScrollOffset: 0);
   TextEditingController ratingController = TextEditingController();
   var hoteltext1 =
@@ -195,7 +194,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                   ),
                   child: RatingView(hotelRating: reviewProvider.hotelRating),
                 ),
-                // HotelRoomList(),
+                HotelRoomList(),
                 _getPhotoReviewUi("reviews", reviewProvider.reviewList.length,
                     'view_all', Icons.arrow_forward, () {
                   NavigationServices(context)
@@ -204,7 +203,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen>
                 if (reviewProvider.reviewList.isEmpty)
                   const Center(
                     child: Text(
-                      'Hiện không có đánh giá nào.',
+                      'No reviews',
                       style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                   )

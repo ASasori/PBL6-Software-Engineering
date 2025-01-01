@@ -42,6 +42,7 @@ class AuthProvider with ChangeNotifier {
       );
       if (image != null) {
         _selectedImage = File(image.path);
+        print(_selectedImage);
         await updateProfile(null, null, null, null, null, null, null, _selectedImage!.path, null);
         notifyListeners();
       }
@@ -64,15 +65,14 @@ class AuthProvider with ChangeNotifier {
     }
   }
   Future<bool> register(String email, String password,
-      String username, String phone) async {
+      String username) async {
     try {
-      bool isSuccess = await _authService.register(email, password, username, phone);
+      bool isSuccess = await _authService.register(email, password, username);
       if (isSuccess) {
         return true;
       }
       return false;
     } catch (e) {
-      print('Error: $e');
       return false;
     }
   }
@@ -156,7 +156,6 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      print("error: $e");
       return false;
     }
   }
@@ -311,7 +310,7 @@ class AuthProvider with ChangeNotifier {
     return validateAll(['email', 'password']);
   }
   bool validateRegister() {
-    return validateAll(['email', 'password', 'username', 'phone']);
+    return validateAll(['email', 'password', 'confirmPassword','username']);
   }
   bool validateForgotPassword() {
     return validateAll(['email']);

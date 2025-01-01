@@ -9,6 +9,7 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../../language/appLocalizations.dart';
 import '../../../utils/text_styles.dart';
+import '../../../widgets/common_snack_bar.dart';
 
 class TimeDateView extends StatefulWidget {
   final Function(DateTime startDate, DateTime endDate)? onDateChanged;
@@ -27,13 +28,13 @@ class _TimeDateViewState extends State<TimeDateView> {
   @override
   void initState() {
     startDate = DateTime.now();
-    endDate = DateTime.now().add(Duration(days: 5));
+    endDate = DateTime.now().add(const Duration(days: 5));
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 16, bottom: 22),
+      padding: const EdgeInsets.only(left: 16, bottom: 22),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
@@ -42,7 +43,7 @@ class _TimeDateViewState extends State<TimeDateView> {
                   () {
                 _showDemoDialog(context);
               }),
-          SizedBox(width: 10,),
+          const SizedBox(width: 10),
           Container(
             width: 1,
             height: 100,
@@ -60,7 +61,7 @@ class _TimeDateViewState extends State<TimeDateView> {
           Material(
             color: Colors.transparent,
             child: InkWell(
-              borderRadius: BorderRadius.all(
+              borderRadius: const BorderRadius.all(
                 Radius.circular(4.0),
               ),
               onTap: onTap,
@@ -77,9 +78,7 @@ class _TimeDateViewState extends State<TimeDateView> {
                           .getDescriptionStyle()
                           .copyWith(fontSize: 16),
                     ),
-                    SizedBox(
-                      height: 8,
-                    ),
+                    const SizedBox(height: 8),
                     Text(
                       subtitle,
                       // "${DateFormat("dd, MMM").format(startDate)} - ${DateFormat("dd, MMM").format(endDate)}",
@@ -123,18 +122,29 @@ class _TimeDateViewState extends State<TimeDateView> {
                     allowViewNavigation: false,
                   ),
                 ),
-                // Buttons to confirm or cancel the selection
                 Padding(
                   padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16, top: 8),
                   child: CommonButton(
                     buttonText: AppLocalizations(context).of("Apply_date"),
                     onTap: () {
-                      // Close the dialog and update the parent state
                       Navigator.pop(context);
-                      if (widget.onDateChanged != null) {
-                        widget.onDateChanged!(startDate, endDate); // Notify the parent
+                      if (widget.onDateChanged != null ) {
+                        if (startDate.compareTo(endDate) != 0)
+                          {
+                            widget.onDateChanged!(startDate, endDate);
+                          }
+                        else if (startDate.compareTo(endDate) == 0) {
+                          CommonSnackBar.show(
+                              context: context,
+                              iconData: Icons.error_outline,
+                              iconColor: Colors.red,
+                              message:
+                                "Start date cannot coincide with end date",
+                              backgroundColor: Colors.black87);
+                          endDate = startDate.add(const Duration(days: 1));
+                          widget.onDateChanged!(startDate, endDate);
+                        }
                       }
-                      // Ensure parent widget updates with the selected dates
                       setState(() {
                       });
                     },

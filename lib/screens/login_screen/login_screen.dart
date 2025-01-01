@@ -21,7 +21,7 @@ class _LoginScreen extends State<LoginScreen> {
   bool _isPasswordVisible = false;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<AuthProvider>(context, listen: false).resetError();
@@ -29,6 +29,7 @@ class _LoginScreen extends State<LoginScreen> {
       Provider.of<AuthProvider>(context, listen: false).resetPasswordVisible();
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,7 +66,9 @@ class _LoginScreen extends State<LoginScreen> {
                           hintText:
                               AppLocalizations(context).of("enter_your_email"),
                           keyboardType: TextInputType.emailAddress,
-                          onChanged: (String txt) {authProvider.validateField('email');},
+                          onChanged: (String txt) {
+                            authProvider.validateField('email');
+                          },
                         ),
                         CommonTextFieldView(
                           controller: authProvider.controllers['password'],
@@ -75,7 +78,9 @@ class _LoginScreen extends State<LoginScreen> {
                               left: 24, right: 24, bottom: 16),
                           hintText:
                               AppLocalizations(context).of("enter_password"),
-                          onChanged: (String txt) {authProvider.validateField('password');},
+                          onChanged: (String txt) {
+                            authProvider.validateField('password');
+                          },
                           isObsecureText: !_isPasswordVisible,
                           isPasswordField: true,
                           togglePasswordVisibility: () {
@@ -92,26 +97,28 @@ class _LoginScreen extends State<LoginScreen> {
                           buttonText: AppLocalizations(context).of("login"),
                           onTap: () async {
                             if (authProvider.validateLogin()) {
-                              bool isSuccess = await authProvider.login( authProvider.controllers['email']!.text.trim(),
-                                authProvider.controllers['password']!.text.trim());
+                              bool isSuccess = await authProvider.login(
+                                  authProvider.controllers['email']!.text
+                                      .trim(),
+                                  authProvider.controllers['password']!.text
+                                      .trim());
                               if (isSuccess) {
                                 CommonSnackBar.show(
                                     context: context,
                                     iconData: Icons.check_circle,
                                     iconColor: Colors.white,
-                                    message:
-                                        "Login successfully",
+                                    message: "Login successfully",
                                     backgroundColor:
                                         Theme.of(context).primaryColor);
                                 NavigationServices(context)
                                     .gotoBottomTabScreen();
                               } else {
                                 CommonSnackBar.show(
-                                  context: context,
-                                  iconData: Icons.error_outline,
-                                  iconColor: Colors.red,
-                                  message: "Email or password is incorrect",
-                                  backgroundColor: Colors.black87);
+                                    context: context,
+                                    iconData: Icons.error_outline,
+                                    iconColor: Colors.red,
+                                    message: "Email or password is incorrect",
+                                    backgroundColor: Colors.black87);
                               }
                             }
                           },
@@ -130,48 +137,23 @@ class _LoginScreen extends State<LoginScreen> {
 
   _forgotYourPassword() {
     return Padding(
-        padding: EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            InkWell(
-              borderRadius: BorderRadius.all(Radius.circular(8)),
-              onTap: () {
-                NavigationServices(context).gotoForgotPasswordScreen();
-              },
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child:
-                    Text(AppLocalizations(context).of("forgot_your_Password")),
-              ),
-            )
-          ],
-        ));
+      padding: const EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          InkWell(
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+            onTap: () {
+              NavigationServices(context).gotoForgotPasswordScreen();
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text(AppLocalizations(context).of("forgot_your_Password")),
+            ),
+          ),
+        ],
+      ),
+    );
   }
-
-  // bool allValidation() {
-  //   bool isValid = true;
-  //   if (_emailController.text.trim().isEmpty) {
-  //     _errorEmail = AppLocalizations(context).of("email_cannot_empty");
-  //     isValid = false;
-  //   } else if (!Validator.validateEmail(_emailController.text.trim())) {
-  //     _errorEmail = AppLocalizations(context).of("enter_valid_email");
-  //     isValid = false;
-  //   } else {
-  //     _errorEmail = "";
-  //   }
-  //
-  //   if (_passwordController.text.trim().isEmpty) {
-  //     _errorPassword = AppLocalizations(context).of("password_cannot_empty");
-  //     isValid = false;
-  //   } else if (_passwordController.text.trim().length < 8) {
-  //     _errorPassword = AppLocalizations(context).of("valid_password");
-  //     isValid = false;
-  //   } else {
-  //     _errorPassword = "";
-  //   }
-  //   setState(() {});
-  //   return isValid;
-  // }
 }
