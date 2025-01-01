@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Hotel, RoomType, Room, Booking, Cart, CartItem, HotelGallery, Review, Coupon
 from taggit.serializers import TagListSerializerField
-from django.db.models import Min, Max
+from django.db.models import Min, Max, Avg, Count
 
 class HotelGallerySerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,17 +22,19 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class HotelSerializer(serializers.ModelSerializer):
     hotel_gallery = HotelGallerySerializer(many=True, read_only=True) 
-    reviews = ReviewSerializer(many=True, read_only=True)
+    #reviews = ReviewSerializer(many=True, read_only=True)
     tags = TagListSerializerField()
     price_min = serializers.SerializerMethodField()
     price_max = serializers.SerializerMethodField()
+    review_count = serializers.SerializerMethodField()
+    average_rating = serializers.SerializerMethodField()
 
     class Meta:
         model = Hotel
         fields = [
             'id', 'user', 'name', 'description', 'map_image', 'address', 'mobile',
             'email', 'status', 'tags', 'views', 'featured', 'hid', 'slug',
-            'date', 'hotel_gallery', 'reviews', 'price_min', 'price_max'
+            'date', 'hotel_gallery',  'review_count', 'average_rating', 'price_min', 'price_max'
         ]
 
     def get_price_min(self, obj):
@@ -40,6 +42,12 @@ class HotelSerializer(serializers.ModelSerializer):
 
     def get_price_max(self, obj):
         return RoomType.objects.filter(hotel=obj).aggregate(Max('price'))['price__max'] or 0.00
+    
+    def get_review_count(self, obj):
+        return Review.objects.filter(hotel=obj).count()
+
+    def get_average_rating(self, obj):
+        return Review.objects.filter(hotel=obj).aggregate(Avg('rating'))['rating__avg'] or 0.00
 
 class RoomTypeSerializer(serializers.ModelSerializer):
     class Meta:
