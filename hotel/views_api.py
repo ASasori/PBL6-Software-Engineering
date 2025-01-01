@@ -249,7 +249,7 @@ class CartViewSet(viewsets.ModelViewSet):
 
     @swagger_auto_schema(
         operation_description="Add a room item to the user's cart.",
-        request_body=CartItemSerializer,  # Specify the request body schema
+        request_body=CartItemSerializer, 
         responses={
             201: 'Cart item successfully created', 
             400: 'Bad request, room may already be booked for the selected dates',
@@ -264,10 +264,6 @@ class CartViewSet(viewsets.ModelViewSet):
         room_id = request.data.get('room')
         checkin_date = request.data.get('check_in_date')
         checkout_date = request.data.get('check_out_date')
-
-        
-        # if CartItem.objects.filter(cart=cart, room_id=room_id).exists():
-        #     return Response({'error': 'Room already in cart'}, status=status.HTTP_400_BAD_REQUEST)
 
         overlapping_items = CartItem.objects.filter(cart=cart, room_id=room_id).filter(
         (models.Q(check_in_date__lte=checkout_date) & models.Q(check_out_date__gte=checkin_date))
@@ -367,13 +363,13 @@ class BookingViewSet(viewsets.ModelViewSet):
 
             booking.room.add(room) 
             booking.save()
-# Send booking confirmation email
+
             subject = "Booking Confirmation"
             message = (
                 f"Dear {full_name},\n\n"
                 f"Thank you for booking with us at {hotel.name}.\n"
                 f"Here are your booking details:\n\n"
-                f"Booking ID: {booking.booking_id}\n"
+                f"Booking ID: #{booking.booking_id}\n"
                 f"Hotel: {hotel.name}\n"
                 f"Room Type: {room_type.type}\n"
                 f"Room Number: {room.room_number}\n"
@@ -382,8 +378,9 @@ class BookingViewSet(viewsets.ModelViewSet):
                 f"Total Days: {total_days}\n"
                 f"Guests: {num_adults} Adults, {num_children} Children\n"
                 f"Total Price: ${total}\n\n"
+                f"You can complete your payment online on our website or choose to pay at the hotel upon check-in.\n"
                 f"We look forward to hosting you!\n\n"
-                f"Best regards,\n{hotel.name} Team"
+                f"Best regards,\nTravel-PBL6 Team"
             )
 
             send_mail(
@@ -478,7 +475,7 @@ def checkout_api(request, booking_id):
             if coupon in booking.coupons.all():
                 return Response({'error': 'Coupon already activated'}, status=status.HTTP_400_BAD_REQUEST)
             if coupon.valid_to < datetime.now().date():
-                return Response({'error': 'Mã giảm giá đã hết hạn.'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': 'Coupon code has expired.'}, status=status.HTTP_400_BAD_REQUEST)
             
             # Calculate the discount
             if coupon.type == "Percentage":
@@ -500,7 +497,7 @@ def checkout_api(request, booking_id):
             }, status=status.HTTP_200_OK)
 
         except Coupon.DoesNotExist:
-            return Response({'error': 'Mã giảm giá không tồn tại.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Coupon code does not exist.'}, status=status.HTTP_404_NOT_FOUND)
 
     except Booking.DoesNotExist:
         return Response({'error': 'Booking not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -515,11 +512,6 @@ def create_checkout_session(request, booking_id):
         
         success_url = f"{settings.FRONTEND_URL}/success-payment?session_id={{CHECKOUT_SESSION_ID}}&booking_id={booking.booking_id}&cart_item_id={cart_item_id}"
         cancel_url = f"{settings.FRONTEND_URL}/payment-failed"
-
-        # domain = os.getenv('DOMAIN', 'http://localhost:3000')
-
-        # success_url = f"{domain}/success-payment?session_id={{CHECKOUT_SESSION_ID}}&booking_id={booking.booking_id}&cart_item_id={cart_item_id}"
-        # cancel_url = f"{domain}/payment-failed"
 
         checkout_session = stripe.checkout.Session.create(
             customer_email=booking.email,
@@ -560,14 +552,53 @@ def create_checkout_session(request, booking_id):
     except Booking.DoesNotExist:
         return Response({'error': 'Booking not found'}, status=status.HTTP_404_NOT_FOUND)
 
+# @api_view(['POST'])
+# def payment_success(request, booking_id):
+#     session_id = request.data.get('sessionId')
+#     booking = get_object_or_404(Booking, booking_id=booking_id)
+#     if booking.stripe_payment_intent == session_id and booking.payment_status == "processing":
+#         booking.payment_status = "paid"
+#         booking.save()
+#         return Response({'message': 'Payment successful'}, status=status.HTTP_200_OK)
+#     return Response({'error': 'Payment verification failed'}, status=status.HTTP_400_BAD_REQUEST)
+
+from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework import status
+
 @api_view(['POST'])
 def payment_success(request, booking_id):
     session_id = request.data.get('sessionId')
     booking = get_object_or_404(Booking, booking_id=booking_id)
+
     if booking.stripe_payment_intent == session_id and booking.payment_status == "processing":
         booking.payment_status = "paid"
         booking.save()
+
+        # Gửi email xác nhận
+        subject = "Payment Confirmation"
+        message = (
+            f"Dear {booking.full_name},\n\n"
+            f"Thank you for paying via website Travel-pbl6.\n"
+            f"Here are your booking details:\n\n"
+            f"Booking ID: #{booking.booking_id}\n"
+            f"Your invoice: https://pbl6-fe-hotel-management.vercel.app/invoice/?booking-id={booking.booking_id}\n\n"
+            f"We look forward to welcoming you!\n\n"
+            f"Best regards,\nTravel-PBL6 Team"
+        )
+
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email="minamisasori28@gmail.com",  # Thay đổi email gửi đi nếu cần
+            recipient_list=[booking.email],
+            fail_silently=False,
+        )
+
         return Response({'message': 'Payment successful'}, status=status.HTTP_200_OK)
+
     return Response({'error': 'Payment verification failed'}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
@@ -715,13 +746,13 @@ def search_hotel_by_location_name(request):
         try:
             min_price = Decimal(price_min)
         except InvalidOperation:
-            return Response({'error': 'Giá tối thiểu không hợp lệ.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Minimum price not valid.'}, status=status.HTTP_400_BAD_REQUEST)
 
     if price_max:
         try:
             max_price = Decimal(price_max)
         except InvalidOperation:
-            return Response({'error': 'Giá tối đa không hợp lệ.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Invalid maximum price.'}, status=status.HTTP_400_BAD_REQUEST)
 
     # Filter hotels by price range
     valid_hotels = []
@@ -742,11 +773,12 @@ def search_hotel_by_location_name(request):
             valid_hotels.append(hotel)  # No price filter applied
 
     if not valid_hotels:
-        return Response({'error': 'Không tìm thấy khách sạn nào thỏa mãn điều kiện.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': 'No hotels were found that satisfied the conditions.'}, status=status.HTTP_404_NOT_FOUND)
 
     # Serialize and return results
     serializer = HotelSerializer(valid_hotels, many=True, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_public_coupon(request):
@@ -780,7 +812,7 @@ def get_featured_hotels(request):
 
     featured_hotels = Hotel.objects.filter(featured=True)
     if not featured_hotels.exists():
-        return Response({'error': 'Không có khách sạn nào nổi bật.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': 'There are no feature hotels.'}, status=status.HTTP_404_NOT_FOUND)
     serializer = HotelSerializer(featured_hotels, many=True, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -804,7 +836,7 @@ def search_hotel_by_location_and_price(request):
         try:
             max_price = Decimal(price_max)
         except InvalidOperation:
-            return Response({'error': 'Giá tối đa không hợp lệ.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Invalid maximum price.'}, status=status.HTTP_400_BAD_REQUEST)
 
     filters = {}
     if location:
@@ -827,110 +859,9 @@ def search_hotel_by_location_and_price(request):
             valid_hotels.append(hotel)
 
     if not valid_hotels:
-        return Response({'error': 'Không tìm thấy khách sạn nào thỏa mãn điều kiện.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': 'No hotels were found that satisfied the conditions.'}, status=status.HTTP_404_NOT_FOUND)
 
     serializer = HotelSerializer(valid_hotels, many=True, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# @api_view(['GET'])
-# @permission_classes([AllowAny])
-# def get_range_price_hotel(request):
-#     try:
-#         # Retrieve the price range for each hotel
-#         hotels_price_range = (
-#             RoomType.objects.values('hotel__id')  # Group by hotel ID and name
-#             .annotate(
-#                 min_price=models.Min('price'),  # Minimum price in the hotel
-#                 max_price=models.Max('price')   # Maximum price in the hotel
-#             )
-#         )
-
-#         # Format the response
-#         formatted_data = [
-#             {
-#                 'hotel_id': hotel['hotel__id'],
-#                 #'hotel_name': hotel['hotel__name'],
-#                 'min_price': hotel['min_price'],
-#                 'max_price': hotel['max_price']
-#             }
-#             for hotel in hotels_price_range
-#         ]
-
-#         return Response(formatted_data, status=status.HTTP_200_OK)
-    
-#     except Exception as e:
-#         # Log the error and return a generic error response
-#         return Response(
-#             {'error': 'An error occurred while fetching price ranges for hotels.', 'details': str(e)},
-#             status=status.HTTP_500_INTERNAL_SERVER_ERROR
-#         )
-    
-# @api_view(['GET'])
-# @permission_classes([AllowAny])
-# def get_range_price_by_hotel(request, hid):
-    # try:
-    #     # Retrieve all room types
-    #     hotel = Hotel.objects.get(hid=hid)
-    #     room_types = RoomType.objects.filter(hotel=hotel)
-    #     room_types_price_range = room_types.aggregate(
-    #         min_price=models.Min('price'),
-    #         max_price=models.Max('price')
-    #     )
-        
-    #     return Response(room_types_price_range, status=status.HTTP_200_OK)
-    
-    # except Exception as e:
-    #     # Log the error and return a generic error response
-    #     return Response(
-    #         {'error': 'An error occurred while fetching room types.', 'details': str(e)},
-    #         status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        # )
-
-# @api_view(['POST'])
-# @permission_classes([AllowAny])
-# def search_hotel_by_location_and_price(request):
-#     location = request.data.get('location', '').strip()
-#     price_min = request.data.get('price_min', None)
-#     price_max = request.data.get('price_max', None)
-#     name_hotel
-#     min_price = None
-#     max_price = None
-
-#     if price_min:
-#         try:
-#             min_price = Decimal(price_min)
-#         except InvalidOperation:
-#             return Response({'error': 'Giá tối thiểu không hợp lệ.'}, status=status.HTTP_400_BAD_REQUEST)
-
-#     if price_max:
-#         try:
-#             max_price = Decimal(price_max)
-#         except InvalidOperation:
-#             return Response({'error': 'Giá tối đa không hợp lệ.'}, status=status.HTTP_400_BAD_REQUEST)
-
-#     filters = {}
-#     if location:
-#         filters['address__icontains'] = location  
-
-#     hotels = Hotel.objects.filter(**filters)
-
-#     valid_hotels = []
-#     for hotel in hotels:
-#         price_min_hotel = RoomType.objects.filter(hotel=hotel).aggregate(Min('price'))['price__min'] or Decimal(0.00)
-
-#         if min_price is not None and max_price is not None:
-#             if price_min_hotel >= min_price and price_min_hotel <= max_price:
-#                 valid_hotels.append(hotel)
-#         elif min_price is not None and price_min_hotel >= min_price:
-#             valid_hotels.append(hotel)
-#         elif max_price is not None and price_min_hotel <= max_price:
-#             valid_hotels.append(hotel)
-#         elif min_price is None and max_price is None:
-#             valid_hotels.append(hotel)
-
-#     if not valid_hotels:
-#         return Response({'error': 'Không tìm thấy khách sạn nào thỏa mãn điều kiện.'}, status=status.HTTP_404_NOT_FOUND)
-
-#     serializer = HotelSerializer(valid_hotels, many=True, context={'request': request})
-#     return Response(serializer.data, status=status.HTTP_200_OK)
