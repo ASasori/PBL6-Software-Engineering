@@ -100,7 +100,7 @@ class Receptionist(models.Model):
         return f"Receptionist {self.user.username} - Hotel: {self.hotel.name if self.hotel else 'No hotel'}"
 
 # New model for Customer
-class Customer(models.Model):
+class   Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)  # Sử dụng user ID làm khóa chính
     bookingID = models.IntegerField(null=True, blank=True)  # Giữ lại trường bookingID nếu cần
 

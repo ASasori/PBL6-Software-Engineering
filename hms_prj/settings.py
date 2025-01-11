@@ -260,8 +260,18 @@ JAZZMIN_SETTINGS = {
     },
 
 
+
     "show_ui_builder" : False,
-    "custom_links":{},
+    "custom_links": {
+        "hotel": [  # Replace "hotel" with the app you want to group this under
+            {
+                "name": "Statistics",
+                "url": "/statistics/",  # URL to your statistics view
+                "icon": "fas fa-chart-line",  # Font Awesome icon
+                "permissions": ["hotel.view_hotel"],  # Replace with your permission
+            },
+        ],
+    },
     "hide_apps": [],
     "hide_models": [],
     'custom_css': 'css/custom_admin.css',

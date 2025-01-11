@@ -1,0 +1,66 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h1>Hotel Revenue Statistics</h1>
+<div style="display: flex; flex-direction: column; align-items: center;">
+    <canvas id="revenueChart" width="400" height="200"></canvas>
+    <canvas id="bookingChart" width="400" height="200" style="margin-top: 30px;"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script id="labels-data" type="application/json">{{ labels|safe }}</script>
+<script id="revenues-data" type="application/json">{{ total_revenues|safe }}</script>
+<script id="bookings-data" type="application/json">{{ total_bookings|safe }}</script>
+<script>
+    // Data passed from the server
+    const labels = JSON.parse(document.getElementById('labels-data').textContent);
+    const totalRevenues = JSON.parse(document.getElementById('revenues-data').textContent);
+    const totalBookings = JSON.parse(document.getElementById('bookings-data').textContent);
+
+    // Revenue Bar Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(revenueCtx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Revenue (USD)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                data: totalRevenues,
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    // Booking Pie Chart
+    const bookingCtx = document.getElementById('bookingChart').getContext('2d');
+    new Chart(bookingCtx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Bookings',
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+                data: totalBookings,
+            }]
+        },
+        options: { responsive: true }
+    });
+console.log("Labels:", labels);
+console.log("Revenues:", totalRevenues);
+console.log("Bookings:", totalBookings);
+
+if (!revenueCtx || !bookingCtx) {
+    console.error("Canvas elements not found!");
+}
+
+</script>
+
+<!-- JSON script tags to pass data -->
+
+
+{% endblock %}
